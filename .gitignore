@@ -1,0 +1,39 @@
+# Rust Build Artifacts
+/target/
+/Cargo.lock
+/proof-of-concept/
+
+# Backup files
+**/*.rs.bak
+**/*.bak.rs
+
+# IDE Directories
+.zed
+.idea
+.vscode
+
+# Ai Directories
+.claude
+
+# OS specific files
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# Temporary files
+*.tmp
+*.temp
