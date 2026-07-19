@@ -9,6 +9,7 @@ unexpected_cfgs = { level = "allow", check-cfg = ["cfg(feature, values(\"webgpu\
 [dependencies]
 ron.workspace = true
 bevy.workspace = true
+smol_str.workspace = true
 bevy_common_assets = { version = "0.17.0", features = ["ron"] }
 big_space.workspace = true
 tiff.workspace = true

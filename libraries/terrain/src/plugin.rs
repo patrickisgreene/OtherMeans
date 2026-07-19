@@ -47,7 +47,7 @@ impl TerrainSettings {
         attachments.extend(
             custom_attachments
                 .into_iter()
-                .map(|name| AttachmentLabel::Custom(name.to_string())),
+                .map(|name| AttachmentLabel::Custom(name.into())),
         );
 
         Self {

@@ -14,16 +14,16 @@ use strum_macros::EnumIter;
 pub enum AttachmentLabel {
     #[default]
     Height,
-    Custom(String), // Todo: this should not be a heap allocated string
+    Custom(smol_str::SmolStr),
     Empty(usize),
 }
 
 impl From<&AttachmentLabel> for String {
     fn from(value: &AttachmentLabel) -> Self {
         match value {
-            AttachmentLabel::Height => "height".to_string(),
-            AttachmentLabel::Custom(name) => name.clone(),
-            AttachmentLabel::Empty(i) => format!("empty_{}", (b'a' + *i as u8) as char).to_string(),
+            AttachmentLabel::Height => "height".into(),
+            AttachmentLabel::Custom(name) => name.to_string(),
+            AttachmentLabel::Empty(i) => format!("empty_{}", (b'a' + *i as u8) as char),
         }
     }
 }
@@ -34,7 +34,7 @@ impl FromStr for AttachmentLabel {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.trim() {
             "height" => Ok(Self::Height),
-            name => Ok(Self::Custom(name.to_string())),
+            name => Ok(Self::Custom(name.into())),
         }
     }
 }
