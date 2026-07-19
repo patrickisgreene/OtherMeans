@@ -1,0 +1,123 @@
+use crate::{
+    plugin::TerrainSettings,
+    terrain::TerrainConfig,
+    terrain_data::{TileAtlas, TileTree},
+    terrain_view::{TerrainViewComponents, TerrainViewConfig},
+};
+use bevy::{ecs::system::SystemState, prelude::*, render::storage::ShaderBuffer};
+use big_space::floating_origins::BigSpace;
+
+#[derive(Clone)]
+pub(crate) struct TerrainToSpawn<M: Material + Clone> {
+    config: Handle<TerrainConfig>,
+    view_config: TerrainViewConfig,
+    material: M,
+    view: Entity,
+}
+
+#[derive(Resource)]
+pub(crate) struct TerrainsToSpawn<M: Material>(pub(crate) Vec<TerrainToSpawn<M>>);
+
+pub(crate) fn spawn_terrains<M: Material>(
+    mut commands: Commands,
+    mut terrains: ResMut<TerrainsToSpawn<M>>,
+    asset_server: Res<AssetServer>,
+) {
+    terrains.0.retain(|terrain| {
+        if asset_server.is_loaded(&terrain.config) {
+            let terrain = terrain.clone();
+
+            commands.queue(move |world: &mut World| {
+                let TerrainToSpawn {
+                    config,
+                    view_config,
+                    material,
+                    view,
+                } = terrain;
+
+                let mut state = SystemState::<(
+                    Commands,
+                    Res<Assets<TerrainConfig>>,
+                    Query<Entity, With<BigSpace>>,
+                    ResMut<Assets<M>>,
+                    ResMut<TerrainViewComponents<TileTree>>,
+                    ResMut<Assets<ShaderBuffer>>,
+                    Res<TerrainSettings>,
+                )>::new(world);
+
+                let (
+                    mut commands,
+                    configs,
+                    big_space,
+                    mut materials,
+                    mut tile_trees,
+                    mut buffers,
+                    settings,
+                ) = state.get_mut(world).unwrap();
+
+                let config = configs.get(config.id()).unwrap().clone();
+
+                let root = big_space.single().unwrap();
+
+                let terrain = commands
+                    .spawn((
+                        config.shape.transform(),
+                        TileAtlas::new(&config, &mut buffers, &settings),
+                        MeshMaterial3d(materials.add(material)),
+                    ))
+                    .id();
+
+                commands.entity(root).add_child(terrain);
+
+                tile_trees.insert(
+                    (terrain, view),
+                    TileTree::new(
+                        &config,
+                        &view_config,
+                        (terrain, view),
+                        &mut commands,
+                        &mut buffers,
+                    ),
+                );
+
+                state.apply(world);
+            });
+            false
+        } else {
+            true
+        }
+    });
+}
+
+pub trait SpawnTerrainCommandsExt<M: Material> {
+    // define a method that we will be able to call on `commands`
+    fn spawn_terrain(
+        &mut self,
+        config: Handle<TerrainConfig>,
+        view_config: TerrainViewConfig,
+        material: M,
+        view: Entity,
+    );
+}
+
+impl<M: Material> SpawnTerrainCommandsExt<M> for Commands<'_, '_> {
+    fn spawn_terrain(
+        &mut self,
+        config: Handle<TerrainConfig>,
+        view_config: TerrainViewConfig,
+        material: M,
+        view: Entity,
+    ) {
+        self.queue(move |world: &mut World| {
+            world
+                .resource_mut::<TerrainsToSpawn<M>>()
+                .0
+                .push(TerrainToSpawn {
+                    config,
+                    view_config,
+                    material,
+                    view,
+                });
+        });
+    }
+}

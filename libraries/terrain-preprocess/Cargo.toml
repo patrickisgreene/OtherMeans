@@ -1,0 +1,22 @@
+[package]
+name = "terrain-preprocess"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+terrain.workspace = true
+gag.workspace = true
+gdal.workspace = true
+gdal-sys.workspace = true
+glam.workspace = true
+itertools.workspace = true
+thiserror.workspace = true
+num.workspace = true
+rayon.workspace = true
+thread_local.workspace = true
+clap.workspace = true
+indicatif.workspace = true
+ndarray.workspace = true
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(gdal_major_ge_3)', 'cfg(gdal_major_ge_4)', 'cfg(gdal_minor_ge_5)', 'cfg(gdal_minor_ge_7)'] }

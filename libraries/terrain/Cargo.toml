@@ -1,0 +1,24 @@
+[package]
+name = "terrain"
+version.workspace = true
+edition.workspace = true
+
+[lints.rust]
+unexpected_cfgs = { level = "allow", check-cfg = ["cfg(feature, values(\"webgpu\"))"] }
+
+[dependencies]
+ron.workspace = true
+bevy.workspace = true
+bevy_common_assets = { version = "0.17.0", features = ["ron"] }
+big_space.workspace = true
+tiff.workspace = true
+bytemuck.workspace = true
+ndarray.workspace = true
+itertools.workspace = true
+bitflags.workspace = true
+serde.workspace = true
+async-channel.workspace = true
+indexmap.workspace = true
+slab.workspace = true
+strum.workspace = true
+strum_macros.workspace = true
