@@ -1,9 +1,9 @@
 //! Contains a debug resource and systems controlling it to visualize different internal
 //! data of the plugin.
 use crate::{
+    data::{TileAtlas, TileTree, tile_tree::systems::generate_surface_approximation},
     debug::{debug_camera_controller, debug_surface_approximation, orbital_camera_controller},
-    terrain_data::{TileAtlas, TileTree},
-    terrain_view::TerrainViewComponents,
+    view::TerrainViewComponents,
 };
 
 use bevy::{
@@ -45,7 +45,7 @@ impl Plugin for TerrainDebugPlugin {
             )
             .add_systems(
                 Last,
-                debug_surface_approximation.after(TileTree::generate_surface_approximation),
+                debug_surface_approximation.after(generate_surface_approximation),
             );
 
         app.sub_app_mut(RenderApp)
@@ -230,10 +230,10 @@ pub fn update_terrain_parameter(
     mut tile_atlases: Query<&mut TileAtlas>,
 ) {
     for mut tile_atlas in tile_atlases.iter_mut() {
-        if input.pressed(KeyCode::ShiftLeft) && input.just_pressed(KeyCode::Equal) {
+        if input.pressed(KeyCode::Equal) {
             tile_atlas.height_scale += 0.1;
         }
-        if input.just_pressed(KeyCode::Minus) {
+        if input.pressed(KeyCode::Minus) {
             tile_atlas.height_scale -= 0.1;
         }
     }

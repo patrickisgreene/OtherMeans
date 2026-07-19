@@ -1,8 +1,8 @@
 use crate::{
+    data::{TileTree, TileTreeEntry},
     math::{TileCoordinate, ViewCoordinate},
     render::TerrainTilingPrepassPipelines,
-    terrain_data::{TileTree, TileTreeEntry},
-    terrain_view::TerrainViewComponents,
+    view::TerrainViewComponents,
 };
 use bevy::{
     ecs::{

@@ -1,7 +1,7 @@
 use crate::{
+    data::{AttachmentFormat, AttachmentLabel, TileAtlas, attachment::Attachment},
+    mipmap::MipPipelines,
     plugin::TerrainSettings,
-    preprocess::MipPipelines,
-    terrain_data::{AttachmentFormat, AttachmentLabel, TileAtlas, attachment::Attachment},
     util::GpuBuffer,
 };
 use bevy::{
@@ -44,7 +44,7 @@ pub struct AtlasTileAttachment {
 }
 
 #[derive(Default, ShaderType)]
-pub(crate) struct AttachmentMeta {
+pub struct AttachmentMeta {
     pub(crate) lod_count: u32,
     pub(crate) texture_size: u32,
     pub(crate) border_size: u32,
@@ -55,7 +55,7 @@ pub(crate) struct AttachmentMeta {
 }
 
 #[derive(Clone, Copy, Debug)]
-pub(crate) struct AtlasBufferInfo {
+pub struct AtlasBufferInfo {
     pub(crate) mask: bool,
     lod_count: u32,
     pub(crate) texture_size: u32,
@@ -177,7 +177,7 @@ impl AtlasBufferInfo {
     }
 }
 
-pub(crate) struct GpuAttachment {
+pub struct GpuAttachment {
     pub(crate) index: usize,
 
     pub(crate) buffer_info: AtlasBufferInfo,

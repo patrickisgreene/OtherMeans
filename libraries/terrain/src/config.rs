@@ -3,7 +3,7 @@
 
 use crate::{
     math::{TerrainShape, TileCoordinate},
-    terrain_data::{AttachmentConfig, AttachmentLabel},
+    data::{AttachmentConfig, AttachmentLabel},
 };
 use bevy::{ecs::entity::hash_map::EntityHashMap, platform::collections::HashMap, prelude::*};
 use serde::{Deserialize, Serialize};

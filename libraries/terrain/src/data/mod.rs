@@ -15,21 +15,18 @@
 //! Both the tile atlas and the tile_trees also have a corresponding GPU representation,
 //! which can be used to access the terrain data in shaders.
 
-mod attachment;
-mod gpu_attachment;
-mod gpu_tile_atlas;
-mod tile_atlas;
-mod tile_loader;
-mod tile_tree;
+pub mod attachment;
+pub mod tile_atlas;
+pub mod tile_loader;
+pub mod tile_tree;
 
 pub use self::{
     attachment::{AttachmentConfig, AttachmentFormat, AttachmentLabel},
-    gpu_tile_atlas::GpuTileAtlas,
     tile_atlas::TileAtlas,
     tile_tree::TileTree,
 };
 
-pub(crate) use self::{attachment::*, gpu_attachment::*, tile_loader::*, tile_tree::*};
+pub(crate) use self::{attachment::*, tile_loader::*, tile_tree::*};
 
 pub const INVALID_ATLAS_INDEX: u32 = u32::MAX;
 pub const INVALID_LOD: u32 = u32::MAX;

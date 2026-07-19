@@ -1,20 +1,14 @@
-use crate::terrain_data::{AttachmentData, AttachmentFormat, AttachmentTile, TileAtlas};
+use crate::data::{AttachmentData, AttachmentTile, TileAtlas};
 use bevy::{
-    asset::{AssetServer, Assets, Handle},
+    asset::{AssetServer, Assets},
     image::Image,
     prelude::*,
 };
 use slab::Slab;
 
-struct LoadingTile {
-    handle: Handle<Image>,
-    tile: AttachmentTile,
-    format: AttachmentFormat,
-}
-
 #[derive(Component)]
 pub struct DefaultLoader {
-    loading_tiles: Slab<LoadingTile>,
+    loading_tiles: Slab<super::LoadingTile>,
 }
 
 impl Default for DefaultLoader {
@@ -31,7 +25,7 @@ impl DefaultLoader {
         tiles.pop()
     }
 
-    fn finish_loading(
+    pub fn finish_loading(
         &mut self,
         atlas: &mut TileAtlas,
         asset_server: &mut AssetServer,
@@ -52,7 +46,7 @@ impl DefaultLoader {
         });
     }
 
-    fn start_loading(&mut self, atlas: &mut TileAtlas, asset_server: &mut AssetServer) {
+    pub fn start_loading(&mut self, atlas: &mut TileAtlas, asset_server: &mut AssetServer) {
         while self.loading_tiles.len() < self.loading_tiles.capacity() {
             if let Some(tile) = self.to_load_next(&mut atlas.to_load) {
                 let attachment = &atlas.attachments[&tile.label];
@@ -61,7 +55,7 @@ impl DefaultLoader {
                     .coordinate
                     .path(&attachment.path.join(String::from(&tile.label)));
 
-                self.loading_tiles.insert(LoadingTile {
+                self.loading_tiles.insert(super::LoadingTile {
                     handle: asset_server.load(path),
                     tile,
                     format: attachment.format,
@@ -70,24 +64,5 @@ impl DefaultLoader {
                 break;
             }
         }
-    }
-}
-
-pub fn finish_loading(
-    mut terrains: Query<(&mut TileAtlas, &mut DefaultLoader)>,
-    mut asset_server: ResMut<AssetServer>,
-    mut images: ResMut<Assets<Image>>,
-) {
-    for (mut tile_atlas, mut loader) in &mut terrains {
-        loader.finish_loading(&mut tile_atlas, &mut asset_server, &mut images);
-    }
-}
-
-pub fn start_loading(
-    mut terrains: Query<(&mut TileAtlas, &mut DefaultLoader)>,
-    mut asset_server: ResMut<AssetServer>,
-) {
-    for (mut tile_atlas, mut loader) in &mut terrains {
-        loader.start_loading(&mut tile_atlas, &mut asset_server);
     }
 }

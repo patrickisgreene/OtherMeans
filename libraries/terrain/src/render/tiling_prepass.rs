@@ -1,4 +1,6 @@
 use crate::{
+    config::TerrainComponents,
+    data::tile_atlas::gpu::GpuTileAtlas,
     debug::DebugTerrain,
     render::{
         GpuTerrain, GpuTerrainView,
@@ -6,9 +8,7 @@ use crate::{
         terrain_view_bind_group::{IndirectBindGroup, PrepassViewBindGroup, TerrainViewBindGroup},
     },
     shaders::{PREPARE_PREPASS_SHADER, REFINE_TILES_SHADER},
-    terrain::TerrainComponents,
-    terrain_data::GpuTileAtlas,
-    terrain_view::TerrainViewComponents,
+    view::TerrainViewComponents,
 };
 use bevy::{
     prelude::*,

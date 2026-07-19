@@ -16,8 +16,8 @@ use std::{
     str::FromStr,
 };
 use terrain::{
+    data::{AttachmentConfig, AttachmentLabel},
     math::{TerrainShape, TileCoordinate},
-    terrain_data::{AttachmentConfig, AttachmentLabel},
 };
 
 #[derive(Debug, Clone, Copy)]

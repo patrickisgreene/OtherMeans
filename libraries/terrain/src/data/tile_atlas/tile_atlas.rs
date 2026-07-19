@@ -1,13 +1,12 @@
 use crate::{
+    config::TerrainConfig,
+    data::{
+        Attachment, AttachmentData, AttachmentLabel, AttachmentTile, AttachmentTileWithData,
+        DefaultLoader, TileTreeEntry,
+    },
     math::{TerrainShape, TileCoordinate},
     plugin::TerrainSettings,
     render::TerrainUniform,
-    terrain::TerrainConfig,
-    terrain_data::{
-        Attachment, AttachmentData, AttachmentLabel, AttachmentTile, AttachmentTileWithData,
-        DefaultLoader, TileTree, TileTreeEntry,
-    },
-    terrain_view::TerrainViewComponents,
 };
 use bevy::{
     asset::RenderAssetUsages,
@@ -19,28 +18,6 @@ use bevy::{
 };
 use big_space::prelude::*;
 use std::collections::VecDeque;
-
-/// The current state of a tile of a [`TileAtlas`].
-///
-/// This indicates, whether the tile is loading or loaded and ready to be used.
-#[derive(Clone, Copy, Debug)]
-enum LoadingState {
-    /// The tile is loading, but can not be used yet.
-    Loading(u32),
-    /// The tile is loaded and can be used.
-    Loaded,
-}
-
-/// The internal representation of a present tile in a [`TileAtlas`].
-struct TileState {
-    /// Indicates whether or not the tile is loading or loaded.
-    state: LoadingState,
-    /// The index of the tile inside the atlas.
-    atlas_index: u32,
-    /// The count of [`TileTrees`] that have requested this tile.
-    requests: u32,
-}
-
 // Todo: rename to terrain?
 // Todo: consider turning this into an asset
 
@@ -61,7 +38,7 @@ struct TileState {
 #[component(on_add = add_visibility_class::<TileAtlas>)]
 pub struct TileAtlas {
     pub(crate) attachments: HashMap<AttachmentLabel, Attachment>, // stores the attachment data
-    tile_states: HashMap<TileCoordinate, TileState>,
+    tile_states: HashMap<TileCoordinate, super::TileState>,
     unused_indices: VecDeque<u32>,
     existing_tiles: HashSet<TileCoordinate>,
     pub(crate) uploading_tiles: Vec<AttachmentTileWithData>,
@@ -126,7 +103,7 @@ impl TileAtlas {
             }
 
             if let Some(tile) = self.tile_states.get(&best_tile_coordinate) {
-                if matches!(tile.state, LoadingState::Loaded) {
+                if matches!(tile.state, super::LoadingState::Loaded) {
                     // found best loaded tile
                     return TileTreeEntry {
                         atlas_index: tile.atlas_index,
@@ -144,9 +121,9 @@ impl TileAtlas {
     pub(crate) fn tile_loaded(&mut self, tile: AttachmentTile, data: AttachmentData) {
         if let Some(tile_state) = self.tile_states.get_mut(&tile.coordinate) {
             tile_state.state = match tile_state.state {
-                LoadingState::Loading(1) => LoadingState::Loaded,
-                LoadingState::Loading(n) => LoadingState::Loading(n - 1),
-                LoadingState::Loaded => {
+                super::LoadingState::Loading(1) => super::LoadingState::Loaded,
+                super::LoadingState::Loading(n) => super::LoadingState::Loading(n - 1),
+                super::LoadingState::Loaded => {
                     panic!("Loaded more attachments, than registered with the tile atlas.")
                 }
             };
@@ -161,35 +138,7 @@ impl TileAtlas {
         }
     }
 
-    /// Updates the tile atlas according to all corresponding tile_trees.
-    pub(crate) fn update(
-        mut tile_trees: ResMut<TerrainViewComponents<TileTree>>,
-        mut tile_atlases: Query<&mut TileAtlas>,
-    ) {
-        for (&(terrain, _view), tile_tree) in tile_trees.iter_mut() {
-            let mut tile_atlas = tile_atlases.get_mut(terrain).unwrap();
-
-            for tile_coordinate in tile_tree.released_tiles.drain(..) {
-                tile_atlas.release_tile(tile_coordinate);
-            }
-
-            for tile_coordinate in tile_tree.requested_tiles.drain(..) {
-                tile_atlas.request_tile(tile_coordinate);
-            }
-        }
-    }
-
-    pub fn update_terrain_buffer(
-        mut tile_atlases: Query<(&mut TileAtlas, &GlobalTransform)>,
-        mut buffers: ResMut<Assets<ShaderBuffer>>,
-    ) {
-        for (tile_atlas, global_transform) in &mut tile_atlases {
-            let mut terrain_buffer = buffers.get_mut(&tile_atlas.terrain_buffer).unwrap();
-            terrain_buffer.set_data(TerrainUniform::new(&tile_atlas, global_transform));
-        }
-    }
-
-    fn request_tile(&mut self, tile_coordinate: TileCoordinate) {
+    pub fn request_tile(&mut self, tile_coordinate: TileCoordinate) {
         if !self.existing_tiles.contains(&tile_coordinate) {
             return;
         }
@@ -214,9 +163,9 @@ impl TileAtlas {
 
             self.tile_states.insert(
                 tile_coordinate,
-                TileState {
+                super::TileState {
                     requests: 1,
-                    state: LoadingState::Loading(self.attachments.len() as u32),
+                    state: super::LoadingState::Loading(self.attachments.len() as u32),
                     atlas_index,
                 },
             );
@@ -230,7 +179,7 @@ impl TileAtlas {
         }
     }
 
-    fn release_tile(&mut self, tile_coordinate: TileCoordinate) {
+    pub fn release_tile(&mut self, tile_coordinate: TileCoordinate) {
         if !self.existing_tiles.contains(&tile_coordinate) {
             return;
         }

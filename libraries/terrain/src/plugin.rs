@@ -1,17 +1,15 @@
 use crate::{
+    config::{TerrainComponents, TerrainConfig},
+    data::{AttachmentLabel, TileTree, tile_atlas::gpu::GpuTileAtlas},
     formats::TiffLoader,
-    preprocess::{MipPipelines, mip_prepass},
+    mipmap::{MipPipelines, mip_prepass},
     render::{
         DepthCopyPipeline, GpuTerrain, GpuTerrainView, TerrainItem, TerrainTilingPrepassPipelines,
         TilingPrepassItem, extract_terrain_phases, prepare_terrain_depth_textures,
         queue_tiling_prepass, terrain_pass, tiling_prepass,
     },
     shaders::{InternalShaders, load_terrain_shaders},
-    terrain::{TerrainComponents, TerrainConfig},
-    terrain_data::{
-        AttachmentLabel, GpuTileAtlas, TileAtlas, TileTree, finish_loading, start_loading,
-    },
-    terrain_view::TerrainViewComponents,
+    view::TerrainViewComponents,
 };
 use bevy::{
     core_pipeline::{Core3dSystems, core_3d::main_opaque_pass_3d, schedule::Core3d},
@@ -76,14 +74,14 @@ impl Plugin for TerrainPlugin {
                     // Todo: enable visibility checking again
                     // check_visibility::<With<TileAtlas>>.in_set(VisibilitySystems::CheckVisibility),
                     (
-                        TileTree::compute_requests,
-                        finish_loading,
-                        TileAtlas::update,
-                        start_loading,
-                        TileTree::adjust_to_tile_atlas,
-                        TileTree::generate_surface_approximation,
-                        TileTree::update_terrain_view_buffer,
-                        TileAtlas::update_terrain_buffer,
+                        crate::data::tile_tree::systems::compute_requests,
+                        crate::data::tile_loader::systems::finish_loading,
+                        crate::data::tile_atlas::systems::update,
+                        crate::data::tile_loader::systems::start_loading,
+                        crate::data::tile_tree::systems::adjust_to_tile_atlas,
+                        crate::data::tile_tree::systems::generate_surface_approximation,
+                        crate::data::tile_tree::systems::update_terrain_view_buffer,
+                        crate::data::tile_atlas::systems::update_terrain_buffer,
                     )
                         .chain()
                         .after(TransformSystems::Propagate),

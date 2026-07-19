@@ -1,4 +1,4 @@
-use crate::terrain_data::AttachmentLabel;
+use crate::data::AttachmentLabel;
 use bevy::{asset::embedded_asset, prelude::*};
 use itertools::Itertools;
 

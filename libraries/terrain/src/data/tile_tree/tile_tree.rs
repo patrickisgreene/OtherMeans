@@ -1,79 +1,22 @@
 use crate::{
+    config::TerrainConfig,
     math::{Coordinate, TerrainShape, TileCoordinate},
-    render::{TerrainViewUniform, TileTreeUniform},
-    terrain::TerrainConfig,
-    terrain_data::{INVALID_ATLAS_INDEX, INVALID_LOD, TileAtlas},
-    terrain_view::{TerrainViewComponents, TerrainViewConfig},
+    render::TerrainViewUniform,
+    view::TerrainViewConfig,
 };
 use bevy::{
     asset::RenderAssetUsages,
-    camera::primitives::Frustum,
     math::{DVec2, DVec3},
     prelude::*,
     render::{
-        gpu_readback::{Readback, ReadbackComplete},
+        gpu_readback::Readback,
         render_resource::{BufferUsages, ShaderType},
         storage::ShaderBuffer,
     },
 };
-use big_space::prelude::*;
-use itertools::{Itertools, iproduct};
+use itertools::iproduct;
 use ndarray::Array4;
-use std::{cmp::Ordering, iter};
-
-/// The current state of a tile of a [`TileTree`].
-///
-/// This indicates, whether or not the tile should be loaded into the [`TileAtlas`).
-#[derive(Clone, Copy, PartialEq, Eq)]
-enum RequestState {
-    /// The tile should be loaded.
-    Requested,
-    /// The tile does not have to be loaded.
-    Released,
-}
-
-/// The internal representation of a tile in a [`TileTree`].
-struct TileState {
-    /// The current tile coordinate at the tile_tree position.
-    coordinate: TileCoordinate,
-    /// Indicates, whether the tile is currently demanded or released.
-    state: RequestState,
-}
-
-impl Default for TileState {
-    fn default() -> Self {
-        Self {
-            coordinate: TileCoordinate::INVALID,
-            state: RequestState::Released,
-        }
-    }
-}
-
-/// An entry of the [`TileTree`], used to access the best currently loaded tile
-/// of the [`TileAtlas`] on the CPU.
-///
-/// These entries are synced each frame with their equivalent representations in the
-/// [`GpuTileTree`](super::gpu_tile_tree::GpuTileTree) for access on the GPU.
-#[repr(C)]
-#[derive(Clone, Copy, Debug, ShaderType)]
-pub(crate) struct TileTreeEntry {
-    /// The atlas index of the best entry.
-    pub(crate) atlas_index: u32,
-    /// The atlas lod of the best entry.
-    pub(crate) atlas_lod: u32,
-}
-
-impl Default for TileTreeEntry {
-    fn default() -> Self {
-        Self {
-            atlas_index: INVALID_ATLAS_INDEX,
-            atlas_lod: INVALID_LOD,
-        }
-    }
-}
-
-#[derive(Component)]
-pub struct TerrainViewKey((Entity, Entity));
+use std::cmp::Ordering;
 
 /// A quadtree-like view of a terrain, that requests and releases tiles from the [`TileAtlas`]
 /// depending on the distance to the viewer.
@@ -98,13 +41,13 @@ pub struct TerrainViewKey((Entity, Entity));
 #[derive(Component)]
 pub struct TileTree {
     /// The current cpu tile_tree data. This is synced each frame with the gpu tile_tree data.
-    pub(crate) data: Array4<TileTreeEntry>,
+    pub(crate) data: Array4<super::TileTreeEntry>,
     /// Tiles that are no longer required by this tile_tree.
     pub(crate) released_tiles: Vec<TileCoordinate>,
     /// Tiles that are requested to be loaded by this tile_tree.
     pub(crate) requested_tiles: Vec<TileCoordinate>,
     /// The internal tile states of the tile_tree.
-    tiles: Array4<TileState>,
+    pub tiles: Array4<super::TileState>,
     /// The count of tiles in x and y direction per layer.
     pub(crate) tree_size: u32,
     pub(crate) lod_count: u32,
@@ -155,7 +98,7 @@ impl TileTree {
             RenderAssetUsages::all(),
         ));
         let tile_tree_buffer = buffers.add(ShaderBuffer::with_size(
-            data.len() * size_of::<TileTreeEntry>(),
+            data.len() * size_of::<super::TileTreeEntry>(),
             RenderAssetUsages::all(),
         ));
 
@@ -165,10 +108,10 @@ impl TileTree {
 
         commands
             .spawn((
-                TerrainViewKey(terrain_view),
+                super::TerrainViewKey(terrain_view),
                 Readback::buffer(approximate_height_buffer.clone()),
             ))
-            .observe(Self::approximate_height_readback);
+            .observe(super::approximate_height_readback);
 
         let face_size = config.shape.face_size();
 
@@ -258,7 +201,7 @@ impl TileTree {
         tile_local_position.distance(self.view_local_position)
     }
 
-    fn update(&mut self) {
+    pub fn update(&mut self) {
         let view_coordinate = Coordinate::from_local_position(self.view_local_position, self.shape);
         self.view_face = view_coordinate.face;
 
@@ -281,9 +224,9 @@ impl TileTree {
                     let load_distance = self.load_distance / (tile_coordinate.lod as f64).exp2();
 
                     let state = if lod == 0 || tile_distance < load_distance {
-                        RequestState::Requested
+                        super::RequestState::Requested
                     } else {
-                        RequestState::Released
+                        super::RequestState::Released
                     };
 
                     let tile = &mut self.tiles[[
@@ -296,8 +239,8 @@ impl TileTree {
                     // check if tile_tree slot refers to a new tile
                     if tile_coordinate != tile.coordinate {
                         // release old tile
-                        if tile.state == RequestState::Requested {
-                            tile.state = RequestState::Released;
+                        if tile.state == super::RequestState::Requested {
+                            tile.state = super::RequestState::Released;
                             self.released_tiles.push(tile.coordinate);
                         }
 
@@ -306,12 +249,12 @@ impl TileTree {
 
                     // request or release tile based on its distance to the view
                     match (tile.state, state) {
-                        (RequestState::Released, RequestState::Requested) => {
-                            tile.state = RequestState::Requested;
+                        (super::RequestState::Released, super::RequestState::Requested) => {
+                            tile.state = super::RequestState::Requested;
                             self.requested_tiles.push(tile.coordinate);
                         }
-                        (RequestState::Requested, RequestState::Released) => {
-                            tile.state = RequestState::Released;
+                        (super::RequestState::Requested, super::RequestState::Released) => {
+                            tile.state = super::RequestState::Released;
                             self.released_tiles.push(tile.coordinate);
                         }
                         (_, _) => {}
@@ -319,91 +262,5 @@ impl TileTree {
                 }
             }
         }
-    }
-
-    /// Traverses all tile_trees and updates the tile states,
-    /// while selecting newly requested and released tiles.
-    pub(crate) fn compute_requests(
-        camera: Query<&Camera>,
-        mut tile_trees: ResMut<TerrainViewComponents<TileTree>>,
-        grids: Grids,
-        views: Query<(&Transform, &CellCoord)>,
-    ) {
-        for (&(_, view), tile_tree) in tile_trees.iter_mut() {
-            let camera = camera.get(view).unwrap();
-            let grid = grids.parent_grid(view).unwrap();
-            let (transform, cell) = views.get(view).unwrap();
-
-            // Todo: transform should be global transform?
-
-            let clip_from_view = camera.clip_from_view();
-            let world_from_view = transform.to_matrix();
-            let clip_from_world = clip_from_view * world_from_view.inverse();
-
-            let half_spaces = Frustum(ViewFrustum::from_clip_from_world(&clip_from_world))
-                .half_spaces
-                .map(|space| space.normal_d());
-
-            tile_tree.view_local_position = grid.grid_position_double(cell, transform);
-            tile_tree.view_world_position = transform.translation;
-            tile_tree.half_spaces = half_spaces;
-            tile_tree.update();
-        }
-    }
-
-    /// Adjusts all tile_trees to their corresponding tile atlas
-    /// by updating the entries with the best available tiles.
-    pub(crate) fn adjust_to_tile_atlas(
-        mut tile_trees: ResMut<TerrainViewComponents<TileTree>>,
-        tile_atlases: Query<&TileAtlas>,
-    ) {
-        for (&(terrain, _view), tile_tree) in tile_trees.iter_mut() {
-            let tile_atlas = tile_atlases.get(terrain).unwrap();
-
-            for (tile, entry) in iter::zip(&tile_tree.tiles, &mut tile_tree.data) {
-                *entry = tile_atlas.get_best_tile(tile.coordinate);
-            }
-        }
-    }
-
-    pub fn generate_surface_approximation(mut tile_trees: ResMut<TerrainViewComponents<TileTree>>) {
-        for tile_tree in tile_trees.values_mut() {
-            tile_tree.surface_approximation = tile_tree.view_coordinates.map(|view_coordinate| {
-                crate::math::SurfaceApproximation::compute(
-                    view_coordinate,
-                    tile_tree.view_local_position,
-                    tile_tree.view_world_position,
-                    tile_tree.shape,
-                )
-            });
-        }
-    }
-
-    pub fn update_terrain_view_buffer(
-        tile_trees: Res<TerrainViewComponents<TileTree>>,
-        mut buffers: ResMut<Assets<ShaderBuffer>>,
-    ) {
-        for tile_tree in tile_trees.values() {
-            {
-                let mut terrain_view_buffer =
-                    buffers.get_mut(&tile_tree.terrain_view_buffer).unwrap();
-                terrain_view_buffer.set_data(TerrainViewUniform::from(tile_tree));
-            }
-
-            let mut tile_tree_buffer = buffers.get_mut(&tile_tree.tile_tree_buffer).unwrap();
-            tile_tree_buffer.set_data(TileTreeUniform {
-                entries: tile_tree.data.clone().into_iter().collect_vec(),
-            });
-        }
-    }
-
-    pub fn approximate_height_readback(
-        trigger: On<ReadbackComplete>,
-        terrain_view: Query<&TerrainViewKey>,
-        mut tile_trees: ResMut<TerrainViewComponents<TileTree>>,
-    ) {
-        let TerrainViewKey(terrain_view) = terrain_view.get(trigger.entity).unwrap();
-        let tile_tree = tile_trees.get_mut(terrain_view).unwrap();
-        tile_tree.approximate_height = trigger.event().to_shader_type();
     }
 }

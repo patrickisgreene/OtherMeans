@@ -1,10 +1,11 @@
 use crate::{
-    plugin::TerrainSettings,
-    preprocess::{MipPipelineKey, MipPipelines},
-    terrain::TerrainComponents,
-    terrain_data::{
-        AttachmentData, AttachmentLabel, AttachmentTileWithData, GpuAttachment, TileAtlas,
+    config::TerrainComponents,
+    data::{
+        AttachmentData, AttachmentLabel, AttachmentTileWithData, TileAtlas,
+        attachment::gpu::GpuAttachment,
     },
+    mipmap::{MipPipelineKey, MipPipelines},
+    plugin::TerrainSettings,
 };
 use bevy::{
     platform::collections::HashMap,

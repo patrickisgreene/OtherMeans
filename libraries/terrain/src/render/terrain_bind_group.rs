@@ -1,6 +1,6 @@
 use crate::{
-    terrain::TerrainComponents,
-    terrain_data::{GpuAttachment, GpuTileAtlas, TileAtlas},
+    config::TerrainComponents,
+    data::{TileAtlas, gpu::GpuAttachment, tile_atlas::gpu::GpuTileAtlas},
     util::GpuBuffer,
 };
 use bevy::{

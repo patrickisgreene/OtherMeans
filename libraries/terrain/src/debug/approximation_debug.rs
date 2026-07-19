@@ -1,7 +1,7 @@
 use crate::{
+    data::TileTree,
     math::{Coordinate, SurfaceApproximation},
-    terrain_data::TileTree,
-    terrain_view::TerrainViewComponents,
+    view::TerrainViewComponents,
 };
 use bevy::{color::palettes::basic, math::DVec2, prelude::*};
 use itertools::Itertools;

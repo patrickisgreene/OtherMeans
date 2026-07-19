@@ -1,8 +1,8 @@
 use crate::{
+    config::TerrainConfig,
+    data::{TileAtlas, TileTree},
     plugin::TerrainSettings,
-    terrain::TerrainConfig,
-    terrain_data::{TileAtlas, TileTree},
-    terrain_view::{TerrainViewComponents, TerrainViewConfig},
+    view::{TerrainViewComponents, TerrainViewConfig},
 };
 use bevy::{ecs::system::SystemState, prelude::*, render::storage::ShaderBuffer};
 use big_space::floating_origins::BigSpace;

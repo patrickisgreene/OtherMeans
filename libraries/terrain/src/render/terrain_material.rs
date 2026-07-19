@@ -1,4 +1,6 @@
 use crate::{
+    config::TerrainComponents,
+    data::tile_atlas::gpu::GpuTileAtlas,
     debug::DebugTerrain,
     render::{
         DrawTerrainCommand, GpuTerrainView, SetTerrainBindGroup, SetTerrainViewBindGroup,
@@ -6,9 +8,7 @@ use crate::{
     },
     shaders::{DEFAULT_FRAGMENT_SHADER, DEFAULT_VERTEX_SHADER},
     spawn::{TerrainsToSpawn, spawn_terrains},
-    terrain::TerrainComponents,
-    terrain_data::GpuTileAtlas,
-    terrain_view::TerrainViewComponents,
+    view::TerrainViewComponents,
 };
 use bevy::{
     pbr::{

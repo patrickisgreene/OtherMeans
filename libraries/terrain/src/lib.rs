@@ -43,25 +43,27 @@
 //!
 //! [^note]: Some of these claims are not yet fully implemented.
 
+pub mod config;
+pub mod data;
 pub mod debug;
 pub mod formats;
 pub mod math;
+pub mod mipmap;
 pub mod picking;
 pub mod plugin;
-pub mod preprocess;
 pub mod render;
 pub mod shaders;
 pub mod spawn;
-pub mod terrain;
-pub mod terrain_data;
-pub mod terrain_view;
 pub mod util;
+pub mod view;
 
 #[doc(hidden)]
 pub mod prelude {
     //! `use terrain::prelude::*;` to import common components, bundles, and plugins.
 
     pub use crate::{
+        config::TerrainConfig,
+        data::{AttachmentConfig, AttachmentFormat, AttachmentLabel, TileAtlas, TileTree},
         debug::{
             DebugCameraController, DebugTerrainMaterial, LoadingImages, OrbitalCameraController,
             TerrainDebugPlugin,
@@ -72,11 +74,7 @@ pub mod prelude {
         // preprocess::{PreprocessDataset, Preprocessor, SphericalDataset, TerrainPreprocessPlugin},
         render::TerrainMaterialPlugin,
         spawn::SpawnTerrainCommandsExt,
-        terrain::TerrainConfig,
-        terrain_data::{
-            AttachmentConfig, AttachmentFormat, AttachmentLabel, GpuTileAtlas, TileAtlas, TileTree,
-        },
-        terrain_view::{TerrainViewComponents, TerrainViewConfig},
+        view::{TerrainViewComponents, TerrainViewConfig},
     };
     pub use big_space::{commands::BigSpaceCommands, grid::Grid};
 }
