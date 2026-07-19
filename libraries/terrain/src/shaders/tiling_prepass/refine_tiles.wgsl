@@ -1,6 +1,6 @@
-#import bevy_terrain::types::{TileCoordinate, GeometryTile, Coordinate, WorldCoordinate, Blend}
-#import bevy_terrain::bindings::{terrain, terrain_view, final_tiles, approximate_height, temporary_tiles, state}
-#import bevy_terrain::functions::{compute_subdivision_coordinate, compute_world_coordinate, compute_morph, compute_blend, lookup_tile, apply_height}
+#import terrain::types::{TileCoordinate, GeometryTile, Coordinate, WorldCoordinate, Blend}
+#import terrain::bindings::{terrain, terrain_view, final_tiles, approximate_height, temporary_tiles, state}
+#import terrain::functions::{compute_subdivision_coordinate, compute_world_coordinate, compute_morph, compute_blend, lookup_tile, apply_height}
 #import bevy_render::maths::affine3_to_square
 
 fn child_index() -> i32 {

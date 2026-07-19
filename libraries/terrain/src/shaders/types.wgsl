@@ -1,4 +1,4 @@
-#define_import_path bevy_terrain::types
+#define_import_path terrain::types
 
 struct Terrain {
     lod_count: u32,

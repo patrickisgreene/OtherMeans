@@ -1,6 +1,6 @@
-#define_import_path bevy_terrain::bindings
+#define_import_path terrain::bindings
 
-#import bevy_terrain::types::{TerrainView, Terrain, TileTreeEntry, TileCoordinate, GeometryTile, AttachmentConfig, TerrainModelApproximation, IndirectBuffer, PrepassState}
+#import terrain::types::{TerrainView, Terrain, TileTreeEntry, TileCoordinate, GeometryTile, AttachmentConfig, TerrainModelApproximation, IndirectBuffer, PrepassState}
 #import bevy_render::view::View;
 
 struct Attachments {

@@ -1,7 +1,7 @@
-#import bevy_terrain::types::{TileCoordinate, Blend}
-#import bevy_terrain::bindings::{terrain_view, approximate_height, temporary_tiles, state, indirect_buffer}
-#import bevy_terrain::functions::{compute_view_coordinate, compute_world_coordinate, lookup_tile, apply_height, compute_blend}
-#import bevy_terrain::attachments::{sample_height, sample_height_mask}
+#import terrain::types::{TileCoordinate, Blend}
+#import terrain::bindings::{terrain_view, approximate_height, temporary_tiles, state, indirect_buffer}
+#import terrain::functions::{compute_view_coordinate, compute_world_coordinate, lookup_tile, apply_height, compute_blend}
+#import terrain::attachments::{sample_height, sample_height_mask}
 
 @compute @workgroup_size(1, 1, 1)
 fn prepare_root() {
@@ -9,7 +9,7 @@ fn prepare_root() {
     atomicStore(&state.child_index, i32(terrain_view.geometry_tile_count - 1u));
     atomicStore(&state.final_index, 0);
     indirect_buffer.workgroup_count = vec3<u32>(1u, 1u, 1u);
-    
+
 #ifdef SPHERICAL
     // Todo: consider culling the entire back face (opposite of viewer)
     for (var i: u32 = 0u; i < 6u; i = i + 1u) { temporary_tiles[i] = TileCoordinate(i, 0u, vec2<u32>(0u)); }

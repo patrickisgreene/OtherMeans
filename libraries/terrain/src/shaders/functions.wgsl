@@ -1,7 +1,7 @@
-#define_import_path bevy_terrain::functions
+#define_import_path terrain::functions
 
-#import bevy_terrain::bindings::{terrain, origins, terrain_view, geometry_tiles, tile_tree, view, approximate_height}
-#import bevy_terrain::types::{TileCoordinate, WorldCoordinate, TileTree, TileTreeEntry, AtlasTile, Blend, BestLookup, Coordinate, Morph, TangentSpace}
+#import terrain::bindings::{terrain, origins, terrain_view, geometry_tiles, tile_tree, view, approximate_height}
+#import terrain::types::{TileCoordinate, WorldCoordinate, TileTree, TileTreeEntry, AtlasTile, Blend, BestLookup, Coordinate, Morph, TangentSpace}
 #import bevy_render::maths::{affine3_to_square, mat2x4_f32_to_mat3x3_unpack}
 
 const SIGMA = 0.87 * 0.87;

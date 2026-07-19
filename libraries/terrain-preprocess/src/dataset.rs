@@ -16,7 +16,7 @@ use std::{
     str::FromStr,
 };
 use terrain::{
-    math::TileCoordinate,
+    math::{TerrainShape, TileCoordinate},
     terrain_data::{AttachmentConfig, AttachmentLabel},
 };
 
@@ -59,6 +59,34 @@ impl FromStr for PreprocessDataType {
     }
 }
 
+/// The celestial body a terrain is generated for, determining the `TerrainShape` (and thus
+/// radius/scale) baked into the generated `config.tc.ron`. Named presets use each body's mean
+/// radius (matching the ellipsoid/sphere PROJ resolves from the source raster's own CRS, e.g. the
+/// `"radius": 3396190` reported for Mars), so the runtime shape stays consistent with the CRS the
+/// data was reprojected from during preprocessing. Defaults to Earth so existing invocations that
+/// don't pass `--shape` keep today's behaviour.
+#[derive(Debug, Clone, Copy)]
+pub struct PreprocessShape(pub TerrainShape);
+
+impl FromStr for PreprocessShape {
+    type Err = PreprocessError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let shape = match s.trim().to_lowercase().as_str() {
+            "earth" | "wgs84" => TerrainShape::WGS84,
+            "mars" => TerrainShape::Sphere {
+                radius: 3_396_190.0,
+            },
+            "moon" => TerrainShape::Sphere {
+                radius: 1_737_400.0,
+            },
+            other => TerrainShape::Sphere {
+                radius: other.parse::<f64>()?,
+            },
+        };
+        Ok(PreprocessShape(shape))
+    }
+}
+
 pub(crate) struct FaceInfo {
     pub(crate) lod: u32,
     pub(crate) pixel_start: IVec2,
@@ -83,6 +111,7 @@ pub struct PreprocessContext {
     pub(crate) lod_count: Option<u32>,
     pub(crate) attachment_label: AttachmentLabel,
     pub(crate) attachment: AttachmentConfig,
+    pub(crate) shape: TerrainShape,
 }
 
 impl PreprocessContext {
@@ -102,6 +131,7 @@ impl PreprocessContext {
             border_size,
             mip_level_count,
             format,
+            shape,
         } = args;
 
         PreprocessContext::initialize(
@@ -122,6 +152,7 @@ impl PreprocessContext {
             fill_radius,
             create_mask,
             overwrite,
+            shape.0,
         )
     }
 
@@ -140,6 +171,7 @@ impl PreprocessContext {
         fill_radius: f32,
         create_mask: bool,
         overwrite: bool,
+        shape: TerrainShape,
     ) -> PreprocessResult<(Dataset, Self)> {
         let mut src_datasets = src_path
             .iter()
@@ -215,6 +247,7 @@ impl PreprocessContext {
                 attachment,
                 terrain_path,
                 lod_count,
+                shape,
             },
         ))
     }

@@ -1,7 +1,7 @@
-#define_import_path bevy_terrain::attachments
+#define_import_path terrain::attachments
 
-#import bevy_terrain::types::{AtlasTile, TangentSpace, AttachmentConfig, SampleUV, WorldCoordinate}
-#import bevy_terrain::bindings::{terrain, terrain_view, terrain_sampler, attachments, height_attachment}
+#import terrain::types::{AtlasTile, TangentSpace, AttachmentConfig, SampleUV, WorldCoordinate}
+#import terrain::bindings::{terrain, terrain_view, terrain_sampler, attachments, height_attachment}
 
 #ifdef FRAGMENT
 fn compute_sample_uv(tile: AtlasTile, attachment: AttachmentConfig) -> SampleUV {

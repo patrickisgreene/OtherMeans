@@ -1,9 +1,9 @@
-#define_import_path bevy_terrain::vertex
+#define_import_path terrain::vertex
 
-#import bevy_terrain::types::{Blend, Coordinate, WorldCoordinate}
-#import bevy_terrain::bindings::terrain_view
-#import bevy_terrain::functions::{compute_coordinate, compute_world_coordinate, compute_blend, lookup_tile, apply_height}
-#import bevy_terrain::attachments::sample_height
+#import terrain::types::{Blend, Coordinate, WorldCoordinate}
+#import terrain::bindings::terrain_view
+#import terrain::functions::{compute_coordinate, compute_world_coordinate, compute_blend, lookup_tile, apply_height}
+#import terrain::attachments::sample_height
 #import bevy_pbr::mesh_view_bindings::view
 #import bevy_pbr::view_transformations::position_world_to_clip
 

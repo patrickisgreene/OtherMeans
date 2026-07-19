@@ -3,7 +3,11 @@ use bevy::render::render_resource::TextureFormat;
 use bytemuck::cast_slice;
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
-use std::{fmt::Error, path::PathBuf, str::FromStr};
+use std::{
+    fmt::Error,
+    path::{Component, Path, PathBuf},
+    str::FromStr,
+};
 use strum_macros::EnumIter;
 
 #[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq, Hash, Default)]
@@ -56,7 +60,7 @@ impl FromStr for AttachmentFormat {
     type Err = Error;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.trim() {
-            "rg8u" => Ok(Self::Rgb8U),
+            "rgb8u" => Ok(Self::Rgb8U),
             "rgba8u" => Ok(Self::Rgba8U),
             "r16u" => Ok(Self::R16U),
             "r16i" => Ok(Self::R16I),
@@ -202,17 +206,30 @@ pub struct Attachment {
     pub(crate) mask: bool,
 }
 
+/// Bevy resolves asset-load paths relative to the configured asset root (e.g. `example/assets`),
+/// but `config.tc.ron`'s stored `path` may be an absolute filesystem path (whatever
+/// `--terrain-path` was passed to terrain-preprocess with) - joining that in unchanged would
+/// duplicate the asset root in the final load path. Since the terrain's own tiles always live
+/// somewhere under the project's `assets` directory, find that component (wherever it falls,
+/// relative or absolute) and keep only what comes after it.
+pub(crate) fn asset_relative_path(path: &Path) -> PathBuf {
+    let mut components = path.components();
+    if components
+        .by_ref()
+        .any(|component| component == Component::Normal("assets".as_ref()))
+    {
+        components.as_path().to_path_buf()
+    } else {
+        path.to_path_buf()
+    }
+}
+
 impl Attachment {
     pub(crate) fn new(config: &AttachmentConfig, path: &str) -> Self {
-        let path = if path.starts_with("assets") {
-            path[7..].to_string()
-        } else {
-            path.to_string()
-        };
-        // let path = format!("assets/{path}/data/{name}");
+        let path = asset_relative_path(Path::new(path));
 
         Self {
-            path: PathBuf::from(path),
+            path,
             texture_size: config.texture_size,
             center_size: config.center_size(),
             border_size: config.border_size,

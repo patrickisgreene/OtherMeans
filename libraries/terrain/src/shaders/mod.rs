@@ -2,19 +2,18 @@ use crate::terrain_data::AttachmentLabel;
 use bevy::{asset::embedded_asset, prelude::*};
 use itertools::Itertools;
 
-pub const DEFAULT_VERTEX_SHADER: &str = "embedded://bevy_terrain/shaders/render/vertex.wgsl";
-pub const DEFAULT_FRAGMENT_SHADER: &str = "embedded://bevy_terrain/shaders/render/fragment.wgsl";
+pub const DEFAULT_VERTEX_SHADER: &str = "embedded://terrain/shaders/render/vertex.wgsl";
+pub const DEFAULT_FRAGMENT_SHADER: &str = "embedded://terrain/shaders/render/fragment.wgsl";
 pub const PREPARE_PREPASS_SHADER: &str =
-    "embedded://bevy_terrain/shaders/tiling_prepass/prepare_prepass.wgsl";
-pub const REFINE_TILES_SHADER: &str =
-    "embedded://bevy_terrain/shaders/tiling_prepass/refine_tiles.wgsl";
-// pub(crate) const SPLIT_SHADER: &str = "embedded://bevy_terrain/shaders/preprocess/split.wgsl";
-// pub(crate) const STITCH_SHADER: &str = "embedded://bevy_terrain/shaders/preprocess/stitch.wgsl";
+    "embedded://terrain/shaders/tiling_prepass/prepare_prepass.wgsl";
+pub const REFINE_TILES_SHADER: &str = "embedded://terrain/shaders/tiling_prepass/refine_tiles.wgsl";
+// pub(crate) const SPLIT_SHADER: &str = "embedded://terrain/shaders/preprocess/split.wgsl";
+// pub(crate) const STITCH_SHADER: &str = "embedded://terrain/shaders/preprocess/stitch.wgsl";
 // pub(crate) const DOWNSAMPLE_SHADER: &str =
-//     "embedded://bevy_terrain/shaders/preprocess/downsample.wgsl";
-pub(crate) const PICKING_SHADER: &str = "embedded://bevy_terrain/shaders/picking.wgsl";
-pub(crate) const DEPTH_COPY_SHADER: &str = "embedded://bevy_terrain/shaders/depth_copy.wgsl";
-pub(crate) const MIP_SHADER: &str = "embedded://bevy_terrain/shaders/mipmap.wgsl";
+//     "embedded://terrain/shaders/preprocess/downsample.wgsl";
+pub(crate) const PICKING_SHADER: &str = "embedded://terrain/shaders/picking.wgsl";
+pub(crate) const DEPTH_COPY_SHADER: &str = "embedded://terrain/shaders/depth_copy.wgsl";
+pub(crate) const MIP_SHADER: &str = "embedded://terrain/shaders/mipmap.wgsl";
 
 #[derive(Default, Resource)]
 pub(crate) struct InternalShaders(Vec<Handle<Shader>>);
@@ -73,12 +72,12 @@ pub(crate) fn load_terrain_shaders(app: &mut App, attachments: &[AttachmentLabel
     InternalShaders::load(
         app,
         &[
-            "embedded://bevy_terrain/shaders/types.wgsl",
-            "embedded://bevy_terrain/shaders/attachments.wgsl",
-            "embedded://bevy_terrain/shaders/functions.wgsl",
-            "embedded://bevy_terrain/shaders/debug.wgsl",
-            "embedded://bevy_terrain/shaders/render/vertex.wgsl",
-            "embedded://bevy_terrain/shaders/render/fragment.wgsl",
+            "embedded://terrain/shaders/types.wgsl",
+            "embedded://terrain/shaders/attachments.wgsl",
+            "embedded://terrain/shaders/functions.wgsl",
+            "embedded://terrain/shaders/debug.wgsl",
+            "embedded://terrain/shaders/render/vertex.wgsl",
+            "embedded://terrain/shaders/render/fragment.wgsl",
         ],
     );
 }
@@ -91,6 +90,6 @@ pub(crate) fn load_terrain_shaders(app: &mut App, attachments: &[AttachmentLabel
 //
 //     InternalShaders::load(
 //         app,
-//         &["embedded://bevy_terrain/shaders/preprocess/preprocessing.wgsl"],
+//         &["embedded://terrain/shaders/preprocess/preprocessing.wgsl"],
 //     );
 // }

@@ -22,3 +22,10 @@ indexmap.workspace = true
 slab.workspace = true
 strum.workspace = true
 strum_macros.workspace = true
+
+[dev-dependencies]
+bevy = { workspace = true, default-features = true }
+
+[[example]]
+name = "terrain"
+path = "example/main.rs"

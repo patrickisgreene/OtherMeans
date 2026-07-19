@@ -1,8 +1,8 @@
-#define_import_path bevy_terrain::debug
+#define_import_path terrain::debug
 
-#import bevy_terrain::types::{Coordinate, WorldCoordinate, TileCoordinate, AtlasTile, Blend}
-#import bevy_terrain::bindings::{terrain, tile_tree, terrain_view, approximate_height, geometry_tiles, attachments, origins}
-#import bevy_terrain::functions::{lookup_best, compute_world_coordinate, tree_lod, compute_subdivision_coordinate}
+#import terrain::types::{Coordinate, WorldCoordinate, TileCoordinate, AtlasTile, Blend}
+#import terrain::bindings::{terrain, tile_tree, terrain_view, approximate_height, geometry_tiles, attachments, origins}
+#import terrain::functions::{lookup_best, compute_world_coordinate, tree_lod, compute_subdivision_coordinate}
 #import bevy_pbr::mesh_view_bindings::view
 
 fn index_color(index: u32) -> vec4<f32> {

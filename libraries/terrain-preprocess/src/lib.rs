@@ -28,7 +28,7 @@ use terrain::prelude::*;
 pub mod prelude {
     pub use crate::{
         cli::Cli,
-        dataset::{PreprocessContext, PreprocessDataType, PreprocessNoData},
+        dataset::{PreprocessContext, PreprocessDataType, PreprocessNoData, PreprocessShape},
         preprocess,
     };
 }
@@ -90,13 +90,34 @@ pub fn preprocess(src_dataset: Dataset, context: &mut PreprocessContext) {
     };
 }
 
+/// Bevy resolves asset-load paths relative to the configured asset root (e.g. `example/assets`),
+/// but `--terrain-path` is commonly passed as an absolute filesystem path - storing that
+/// unchanged in `config.path` would duplicate the asset root when the terrain crate later joins
+/// it against a tile's own path. Since the terrain's tiles always live somewhere under the
+/// project's `assets` directory, find that component (wherever it falls, relative or absolute)
+/// and keep only what comes after it.
+fn asset_relative_path(path: &std::path::Path) -> std::path::PathBuf {
+    let mut components = path.components();
+    if components
+        .by_ref()
+        .any(|component| component == std::path::Component::Normal("assets".as_ref()))
+    {
+        components.as_path().to_path_buf()
+    } else {
+        path.to_path_buf()
+    }
+}
+
 fn save_terrain_config(tiles: Vec<TileCoordinate>, context: &PreprocessContext) {
     let file_path = context.terrain_path.join("config.tc.ron");
 
     let mut config = TerrainConfig::load_file(&file_path).unwrap_or_default();
 
-    config.shape = TerrainShape::WGS84;
-    config.path = context.terrain_path.to_str().unwrap().to_string();
+    config.shape = context.shape;
+    config.path = asset_relative_path(&context.terrain_path)
+        .to_str()
+        .unwrap()
+        .to_string();
     config.add_attachment(context.attachment_label.clone(), context.attachment.clone());
 
     if context.attachment_label == AttachmentLabel::Height {

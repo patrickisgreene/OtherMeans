@@ -1,10 +1,10 @@
-#define_import_path bevy_terrain::fragment
+#define_import_path terrain::fragment
 
-#import bevy_terrain::types::{Blend, Coordinate, WorldCoordinate, AtlasTile, TangentSpace}
-#import bevy_terrain::bindings::{terrain, terrain_view, geometry_tiles, approximate_height}
-#import bevy_terrain::functions::{compute_coordinate, compute_world_coordinate, compute_blend, compute_tangent_space, lookup_tile, apply_height, high_precision}
-#import bevy_terrain::attachments::{sample_height_mask, sample_surface_gradient}
-#import bevy_terrain::debug::{show_data_lod, show_geometry_lod, show_tile_tree, show_pixels}
+#import terrain::types::{Blend, Coordinate, WorldCoordinate, AtlasTile, TangentSpace}
+#import terrain::bindings::{terrain, terrain_view, geometry_tiles, approximate_height}
+#import terrain::functions::{compute_coordinate, compute_world_coordinate, compute_blend, compute_tangent_space, lookup_tile, apply_height, high_precision}
+#import terrain::attachments::{sample_height_mask, sample_surface_gradient}
+#import terrain::debug::{show_data_lod, show_geometry_lod, show_tile_tree, show_pixels}
 #import bevy_pbr::mesh_view_bindings::view
 #import bevy_pbr::pbr_types::{PbrInput, pbr_input_new}
 #import bevy_pbr::pbr_functions::{calculate_view, apply_pbr_lighting}

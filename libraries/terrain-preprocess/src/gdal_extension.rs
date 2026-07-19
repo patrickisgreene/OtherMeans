@@ -93,6 +93,23 @@ pub fn warp(
     options.eResampleAlg = GDALResampleAlg::GRA_Bilinear;
     options.dfWarpMemoryLimit = 1024f64.powi(2) * 8.0; // Todo: figure out, why this affects reprojection at the poles
 
+    // By default GDAL only samples edge points of each warp chunk to figure out which source
+    // pixels it needs to load (see GDALWarpOperation::ComputeSourceWindow). Our cube-sphere
+    // transformer is extremely non-linear right around the poles (all longitudes converge to
+    // one point, so a tiny destination step near a pole face's center can correspond to a huge
+    // jump in source longitude) - edge-only sampling misses that and badly underestimates the
+    // needed source window, so most of the interior of the two pole-covering faces was loaded
+    // as if it had no source data and left as NoData ("holes" at the poles). SAMPLE_GRID=YES
+    // makes GDAL sample interior points of the chunk too, not just its edges, which is exactly
+    // the case the GDAL docs call out this option for ("large sections of the destination image
+    // are not transformable into the source coordinate system").
+    let sample_grid = CString::new("SAMPLE_GRID=YES").unwrap();
+    let sample_steps = CString::new("SAMPLE_STEPS=41").unwrap();
+    options.papszWarpOptions = unsafe {
+        let list = gdal_sys::CSLAddString(ptr::null_mut(), sample_grid.as_ptr());
+        gdal_sys::CSLAddString(list, sample_steps.as_ptr())
+    };
+
     // for some reason this is not automatically recognized, so we have to set it manually
     options.eWorkingDataType = context.data_type as u32;
     options.nBandCount = band_count;

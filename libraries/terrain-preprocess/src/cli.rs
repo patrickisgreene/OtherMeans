@@ -1,5 +1,5 @@
 use crate::{
-    dataset::{PreprocessDataType, PreprocessNoData},
+    dataset::{PreprocessDataType, PreprocessNoData, PreprocessShape},
     gdal_extension::ProgressCallback,
 };
 use clap::Parser;
@@ -10,40 +10,45 @@ use terrain::prelude::*;
 const BAR_SIZE: u64 = 10000;
 
 #[derive(Parser, Debug)]
-#[command(name = "btpp", author, version, about)]
+#[command(author, version, about)]
 pub struct Cli {
-    #[arg(required = true)]
+    #[arg(long = "src-path", required = true)]
     pub src_path: Vec<PathBuf>,
-    #[arg(required = true)]
+    #[arg(long = "terrain-path", required = true)]
     // cloud be optional and use current directory, but this would be risky in combination with overwrite
     pub terrain_path: PathBuf,
-    #[arg(default_value = None)]
+    #[arg(long = "temp-path", default_value = None)]
     pub temp_path: Option<PathBuf>,
 
     #[arg(short, long, default_value_t = false)]
     pub overwrite: bool,
-    #[arg(default_value = "source")]
+    #[arg(long = "no-data", default_value = "source")]
     pub no_data: PreprocessNoData,
-    #[arg(default_value = "source")]
+    #[arg(long = "data-type", default_value = "source")]
     pub data_type: PreprocessDataType,
-    #[arg(default_value_t = 16.0)]
+    #[arg(long = "fill-radius", default_value_t = 16.0)]
     pub fill_radius: f32,
-    #[arg(default_value_t = false)]
+    #[arg(long = "create-mask", default_value_t = false)]
     pub create_mask: bool,
 
-    #[arg(default_value = None)]
+    #[arg(long = "lod-count", default_value = None)]
     pub lod_count: Option<u32>,
 
-    #[arg(default_value = "height")]
+    #[arg(long = "attachment-label", default_value = "height")]
     pub attachment_label: AttachmentLabel,
-    #[arg(short, long = "ts", default_value_t = 512)]
+    #[arg(short, long = "texture-size", default_value_t = 512)]
     pub texture_size: u32,
-    #[arg(short, long = "bs", default_value_t = 1)]
+    #[arg(short, long = "border-size", default_value_t = 1)]
     pub border_size: u32,
-    #[arg(short, long = "m", default_value_t = 1)]
+    #[arg(short, long = "mip-level-count", default_value_t = 1)]
     pub mip_level_count: u32,
-    #[arg(default_value = "ru16")]
+    #[arg(long, default_value = "ru16")]
     pub format: AttachmentFormat,
+
+    /// The celestial body this terrain represents: "earth" (default), "mars", "moon", or a
+    /// custom sphere radius in metres.
+    #[arg(long, default_value = "earth")]
+    pub shape: PreprocessShape,
 }
 
 pub(crate) struct PreprocessBar<'a> {
