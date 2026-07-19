@@ -11,9 +11,17 @@ fn prepare_root() {
     indirect_buffer.workgroup_count = vec3<u32>(1u, 1u, 1u);
 
 #ifdef SPHERICAL
-    // Todo: consider culling the entire back face (opposite of viewer)
-    for (var i: u32 = 0u; i < 6u; i = i + 1u) { temporary_tiles[i] = TileCoordinate(i, 0u, vec2<u32>(0u)); }
-    state.tile_count = 6u;
+    // The face directly opposite the viewer is always beyond the horizon (its closest point is
+    // ~135 deg from nadir, farther than the max possible horizon angle of 90 deg), so skip seeding it.
+    let opposite_face = (terrain_view.face + 3u) % 6u;
+
+    var count: u32 = 0u;
+    for (var i: u32 = 0u; i < 6u; i = i + 1u) {
+        if (i == opposite_face) { continue; }
+        temporary_tiles[count] = TileCoordinate(i, 0u, vec2<u32>(0u));
+        count = count + 1u;
+    }
+    state.tile_count = count;
 #else
     temporary_tiles[0] = TileCoordinate(0u, 0u, vec2<u32>(0u));
     state.tile_count = 1u;
