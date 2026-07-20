@@ -5,8 +5,8 @@ use crate::{
     mipmap::{MipPipelines, mip_prepass},
     render::{
         DepthCopyPipeline, GpuTerrain, GpuTerrainView, TerrainItem, TerrainTilingPrepassPipelines,
-        TilingPrepassItem, extract_terrain_phases, prepare_terrain_depth_textures,
-        queue_tiling_prepass, terrain_pass, tiling_prepass,
+        TilingPrepassItem, pass::systems::extract_terrain_phases, prepare_terrain_depth_textures,
+        terrain_pass, tiling_prepass,
     },
     shaders::{InternalShaders, load_terrain_shaders},
     view::TerrainViewComponents,
@@ -102,8 +102,8 @@ impl Plugin for TerrainPlugin {
                     extract_terrain_phases,
                     GpuTileAtlas::initialize,
                     GpuTileAtlas::extract.after(GpuTileAtlas::initialize),
-                    GpuTerrain::initialize.after(GpuTileAtlas::initialize),
-                    GpuTerrainView::initialize,
+                    crate::render::bind_group::systems::initialize.after(GpuTileAtlas::initialize),
+                    crate::render::view_bind_group::systems::initialize,
                 ),
             )
             .add_systems(
@@ -111,15 +111,19 @@ impl Plugin for TerrainPlugin {
                 (
                     (
                         GpuTileAtlas::prepare,
-                        GpuTerrain::prepare,
-                        GpuTerrainView::prepare_terrain_view,
-                        GpuTerrainView::prepare_indirect,
-                        GpuTerrainView::prepare_refine_tiles,
+                        crate::render::bind_group::systems::prepare,
+                        crate::render::view_bind_group::systems::prepare_terrain_view,
+                        crate::render::view_bind_group::systems::prepare_indirect,
+                        crate::render::view_bind_group::systems::prepare_refine_tiles,
                     )
                         .in_set(RenderSystems::Prepare),
                     sort_phase_system::<TerrainItem>.in_set(RenderSystems::PhaseSort),
                     prepare_terrain_depth_textures.in_set(RenderSystems::PrepareResources),
-                    (queue_tiling_prepass, GpuTileAtlas::queue).in_set(RenderSystems::Queue),
+                    (
+                        tiling_prepass::systems::queue_tiling_prepass,
+                        GpuTileAtlas::queue,
+                    )
+                        .in_set(RenderSystems::Queue),
                     GpuTileAtlas::_cleanup
                         .before(World::clear_entities)
                         .in_set(RenderSystems::Cleanup),

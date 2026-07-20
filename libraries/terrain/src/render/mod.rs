@@ -5,18 +5,16 @@
 //! each view. Then they are drawn using a single draw indirect call and morphed together to form
 //! one continuous surface.
 
-mod terrain_bind_group;
-mod terrain_material;
-mod terrain_pass;
-mod terrain_view_bind_group;
-mod tiling_prepass;
+pub mod bind_group;
+mod material;
+pub mod pass;
+pub mod tiling_prepass;
+pub mod view_bind_group;
 
 pub use self::{
-    terrain_bind_group::GpuTerrain,
-    terrain_material::TerrainMaterialPlugin,
-    terrain_view_bind_group::{GpuTerrainView, TerrainViewBindGroup},
+    bind_group::GpuTerrain,
+    material::TerrainMaterialPlugin,
+    view_bind_group::{GpuTerrainView, TerrainViewBindGroup},
 };
 
-pub(crate) use self::{
-    terrain_bind_group::*, terrain_pass::*, terrain_view_bind_group::*, tiling_prepass::*,
-};
+pub(crate) use self::{bind_group::*, pass::*, tiling_prepass::*, view_bind_group::*};
