@@ -35,9 +35,12 @@ pub struct GpuTileAtlas {
 impl GpuTileAtlas {
     pub(crate) fn generate_mip(&self, pass: &mut ComputePass, pipeline_cache: &PipelineCache) {
         for attachment in self.attachments.values() {
+            // If this attachment's pipeline hasn't finished compiling yet, skip just this
+            // attachment. `extract` keeps its `mips_to_generate` backlog intact whenever the
+            // pipeline isn't ready, so these tiles get picked up again once it is.
             let Some(pipeline) = pipeline_cache.get_compute_pipeline(attachment.mip_pipeline)
             else {
-                return; // Todo: In case the pipeline has not been loaded yet, but a mip map should be created, we should not skip and clear the mip map generation list
+                continue;
             };
 
             pass.set_pipeline(pipeline);
@@ -98,6 +101,7 @@ impl GpuTileAtlas {
     pub(crate) fn extract(
         mut main_world: ResMut<MainWorld>,
         mut gpu_tile_atlases: ResMut<TerrainComponents<GpuTileAtlas>>,
+        pipeline_cache: Res<PipelineCache>,
     ) {
         let mut tile_atlases = main_world.query::<(Entity, &mut TileAtlas)>();
 
@@ -110,14 +114,19 @@ impl GpuTileAtlas {
             );
 
             for attachment in gpu_tile_atlas.attachments.values_mut() {
-                attachment
-                    .mips_to_generate
-                    .iter_mut()
-                    .for_each(|atlas_indices| atlas_indices.clear());
-                attachment
-                    .mip_bind_groups
-                    .iter_mut()
-                    .for_each(|bind_groups| bind_groups.clear());
+                // Only drop the pending mip requests once the pipeline was actually ready to
+                // dispatch them last frame. If it's still compiling (always true for at least
+                // the first frame a new attachment format is used, e.g. the initial bulk tile
+                // load), keep accumulating so no tile's mips get silently skipped forever.
+                if pipeline_cache
+                    .get_compute_pipeline(attachment.mip_pipeline)
+                    .is_some()
+                {
+                    attachment
+                        .mips_to_generate
+                        .iter_mut()
+                        .for_each(|atlas_indices| atlas_indices.clear());
+                }
             }
 
             for tile in &gpu_tile_atlas.upload_tiles {

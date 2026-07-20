@@ -304,6 +304,13 @@ impl GpuAttachment {
         let layout = pipeline_cache
             .get_bind_group_layout(&mip_pipelines.mip_layouts[&self.buffer_info.format]);
 
+        // Rebuilt from `mips_to_generate` every frame (which may carry over a backlog from
+        // frames where the mip pipeline wasn't ready yet), so start from a clean slate here
+        // instead of relying on a caller to have cleared it.
+        self.mip_bind_groups
+            .iter_mut()
+            .for_each(|bind_groups| bind_groups.clear());
+
         for (mip_level, atlas_indices) in self.mips_to_generate.iter().enumerate() {
             for atlas_index in atlas_indices {
                 self.mip_bind_groups[mip_level].push(device.create_bind_group(
