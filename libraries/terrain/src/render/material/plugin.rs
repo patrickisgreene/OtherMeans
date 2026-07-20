@@ -9,14 +9,9 @@ use bevy::{
     },
 };
 
-use crate::{
-    render::{
-        TerrainItem,
-        material::{
-            DrawTerrain, TerrainRenderPipeline, init_terrain_render_pipeline, queue_terrain,
-        },
-    },
-    spawn::{TerrainsToSpawn, spawn_terrains},
+use crate::render::{
+    TerrainItem,
+    material::{DrawTerrain, TerrainRenderPipeline, init_terrain_render_pipeline, queue_terrain},
 };
 
 /// This plugin adds a custom material for a terrain.
@@ -35,9 +30,7 @@ where
     M::Data: PartialEq + Eq + std::hash::Hash + Clone,
 {
     fn build(&self, app: &mut App) {
-        app.add_plugins(MaterialPlugin::<M>::default())
-            .insert_resource(TerrainsToSpawn::<M>(vec![]))
-            .add_systems(PostUpdate, spawn_terrains::<M>);
+        app.add_plugins(MaterialPlugin::<M>::default());
 
         app.sub_app_mut(RenderApp)
             .add_render_command::<TerrainItem, DrawTerrain>()

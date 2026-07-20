@@ -53,7 +53,6 @@ pub mod picking;
 pub mod plugin;
 pub mod render;
 pub mod shaders;
-pub mod spawn;
 pub mod util;
 pub mod view;
 
@@ -71,9 +70,7 @@ pub mod prelude {
         math::{TerrainShape, TileCoordinate},
         picking::{PickingData, TerrainPickingPlugin},
         plugin::{TerrainPlugin, TerrainSettings},
-        // preprocess::{PreprocessDataset, Preprocessor, SphericalDataset, TerrainPreprocessPlugin},
         render::TerrainMaterialPlugin,
-        spawn::SpawnTerrainCommandsExt,
         view::{TerrainViewComponents, TerrainViewConfig},
     };
     pub use big_space::{commands::BigSpaceCommands, grid::Grid};

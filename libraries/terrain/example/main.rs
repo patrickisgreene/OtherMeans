@@ -1,3 +1,4 @@
+use bevy::render::storage::ShaderBuffer;
 use bevy::shader::ShaderRef;
 use bevy::{prelude::*, reflect::TypePath, render::render_resource::*};
 use terrain::prelude::*;
@@ -41,16 +42,39 @@ fn main() {
         ))
         .insert_resource(TerrainSettings::new(vec!["albedo"]))
         // .insert_resource(ClearColor(Color::WHITE))
-        .add_systems(Startup, initialize)
+        .add_systems(Update, initialize)
         .run();
 }
 
-#[allow(clippy::too_many_arguments)]
+struct MarsConfig(Handle<TerrainConfig>);
+
 fn initialize(
+    mut spawned: Local<bool>,
+    mut config: Local<Option<MarsConfig>>,
     mut commands: Commands,
+    settings: Res<TerrainSettings>,
+    configs: Res<Assets<TerrainConfig>>,
     mut images: ResMut<LoadingImages>,
     asset_server: Res<AssetServer>,
+    mut materials: ResMut<Assets<CustomMaterial>>,
+    mut buffers: ResMut<Assets<ShaderBuffer>>,
+    mut tile_trees: ResMut<TerrainViewComponents<TileTree>>,
 ) {
+    if *spawned {
+        return;
+    }
+
+    let config = if let Some(config) = &*config {
+        if let Some(a) = configs.get(&config.0) {
+            a
+        } else {
+            return;
+        }
+    } else {
+        *config = Some(MarsConfig(asset_server.load("terrain/config.tc.ron")));
+        return;
+    };
+
     let gradient1 = asset_server.load("textures/gradient1.png");
     images.load_image(
         &gradient1,
@@ -59,9 +83,11 @@ fn initialize(
     );
 
     let mut view = Entity::PLACEHOLDER;
+    let mut root = Entity::PLACEHOLDER;
 
-    commands.spawn_big_space(Grid::default(), |root| {
-        view = root
+    commands.spawn_big_space(Grid::default(), |grid| {
+        root = grid.id();
+        view = grid
             .spawn_spatial((
                 Transform::from_translation(-Vec3::X * RADIUS as f32 * 3.0)
                     .looking_to(Vec3::X, Vec3::Y),
@@ -75,13 +101,29 @@ fn initialize(
             .id();
     });
 
-    commands.spawn_terrain(
-        asset_server.load("terrain/config.tc.ron"),
-        TerrainViewConfig::default(),
-        CustomMaterial {
-            gradient: gradient1.clone(),
-            gradient_info: GradientInfo { mode: 2 },
-        },
-        view,
+    let terrain = commands
+        .spawn((
+            config.shape.transform(),
+            TileAtlas::new(&config, &mut buffers, &settings),
+            MeshMaterial3d(materials.add(CustomMaterial {
+                gradient: gradient1,
+                gradient_info: GradientInfo { mode: 2 },
+            })),
+        ))
+        .id();
+
+    commands.entity(root).add_child(terrain);
+
+    tile_trees.insert(
+        (terrain, view),
+        TileTree::new(
+            &config,
+            &TerrainViewConfig::default(),
+            (terrain, view),
+            &mut commands,
+            &mut buffers,
+        ),
     );
+
+    *spawned = true;
 }
