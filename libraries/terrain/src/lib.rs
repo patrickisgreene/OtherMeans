@@ -75,3 +75,37 @@ pub mod prelude {
     };
     pub use big_space::{commands::BigSpaceCommands, grid::Grid};
 }
+
+use std::marker::PhantomData;
+
+use bevy::{app::PluginGroupBuilder, prelude::*};
+use big_space::plugin::BigSpaceMinimalPlugins;
+
+pub struct TerrainPlugins<M: Material> {
+    _phantom: PhantomData<M>,
+}
+
+impl<M: Material + Clone> Default for TerrainPlugins<M>
+where
+    M::Data: PartialEq + Eq + std::hash::Hash + Clone,
+{
+    fn default() -> Self {
+        Self {
+            _phantom: Default::default(),
+        }
+    }
+}
+
+impl<M: Material + Clone> PluginGroup for TerrainPlugins<M>
+where
+    M::Data: PartialEq + Eq + std::hash::Hash + Clone,
+{
+    fn build(self) -> PluginGroupBuilder {
+        PluginGroupBuilder::start::<Self>()
+            .add(prelude::TerrainPlugin)
+            .add(prelude::TerrainDebugPlugin)
+            .add(prelude::TerrainPickingPlugin)
+            .add_group(BigSpaceMinimalPlugins)
+            .add(prelude::TerrainMaterialPlugin::<M>::default())
+    }
+}
