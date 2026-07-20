@@ -25,7 +25,7 @@ strum.workspace = true
 strum_macros.workspace = true
 
 [dev-dependencies]
-bevy = { workspace = true, default-features = true }
+bevy = { workspace = true, default-features = true, features = ["bevy_dev_tools"] }
 
 [[example]]
 name = "terrain"

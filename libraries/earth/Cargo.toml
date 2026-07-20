@@ -1,0 +1,12 @@
+[package]
+name = "earth"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+terrain.workspace = true
+big_space.workspace = true
+bevy = { workspace = true, features = ["bevy_feathers"] }
+
+[dev-dependencies]
+bevy = { workspace = true, features = ["file_watcher", "bevy_dev_tools"] }

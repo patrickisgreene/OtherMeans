@@ -43,6 +43,15 @@ derive_more = { version = "2.1.1", features = ["from", "display"] }
 #big_space = { version = "0.12.0", features = ["i32"] }
 big_space = { git = "https://github.com/m-edlund/big_space", features = ["i32"], branch = "bevy-0.19" }
 
+earth.path = "libraries/earth"
 terrain.path = "libraries/terrain"
 terrain-processor.path = "libraries/terrain-preprocess"
 texture-processor.path = "libraries/texture-processor"
+
+# Keep the workspace's own crates fast to recompile, but optimize dependencies
+# (Bevy, big_space, etc.) where almost all per-frame CPU cost actually lives
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+opt-level = 3

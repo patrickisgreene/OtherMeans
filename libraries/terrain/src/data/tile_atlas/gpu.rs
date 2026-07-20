@@ -37,7 +37,6 @@ impl GpuTileAtlas {
         for attachment in self.attachments.values() {
             let Some(pipeline) = pipeline_cache.get_compute_pipeline(attachment.mip_pipeline)
             else {
-                dbg!("Skipped mipmap generation");
                 return; // Todo: In case the pipeline has not been loaded yet, but a mip map should be created, we should not skip and clear the mip map generation list
             };
 

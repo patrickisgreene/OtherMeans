@@ -8,7 +8,7 @@ pub use tile_atlas::*;
 ///
 /// This indicates, whether the tile is loading or loaded and ready to be used.
 #[derive(Clone, Copy, Debug)]
-enum LoadingState {
+pub enum LoadingState {
     /// The tile is loading, but can not be used yet.
     Loading(u32),
     /// The tile is loaded and can be used.
@@ -16,7 +16,7 @@ enum LoadingState {
 }
 
 /// The internal representation of a present tile in a [`TileAtlas`].
-struct TileState {
+pub struct TileState {
     /// Indicates whether or not the tile is loading or loaded.
     state: LoadingState,
     /// The index of the tile inside the atlas.

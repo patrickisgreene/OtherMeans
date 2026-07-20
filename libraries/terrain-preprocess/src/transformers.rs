@@ -80,9 +80,6 @@ impl Transformer for ReprojectionTransformer {
         let mut success_int = vec![0; x.len()];
 
         self.counter += 1;
-        //dbg!(self.counter);
-
-        //dbg!(thread::current().id());
 
         let return_value = unsafe {
             GDALReprojectionTransform(

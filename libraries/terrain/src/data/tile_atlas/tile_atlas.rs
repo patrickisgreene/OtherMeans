@@ -37,21 +37,21 @@ use std::collections::VecDeque;
 #[require(Transform, CellCoord, Visibility, VisibilityClass, DefaultLoader)]
 #[component(on_add = add_visibility_class::<TileAtlas>)]
 pub struct TileAtlas {
-    pub(crate) attachments: HashMap<AttachmentLabel, Attachment>, // stores the attachment data
+    pub attachments: HashMap<AttachmentLabel, Attachment>, // stores the attachment data
     tile_states: HashMap<TileCoordinate, super::TileState>,
     unused_indices: VecDeque<u32>,
     existing_tiles: HashSet<TileCoordinate>,
-    pub(crate) uploading_tiles: Vec<AttachmentTileWithData>,
-    pub(crate) downloading_tiles: Vec<Task<AttachmentTileWithData>>,
-    pub(crate) to_load: Vec<AttachmentTile>,
+    pub uploading_tiles: Vec<AttachmentTileWithData>,
+    pub downloading_tiles: Vec<Task<AttachmentTileWithData>>,
+    pub to_load: Vec<AttachmentTile>,
 
-    pub(crate) lod_count: u32,
-    pub(crate) min_height: f32,
-    pub(crate) max_height: f32,
-    pub(crate) height_scale: f32,
-    pub(crate) shape: TerrainShape,
+    pub lod_count: u32,
+    pub min_height: f32,
+    pub max_height: f32,
+    pub height_scale: f32,
+    pub shape: TerrainShape,
 
-    pub(crate) terrain_buffer: Handle<ShaderBuffer>,
+    pub terrain_buffer: Handle<ShaderBuffer>,
 }
 
 impl TileAtlas {
@@ -83,7 +83,7 @@ impl TileAtlas {
             lod_count: config.lod_count,
             min_height: config.min_height,
             max_height: config.max_height,
-            height_scale: 1.0,
+            height_scale: config.height_scale,
             shape: config.shape,
             terrain_buffer,
         }
@@ -133,8 +133,6 @@ impl TileAtlas {
                 label: tile.label,
                 data,
             });
-        } else {
-            dbg!("Tile is no longer loaded.");
         }
     }
 

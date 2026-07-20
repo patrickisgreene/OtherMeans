@@ -46,7 +46,7 @@ impl Default for TileState {
 /// [`GpuTileTree`](super::gpu_tile_tree::GpuTileTree) for access on the GPU.
 #[repr(C)]
 #[derive(Clone, Copy, Debug, ShaderType)]
-pub(crate) struct TileTreeEntry {
+pub struct TileTreeEntry {
     /// The atlas index of the best entry.
     pub(crate) atlas_index: u32,
     /// The atlas lod of the best entry.

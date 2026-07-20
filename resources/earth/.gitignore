@@ -1,0 +1,7 @@
+data/
+thumbnails/
+intermediates/
+earth.tif
+height.tif
+height-float32.tif
+height.tif.aux.xml

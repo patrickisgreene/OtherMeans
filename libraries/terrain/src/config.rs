@@ -32,10 +32,24 @@ pub struct TerrainConfig {
     pub lod_count: u32,
     pub min_height: f32,
     pub max_height: f32,
+    /// Converts `min_height`/`max_height` and the height attachment's sampled values (both
+    /// stored in whatever unit the source data used) into real-world metres for displacement
+    /// and LOD/AABB bounds - see `render::bind_group::TerrainUniform::new` and
+    /// `shaders::attachments::sample_height`. 1.0 is correct when the source height data is
+    /// already in metres (e.g. a real elevation raster); a preprocessing pipeline that
+    /// normalizes height into another range (e.g. to keep 0.0 an unambiguous sentinel, see
+    /// `resources/earth/scripts/heightmap.sh`) needs this set to the real metres-per-unit
+    /// factor instead, or displacement ends up scaled down by that same normalization.
+    #[serde(default = "default_height_scale")]
+    pub height_scale: f32,
     /// The attachments of the terrain.
     pub attachments: HashMap<AttachmentLabel, AttachmentConfig>,
     /// The tiles of the terrain.
     pub tiles: Vec<TileCoordinate>,
+}
+
+fn default_height_scale() -> f32 {
+    1.0
 }
 
 impl Default for TerrainConfig {
@@ -45,6 +59,7 @@ impl Default for TerrainConfig {
             lod_count: 1,
             min_height: 0.0,
             max_height: 1.0,
+            height_scale: default_height_scale(),
             path: default(),
             tiles: default(),
             attachments: default(),

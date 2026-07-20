@@ -4,9 +4,9 @@ use image::ImageFormat;
 
 #[derive(Display, Debug, PartialEq, Default, Clone, Copy, Hash, Eq, ValueEnum)]
 pub enum TextureFormat {
-    #[default]
     #[display("png")]
     Png,
+    #[default]
     #[display("tiff")]
     Tiff,
 }

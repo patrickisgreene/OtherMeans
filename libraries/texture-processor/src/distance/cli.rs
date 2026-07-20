@@ -53,4 +53,17 @@ pub struct DistanceField {
     /// visually-irrelevant open ocean/interior land.
     #[arg(long = "distance-cap-km", default_value_t = 278.0)]
     pub distance_cap_km: f64,
+
+    /// Land components (islands) smaller than this are excluded from seeding the distance
+    /// transform, so they don't leave a coastal-fade halo in open ocean out of proportion to
+    /// their real size. Terrain LOD tiling mip-averages the height texture per tile, so an
+    /// island much smaller than one coarse-LOD texel's footprint washes out of the visible
+    /// terrain entirely there - but the distance field is computed once at full source
+    /// resolution and simply resampled per LOD, so without this filter its "near coast" signal
+    /// survives and drives shore-foam/color-fade for land that, at that zoom level, doesn't
+    /// actually render. 200 km^2 excludes remote small islands (e.g. Ascension ~91 km^2, Saint
+    /// Helena ~122 km^2) while keeping substantial ones (e.g. Malta ~316 km^2) that still read
+    /// as real land even fairly zoomed out.
+    #[arg(long = "min-island-area-km2", default_value_t = 200.0)]
+    pub min_island_area_km2: f64,
 }

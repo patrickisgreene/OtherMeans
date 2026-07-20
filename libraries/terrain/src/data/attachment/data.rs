@@ -55,7 +55,7 @@ pub struct AttachmentTile {
 }
 
 #[derive(Clone)]
-pub(crate) struct AttachmentTileWithData {
+pub struct AttachmentTileWithData {
     pub(crate) atlas_index: u32,
     pub(crate) label: AttachmentLabel,
     pub(crate) data: AttachmentData,

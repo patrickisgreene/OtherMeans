@@ -71,6 +71,18 @@ pub fn run(cli: Cli, args: cli::DistanceField) -> Result<(), ProcessError> {
 
     let pixel_size_km = geo_transform[1].abs() * KM_PER_DEGREE_EQUATOR;
 
+    // Seeding-only copy of the water mask with small islands erased (flipped to water) - see
+    // `edt::erase_small_land_components`. `water` itself stays untouched so the final land/water
+    // byte classification below still marks these islands as land wherever they survive.
+    let water_for_seeding = {
+        let _progress = Progress::new(cli.display_format, "distance-small-islands", None);
+        let (labels, areas) = edt::label_land_components(&water, width, height);
+        let min_area_px = (args.min_island_area_km2 / (pixel_size_km * pixel_size_km)).max(0.0) as u32;
+        let mut masked = water.clone();
+        edt::erase_small_land_components(&mut masked, &labels, &areas, min_area_px);
+        masked
+    };
+
     let seeds = {
         let _progress = Progress::new(cli.display_format, "distance-seeds", None);
         match &args.coastline_path {
@@ -83,9 +95,9 @@ pub fn run(cli: Cli, args: cli::DistanceField) -> Result<(), ProcessError> {
                     &spatial_ref,
                 )?;
                 let max_drift_px = (COASTLINE_SEED_MAX_DRIFT_KM / pixel_size_km) as f32;
-                edt::filter_seeds_near_mask_boundary(&raw_seeds, &water, width, height, max_drift_px)
+                edt::filter_seeds_near_mask_boundary(&raw_seeds, &water_for_seeding, width, height, max_drift_px)
             }
-            None => edt::shore_seeds(&water, width, height),
+            None => edt::shore_seeds(&water_for_seeding, width, height),
         }
     };
 

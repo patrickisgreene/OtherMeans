@@ -1,5 +1,67 @@
 const INF: f32 = 1e20;
 
+/// Labels 4-connected land components (mask < 128) with a 1-based id per pixel (0 = water),
+/// wrapping at the antimeridian the same way `shore_seeds`/`edt_1d_wrapped` do, since this is a
+/// global equirectangular raster where column 0 and column width-1 are the same meridian.
+/// Returns the per-pixel label array together with each component's pixel area (`areas[i]` is
+/// the area of label `i + 1`).
+pub fn label_land_components(mask: &[u8], width: usize, height: usize) -> (Vec<u32>, Vec<u32>) {
+    let mut labels = vec![0u32; width * height];
+    let mut areas: Vec<u32> = Vec::new();
+    let mut stack: Vec<(usize, usize)> = Vec::new();
+
+    let is_land = |x: usize, y: usize| mask[y * width + x] < 128;
+
+    for y in 0..height {
+        for x in 0..width {
+            let idx = y * width + x;
+            if !is_land(x, y) || labels[idx] != 0 {
+                continue;
+            }
+
+            areas.push(0);
+            let label = areas.len() as u32;
+            labels[idx] = label;
+            stack.push((x, y));
+
+            while let Some((cx, cy)) = stack.pop() {
+                areas[(label - 1) as usize] += 1;
+
+                for (dx, dy) in [(-1i64, 0i64), (1, 0), (0, -1), (0, 1)] {
+                    let ny = cy as i64 + dy;
+                    if ny < 0 || ny >= height as i64 {
+                        continue;
+                    }
+                    let nx = (cx as i64 + dx).rem_euclid(width as i64) as usize;
+                    let ny = ny as usize;
+                    let nidx = ny * width + nx;
+
+                    if is_land(nx, ny) && labels[nidx] == 0 {
+                        labels[nidx] = label;
+                        stack.push((nx, ny));
+                    }
+                }
+            }
+        }
+    }
+
+    (labels, areas)
+}
+
+/// Flips land pixels belonging to a component smaller than `min_area_px` to water (255) in
+/// `mask`, so they can no longer seed or corroborate a coastline-distance seed - see
+/// `distance::run`'s `water_for_seeding`, which uses this on a copy of the real water mask so
+/// the real mask (used for the final land/water byte classification) is untouched and tiny
+/// islands still show up as land wherever they survive mip-downsampling, just without the
+/// disproportionate coastal-fade halo they'd otherwise radiate into open ocean around them.
+pub fn erase_small_land_components(mask: &mut [u8], labels: &[u32], areas: &[u32], min_area_px: u32) {
+    for (i, &label) in labels.iter().enumerate() {
+        if label != 0 && areas[(label - 1) as usize] < min_area_px {
+            mask[i] = 255;
+        }
+    }
+}
+
 /// Marks water pixels that touch at least one land pixel (4-connected) - the water-side of
 /// the mask's coastline/lakeshore boundary. Pixels off the edge of the raster count as land,
 /// so water that runs to the edge of the source grid is seeded there too.

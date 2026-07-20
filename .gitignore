@@ -1,3 +1,6 @@
+# Generated Game Assets
+/assets/earth/
+
 # Rust Build Artifacts
 /target/
 /Cargo.lock
