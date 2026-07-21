@@ -9,12 +9,17 @@ pub fn compute_requests(
     camera: Query<&Camera>,
     mut tile_trees: ResMut<TerrainViewComponents<TileTree>>,
     grids: Grids,
-    views: Query<(&Transform, &CellCoord)>,
+    views: Query<(Ref<Transform>, &CellCoord)>,
 ) {
     for (&(_, view), tile_tree) in tile_trees.iter_mut() {
+        let (transform, cell) = views.get(view).unwrap();
+
+        if !transform.is_changed() {
+            continue;
+        }
+
         let camera = camera.get(view).unwrap();
         let grid = grids.parent_grid(view).unwrap();
-        let (transform, cell) = views.get(view).unwrap();
 
         // Todo: transform should be global transform?
 
@@ -26,9 +31,10 @@ pub fn compute_requests(
             .half_spaces
             .map(|space| space.normal_d());
 
-        tile_tree.view_local_position = grid.grid_position_double(cell, transform);
+        tile_tree.view_local_position = grid.grid_position_double(cell, &transform);
         tile_tree.view_world_position = transform.translation;
         tile_tree.half_spaces = half_spaces;
         tile_tree.update();
+        tile_tree.dirty = true;
     }
 }

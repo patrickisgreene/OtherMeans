@@ -98,6 +98,14 @@ fn water_surface_color(
     // coastline, saturating to 1 (deep) once fully out in open ocean.
     var color = mix(earth_constants.ocean_shallow_color, earth_constants.ocean_deep_color, ocean_blend);
 
+    // Latitude tint: sphere_normal.y is sin(latitude) for a near-spherical planet (Y is the
+    // rotation axis - see TerrainShape::Spheroid), so abs() gives 0 at the equator ramping to 1
+    // at either pole. Blended in over the depth-based gradient above rather than replacing it,
+    // so coastline/open-ocean shading still reads through underneath the colder/warmer tint.
+    let latitude_factor = abs(sphere_normal.y);
+    let latitude_color = mix(earth_constants.ocean_equatorial_color, earth_constants.ocean_polar_color, latitude_factor);
+    color = mix(color, latitude_color, earth_constants.ocean_latitude_strength);
+
     // Real NASA GEBCO hillshaded seafloor relief (ridges, trenches, seamounts - see
     // resources/earth/scripts/bathyometry.sh), packed into water_attachment's red channel.
     // It's a shaded-relief illustration rather than a literal depth value, averaging around

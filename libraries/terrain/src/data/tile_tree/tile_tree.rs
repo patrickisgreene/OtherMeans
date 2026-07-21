@@ -72,6 +72,10 @@ pub struct TileTree {
     pub approximate_height: f32,
     pub order: u32,
 
+    /// Set whenever `update` actually recomputed tile requests this frame (i.e. the view moved).
+    /// Consumed and reset by the downstream systems in the `PostUpdate` chain.
+    pub(crate) dirty: bool,
+
     pub tile_tree_buffer: Handle<ShaderBuffer>,
     pub terrain_view_buffer: Handle<ShaderBuffer>,
     pub approximate_height_buffer: Handle<ShaderBuffer>,
@@ -152,6 +156,7 @@ impl TileTree {
             surface_approximation: default(),
             approximate_height: 0.0,
             order: view_config.order,
+            dirty: false,
             tile_tree_buffer,
             terrain_view_buffer,
             approximate_height_buffer,

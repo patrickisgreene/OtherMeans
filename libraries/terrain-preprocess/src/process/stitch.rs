@@ -187,13 +187,26 @@ pub fn stitch<T: Copy + GdalType + NumCast>(
         (border_size, border_size),
     ];
 
+    let debug = std::env::var("STITCH_DEBUG").is_ok();
+
     tiles.par_iter().try_for_each(|&tile_coordinate| {
         let tile_dataset = update_tile_dataset(tile_coordinate, context)?;
 
         for (i, (neighbour_coordinate, rotation)) in tile_coordinate.neighbours(true).enumerate() {
-            if let Some(neighbour_dataset) =
-                load_tile_dataset_if_exists(neighbour_coordinate, context)?
-            {
+            let found = load_tile_dataset_if_exists(neighbour_coordinate, context)?;
+
+            if debug {
+                eprintln!(
+                    "STITCH tile={:?} i={} neighbour={:?} rotation={:?} found={}",
+                    tile_coordinate,
+                    i,
+                    neighbour_coordinate,
+                    rotation,
+                    found.is_some()
+                );
+            }
+
+            if let Some(neighbour_dataset) = found {
                 neighbour_data::<T>(
                     &tile_dataset,
                     &neighbour_dataset,

@@ -34,9 +34,19 @@ $WORK_DIR/target/release/texture-processor \
 $WORK_DIR/target/release/texture-processor \
     --overwrite \
     mul \
-    --output $BUILD_DIR/chlorophyll.tif \
+    --output $BUILD_DIR/chlorophyll-masked.tif \
     $DATA_DIR/chlorophyll.tif \
     $BUILD_DIR/lakes-mask-inverted.tif
+
+# Softens the source data's sharp gradients before it's packed into the water texture's green
+# channel (see earth.sh), so it doesn't read as overly crisp against the ocean's other, smoother
+# shading terms.
+$WORK_DIR/target/release/texture-processor \
+    --overwrite \
+    blur \
+    --radius 50 \
+    --input $BUILD_DIR/chlorophyll-masked.tif \
+    --output $BUILD_DIR/chlorophyll.tif
 
 $WORK_DIR/target/release/texture-processor \
     --overwrite \

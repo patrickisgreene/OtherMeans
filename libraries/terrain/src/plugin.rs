@@ -68,21 +68,17 @@ impl Plugin for TerrainPlugin {
             .add_systems(
                 PostUpdate,
                 (
-                    // Todo: enable visibility checking again
-                    // check_visibility::<With<TileAtlas>>.in_set(VisibilitySystems::CheckVisibility),
-                    (
-                        crate::data::tile_tree::systems::compute_requests,
-                        crate::data::tile_loader::systems::finish_loading,
-                        crate::data::tile_atlas::systems::update,
-                        crate::data::tile_loader::systems::start_loading,
-                        crate::data::tile_tree::systems::adjust_to_tile_atlas,
-                        crate::data::tile_tree::systems::generate_surface_approximation,
-                        crate::data::tile_tree::systems::update_terrain_view_buffer,
-                        crate::data::tile_atlas::systems::update_terrain_buffer,
-                    )
-                        .chain()
-                        .after(TransformSystems::Propagate),
-                ),
+                    crate::data::tile_tree::systems::compute_requests,
+                    crate::data::tile_loader::systems::finish_loading,
+                    crate::data::tile_atlas::systems::update,
+                    crate::data::tile_loader::systems::start_loading,
+                    crate::data::tile_tree::systems::adjust_to_tile_atlas,
+                    crate::data::tile_tree::systems::generate_surface_approximation,
+                    crate::data::tile_tree::systems::update_terrain_view_buffer,
+                    crate::data::tile_atlas::systems::update_terrain_buffer,
+                )
+                    .chain()
+                    .after(TransformSystems::Propagate),
             );
         app.sub_app_mut(RenderApp)
             .init_resource::<SpecializedComputePipelines<MipPipelines>>()

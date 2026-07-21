@@ -22,6 +22,10 @@ pub struct EarthParams {
     pub ocean_ambient: Vec3,
     /// Tint blended in over chlorophyll-rich (coastal upwelling / river plume) water.
     pub ocean_chlorophyll_color: Vec3,
+    /// Base ocean color blended in toward the poles (high |latitude|) - a deeper, colder blue.
+    pub ocean_polar_color: Vec3,
+    /// Base ocean color blended in toward the equator (low |latitude|) - a lighter, warmer blue.
+    pub ocean_equatorial_color: Vec3,
     /// Brightness contrast applied from the real GEBCO bathymetric hillshade (water_attachment's
     /// red channel), centered on its ~0.7 mean so typical seafloor renders at neutral
     /// brightness. 0 = no relief shading (flat color), higher = more ridge/trench contrast.
@@ -30,6 +34,9 @@ pub struct EarthParams {
     /// before it saturates into the chlorophyll tint - real concentrations are low outside
     /// productive coastal zones, so this needs to be well above 1 to be visible at all.
     pub chlorophyll_strength: f32,
+    /// How strongly the polar/equatorial latitude tint blends into the base ocean color -
+    /// 0 disables it, 1 fully replaces the depth-based shallow/deep color with the latitude tint.
+    pub ocean_latitude_strength: f32,
 
     // Wave normal (shaders/earth/water.wgsl)
     pub wave_scale_a: f32,
@@ -67,8 +74,11 @@ impl Default for EarthParams {
             ocean_fresnel_color: Vec3::new(0.08, 0.18, 0.35),
             ocean_ambient: Vec3::new(0.003, 0.008, 0.025),
             ocean_chlorophyll_color: Vec3::new(0.055, 0.150, 0.095),
+            ocean_polar_color: Vec3::new(0.010, 0.045, 0.140),
+            ocean_equatorial_color: Vec3::new(0.060, 0.220, 0.360),
             bathymetry_strength: 1.2,
             chlorophyll_strength: 3.0,
+            ocean_latitude_strength: 0.4,
 
             wave_scale_a: 8.0,
             wave_scale_b: 13.0,
@@ -85,7 +95,7 @@ impl Default for EarthParams {
             shore_ripple_freq: 42.0,
             shore_ripple_speed: 2.5,
             shore_foam_falloff: 8.5,
-            shore_foam_strength: 0.55,
+            shore_foam_strength: 2.0,
             shore_foam_width: 0.12,
             shore_noise_scale: 400.0,
             shore_noise_span: 12.5,

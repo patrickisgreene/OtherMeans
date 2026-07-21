@@ -6,6 +6,7 @@ use bevy::{prelude::*, render::render_resource::ShaderType};
 
 mod height_readback;
 pub mod systems;
+#[allow(clippy::module_inception)]
 mod tile_tree;
 
 pub use height_readback::*;

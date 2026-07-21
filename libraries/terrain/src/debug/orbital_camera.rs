@@ -1,6 +1,5 @@
 use crate::picking::PickingData;
 use bevy::{
-    color::palettes::basic,
     input::{ButtonInput, mouse::AccumulatedMouseMotion},
     math::{DQuat, DVec2, DVec3, Mat4, Vec2},
     prelude::*,
@@ -88,7 +87,6 @@ impl Default for OrbitalCameraController {
 
 #[allow(clippy::too_many_arguments)]
 pub fn orbital_camera_controller(
-    mut gizmos: Gizmos,
     grids: Grids,
     time: Res<Time>,
     keyboard: Res<ButtonInput<KeyCode>>,
@@ -136,8 +134,10 @@ pub fn orbital_camera_controller(
     let mut update_cursor_coords = true;
 
     if mouse_buttons.pressed(MouseButton::Left) {
-        if controller.pan_data.is_none() && cursor_position.is_some() {
-            controller.anchor_position = cursor_position.unwrap();
+        if controller.pan_data.is_none()
+            && let Some(cursor_position) = cursor_position
+        {
+            controller.anchor_position = cursor_position;
             controller.anchor_cell = cursor_cell;
             controller.camera_position = camera_position;
             controller.camera_rotation = camera_rotation;
@@ -155,8 +155,10 @@ pub fn orbital_camera_controller(
     }
 
     if mouse_buttons.pressed(MouseButton::Middle) {
-        if controller.rotation_data.is_none() && cursor_position.is_some() {
-            controller.anchor_position = cursor_position.unwrap();
+        if controller.rotation_data.is_none()
+            && let Some(cursor_position) = cursor_position
+        {
+            controller.anchor_position = cursor_position;
             controller.anchor_cell = cursor_cell;
             controller.camera_position = camera_position;
             controller.camera_rotation = camera_rotation;
@@ -187,13 +189,15 @@ pub fn orbital_camera_controller(
     }
 
     if mouse_buttons.pressed(MouseButton::Right) {
-        if controller.zoom_data.is_none() && cursor_position.is_some() {
-            controller.anchor_position = cursor_position.unwrap();
+        if controller.zoom_data.is_none()
+            && let Some(cursor_position) = cursor_position
+        {
+            controller.anchor_position = cursor_position;
             controller.anchor_cell = cursor_cell;
             controller.camera_position = camera_position;
             controller.camera_rotation = camera_rotation;
 
-            let zoom = (cursor_position.unwrap() - camera_position).length().log2();
+            let zoom = (cursor_position - camera_position).length().log2();
 
             controller.zoom_data = Some(ZoomData {
                 target_zoom: zoom,
@@ -337,17 +341,14 @@ pub fn orbital_camera_controller(
             DQuat::from_rotation_arc(initial_direction, new_direction) * controller.camera_rotation;
     }
 
-    let (new_cell, new_translation) = grid.translation_to_grid(new_camera_position);
+    if controller.pan_data.is_some()
+        || controller.rotation_data.is_some()
+        || controller.zoom_data.is_some()
+    {
+        let (new_cell, new_translation) = grid.translation_to_grid(new_camera_position);
 
-    *camera_cell = new_cell;
-    camera_transform.translation = new_translation;
-    camera_transform.rotation = new_camera_rotation.as_quat();
-
-    let anchor_size = 200.0;
-
-    gizmos.sphere(
-        (controller.anchor_position - grid.cell_to_float(&new_cell)).as_vec3(),
-        new_camera_position.distance(controller.anchor_position) as f32 / anchor_size,
-        basic::GREEN,
-    );
+        *camera_cell = new_cell;
+        camera_transform.translation = new_translation;
+        camera_transform.rotation = new_camera_rotation.as_quat();
+    }
 }

@@ -110,7 +110,7 @@ fn split<T: Copy + GdalType + PartialEq + NumCast>(
 
             progress_callback.increment();
 
-            Ok::<Option<TileCoordinate>, PreprocessError>(has_data.then(|| tile_coordinate))
+            Ok::<Option<TileCoordinate>, PreprocessError>(has_data.then_some(tile_coordinate))
         })
         .filter_map(Result::transpose)
         .collect::<PreprocessResult<Vec<TileCoordinate>>>()

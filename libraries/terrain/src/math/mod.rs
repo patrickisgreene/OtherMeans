@@ -58,6 +58,7 @@ const NEIGHBOURING_FACES: [[u32; 5]; 6] = [
 ];
 
 #[repr(u32)]
+#[derive(Debug)]
 pub enum FaceRotation {
     Identical = 0, // i
     ShiftU = 1,    // x
@@ -83,7 +84,7 @@ impl FaceRotation {
     }
 
     fn new(face: u32, other_face: u32) -> Self {
-        let index = if (face % 2) == 0 {
+        let index = if face.is_multiple_of(2) {
             (6 + other_face - face) % 6
         } else {
             (6 + face - other_face) % 6

@@ -19,22 +19,11 @@ impl Plugin for EarthPlugin {
     fn build(&self, app: &mut App) {
         shaders::load_earth_shaders(app);
 
-        // atlas_size sets how many distinct tiles can be resident at once *and* how many layers
-        // each attachment's GPU texture array allocates - it's a genuine memory/zoom-depth
-        // tradeoff, not just a size knob. The 1028 default (tuned for a single attachment) still
-        // exceeds this machine's available VRAM, so this targets roughly the same total
-        // footprint as the smallest atlas_size that ran cleanly, just spread over more (now
-        // smaller) tiles. Land and water are now separate attachments (water at a smaller
-        // texture_size, see assets/earth/config.tc.ron) to keep a third attachment's array from
-        // growing this budget too much further.
-        let terrain_settings = TerrainSettings::new(vec!["earth", "water"]);
-        //terrain_settings.atlas_size = 512;
-
         app.add_plugins((
             atmosphere::EarthAtmospherePlugin,
             TerrainPlugins::<EarthMaterial>::default(),
         ))
-        .insert_resource(terrain_settings)
+        .insert_resource(TerrainSettings::new(vec!["earth", "water"]))
         .add_systems(Update, toggle_render_mode)
         .insert_resource(ClearColor(Color::srgb(0.012, 0.012, 0.031)));
     }

@@ -41,6 +41,9 @@ pub struct TileAtlas {
     tile_states: HashMap<TileCoordinate, super::TileState>,
     unused_indices: VecDeque<u32>,
     existing_tiles: HashSet<TileCoordinate>,
+    /// Set whenever a tile finishes loading, since that can improve the best-available tile
+    /// for a slot even while the view isn't moving. Consumed and reset by `adjust_to_tile_atlas`.
+    pub(crate) changed: bool,
     pub uploading_tiles: Vec<AttachmentTileWithData>,
     pub downloading_tiles: Vec<Task<AttachmentTileWithData>>,
     pub to_load: Vec<AttachmentTile>,
@@ -77,6 +80,7 @@ impl TileAtlas {
             tile_states: default(),
             unused_indices: (0..settings.atlas_size).collect(),
             existing_tiles: HashSet::from_iter(config.tiles.clone()),
+            changed: false,
             to_load: default(),
             uploading_tiles: default(),
             downloading_tiles: default(),
@@ -102,14 +106,14 @@ impl TileAtlas {
                 return TileTreeEntry::default();
             }
 
-            if let Some(tile) = self.tile_states.get(&best_tile_coordinate) {
-                if matches!(tile.state, super::LoadingState::Loaded) {
-                    // found best loaded tile
-                    return TileTreeEntry {
-                        atlas_index: tile.atlas_index,
-                        atlas_lod: best_tile_coordinate.lod,
-                    };
-                }
+            if let Some(tile) = self.tile_states.get(&best_tile_coordinate)
+                && matches!(tile.state, super::LoadingState::Loaded)
+            {
+                // found best loaded tile
+                return TileTreeEntry {
+                    atlas_index: tile.atlas_index,
+                    atlas_lod: best_tile_coordinate.lod,
+                };
             }
 
             best_tile_coordinate = best_tile_coordinate
@@ -127,6 +131,10 @@ impl TileAtlas {
                     panic!("Loaded more attachments, than registered with the tile atlas.")
                 }
             };
+
+            if matches!(tile_state.state, super::LoadingState::Loaded) {
+                self.changed = true;
+            }
 
             self.uploading_tiles.push(AttachmentTileWithData {
                 atlas_index: tile_state.atlas_index,

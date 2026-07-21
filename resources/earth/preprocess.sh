@@ -24,7 +24,7 @@ $WORK_DIR/target/release/terrain-preprocess \
     --terrain-path $WORK_DIR/assets/earth/ \
     --overwrite \
     --lod-count 6 \
-    --fill-radius 0.0 \
+    --fill-radius 16.0 \
     --no-data source \
     --attachment-label height \
     --texture-size 512 \
@@ -38,7 +38,7 @@ $WORK_DIR/target/release/terrain-preprocess \
     --terrain-path $WORK_DIR/assets/earth/ \
     --overwrite \
     --lod-count 6 \
-    --fill-radius 0.0 \
+    --fill-radius 16.0 \
     --no-data source \
     --data-type Byte \
     --attachment-label earth \
@@ -53,7 +53,7 @@ $WORK_DIR/target/release/terrain-preprocess \
     --terrain-path $WORK_DIR/assets/earth/ \
     --overwrite \
     --lod-count 6 \
-    --fill-radius 0.0 \
+    --fill-radius 16.0 \
     --no-data source \
     --data-type Byte \
     --attachment-label water \

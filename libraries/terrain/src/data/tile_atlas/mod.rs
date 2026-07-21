@@ -1,5 +1,6 @@
 pub mod gpu;
 pub mod systems;
+#[allow(clippy::module_inception)]
 mod tile_atlas;
 
 pub use tile_atlas::*;

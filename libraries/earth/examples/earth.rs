@@ -1,6 +1,7 @@
 use bevy::dev_tools::fps_overlay::FpsOverlayPlugin;
 use bevy::prelude::*;
 use bevy::render::storage::ShaderBuffer;
+use bevy::window::PresentMode;
 use earth::EarthMaterial;
 use terrain::prelude::*;
 
@@ -12,6 +13,13 @@ fn main() {
             DefaultPlugins
                 .set(AssetPlugin {
                     file_path: "../../assets".into(),
+                    ..default()
+                })
+                .set(WindowPlugin {
+                    primary_window: Some(Window {
+                        present_mode: PresentMode::AutoVsync,
+                        ..default()
+                    }),
                     ..default()
                 })
                 .build()

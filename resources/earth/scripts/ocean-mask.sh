@@ -32,7 +32,8 @@ $WORK_DIR/target/release/texture-processor \
     flood-fill \
     --input $BUILD_DIR/coastline.tif \
     --output $BUILD_DIR/coastline-mask.tif \
-    --start-point -48.8767 -123.3933
+    --start-point -48.8767 -123.3933 \
+    --start-point 43.37809535609304 35.6757685067261
 
 
 $WORK_DIR/target/release/texture-processor \

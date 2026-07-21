@@ -147,8 +147,13 @@ pub fn debug_panel() -> impl Scene {
                                                     |c, v| c.ocean_ambient.x = v, |c, v| c.ocean_ambient.y = v, |c, v| c.ocean_ambient.z = v),
                                                 color_field("Chlorophyll Color", Vec3::new(0.055, 0.150, 0.095), |c| c.ocean_chlorophyll_color,
                                                     |c, v| c.ocean_chlorophyll_color.x = v, |c, v| c.ocean_chlorophyll_color.y = v, |c, v| c.ocean_chlorophyll_color.z = v),
+                                                color_field("Polar Color", Vec3::new(0.010, 0.045, 0.140), |c| c.ocean_polar_color,
+                                                    |c, v| c.ocean_polar_color.x = v, |c, v| c.ocean_polar_color.y = v, |c, v| c.ocean_polar_color.z = v),
+                                                color_field("Equatorial Color", Vec3::new(0.060, 0.220, 0.360), |c| c.ocean_equatorial_color,
+                                                    |c, v| c.ocean_equatorial_color.x = v, |c, v| c.ocean_equatorial_color.y = v, |c, v| c.ocean_equatorial_color.z = v),
                                                 material_slider("Bathymetry Strength", 0.0, 4.0, 0.05, 1.2, |c, v| c.bathymetry_strength = v),
                                                 material_slider("Chlorophyll Strength", 0.0, 15.0, 0.1, 3.0, |c, v| c.chlorophyll_strength = v),
+                                                material_slider("Latitude Tint Strength", 0.0, 1.0, 0.01, 0.4, |c, v| c.ocean_latitude_strength = v),
                                             ]
                                         ),
                                     ],

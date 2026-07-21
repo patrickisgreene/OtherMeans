@@ -39,7 +39,14 @@ struct Projection {
 }
 
 impl Projection {
-    fn new(x_min: f64, y_min: f64, x_max: f64, y_max: f64, width: u32, height: u32) -> Result<Self, ProcessError> {
+    fn new(
+        x_min: f64,
+        y_min: f64,
+        x_max: f64,
+        y_max: f64,
+        width: u32,
+        height: u32,
+    ) -> Result<Self, ProcessError> {
         if x_max == x_min || y_max == y_min {
             return Err(ProcessError::InvalidInput(
                 "bounding box is degenerate (zero width or height)".to_string(),
@@ -158,9 +165,9 @@ fn fill_rings<P: HasXY>(img: &mut GrayImage, rings: &[PolygonRing<P>], projectio
         .iter()
         .flat_map(|ring| {
             let points = ring.points();
-            points.windows(2).map(|pair| {
-                [projection.project(&pair[0]), projection.project(&pair[1])]
-            })
+            points
+                .windows(2)
+                .map(|pair| [projection.project(&pair[0]), projection.project(&pair[1])])
         })
         .collect();
 
@@ -182,7 +189,7 @@ fn fill_rings<P: HasXY>(img: &mut GrayImage, rings: &[PolygonRing<P>], projectio
             .collect();
         intersections.sort_by(|a, b| a.partial_cmp(b).unwrap());
 
-        for pair in intersections.chunks_exact(2) {
+        for pair in intersections.as_chunks::<2>().0 {
             let start = pair[0].round().max(0.0) as u32;
             let end = pair[1].round().min(f64::from(img.width())) as u32;
             for x in start..end.min(img.width()) {

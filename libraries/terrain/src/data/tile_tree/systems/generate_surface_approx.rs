@@ -4,6 +4,10 @@ use crate::{data::TileTree, view::TerrainViewComponents};
 
 pub fn generate_surface_approximation(mut tile_trees: ResMut<TerrainViewComponents<TileTree>>) {
     for tile_tree in tile_trees.values_mut() {
+        if !tile_tree.dirty {
+            continue;
+        }
+
         tile_tree.surface_approximation = tile_tree.view_coordinates.map(|view_coordinate| {
             crate::math::SurfaceApproximation::compute(
                 view_coordinate,

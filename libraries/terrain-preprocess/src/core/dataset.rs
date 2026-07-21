@@ -175,14 +175,13 @@ impl PreprocessContext {
     ) -> PreprocessResult<(Dataset, Self)> {
         let mut src_datasets = src_path
             .iter()
-            .map(|src_path| {
+            .flat_map(|src_path| {
                 if src_path.is_dir() {
-                    iter_directory(&src_path).collect_vec()
+                    iter_directory(src_path).collect_vec()
                 } else {
                     vec![src_path.clone()]
                 }
             })
-            .flatten()
             .filter(|path| {
                 let path = path.to_str().unwrap();
                 path.ends_with(".tif") || path.ends_with(".tiff")
@@ -222,7 +221,7 @@ impl PreprocessContext {
             }
         };
 
-        let tile_dir = terrain_path.join(&String::from(&attachment_label));
+        let tile_dir = terrain_path.join(String::from(&attachment_label));
 
         let temp_dir = match temp_dir {
             None => tile_dir.join("temp"),
@@ -293,7 +292,7 @@ pub(crate) fn create_tile_dataset<T: Copy + GdalType>(
 ) -> PreprocessResult<Dataset> {
     let tile_path = tile_coordinate.path(&context.tile_dir);
 
-    fs::create_dir_all(&tile_path.parent().unwrap()).unwrap(); // make sure the parent directories do exist
+    fs::create_dir_all(tile_path.parent().unwrap()).unwrap(); // make sure the parent directories do exist
 
     create_empty_dataset::<T>(
         &tile_path,
@@ -313,16 +312,13 @@ pub(crate) fn create_empty_dataset<T: Copy + GdalType>(
 
     // Todo: consider copying the photometric info
 
-    let options = RasterCreationOptions::from_iter(
-        [
-            "TILED=YES",
-            "BLOCKXSIZE=512",
-            "BLOCKYSIZE=512",
-            //  "SPARSE_OK=TRUE",
-            "INTERLEAVE=PIXEL", // Todo: benchmark pixel vs band
-        ]
-        .into_iter(),
-    );
+    let options = RasterCreationOptions::from_iter([
+        "TILED=YES",
+        "BLOCKXSIZE=512",
+        "BLOCKYSIZE=512",
+        //  "SPARSE_OK=TRUE",
+        "INTERLEAVE=PIXEL", // Todo: benchmark pixel vs band
+    ]);
 
     let mut dst = driver.create_with_band_type_with_options::<T, _>(
         dst_path,

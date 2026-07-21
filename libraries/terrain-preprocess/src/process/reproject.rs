@@ -42,13 +42,13 @@ pub fn reproject<T: Copy + GdalType>(
                 &dst_path,
                 transform.size,
                 Some(transform.geo_transform),
-                &context,
+                context,
             )?;
 
             warp(
                 &src_dataset,
                 &dst_dataset,
-                &context,
+                context,
                 &mut transform.transformer,
                 transform.progress_callback.as_deref(),
             )?;
@@ -89,7 +89,7 @@ pub fn compute_transforms<'a>(
     let mut total_area = 0.0;
 
     for face in 0..6 {
-        let mut transformer = CustomTransformer::new(src_dataset, face, None)?;
+        let mut transformer = CustomTransformer::from_dataset(src_dataset, face, None)?;
 
         let Some(SuggestedWarpOutput {
             size,
@@ -100,7 +100,7 @@ pub fn compute_transforms<'a>(
         };
 
         // flip y axis
-        geo_transform[3] = geo_transform[3] + geo_transform[5] * size.y as f64;
+        geo_transform[3] += geo_transform[5] * size.y as f64;
         geo_transform[5] = -geo_transform[5];
 
         let uv_start = DVec2::from(geo_transform.apply(0.0, 0.0)).max(DVec2::ZERO);
@@ -172,8 +172,11 @@ pub fn compute_transforms<'a>(
         ]);
         transform.pixel_start = pixel_start.as_ivec2();
         transform.pixel_end = pixel_end.as_ivec2();
-        transform.transformer =
-            CustomTransformer::new(src_dataset, transform.face, Some(transform.geo_transform))?;
+        transform.transformer = CustomTransformer::from_dataset(
+            src_dataset,
+            transform.face,
+            Some(transform.geo_transform),
+        )?;
     }
 
     let work_portions = transforms

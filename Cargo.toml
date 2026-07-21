@@ -42,6 +42,7 @@ derive_more = { version = "2.1.1", features = ["from", "display"] }
 # TODO: Switch back to the official repository after the release.
 #big_space = { version = "0.12.0", features = ["i32"] }
 big_space = { git = "https://github.com/m-edlund/big_space", features = ["i32"], branch = "bevy-0.19" }
+bevy_common_assets = { version = "0.17.0", features = ["ron"] }
 
 earth.path = "libraries/earth"
 terrain.path = "libraries/terrain"

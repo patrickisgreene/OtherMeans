@@ -54,7 +54,12 @@ pub fn label_land_components(mask: &[u8], width: usize, height: usize) -> (Vec<u
 /// the real mask (used for the final land/water byte classification) is untouched and tiny
 /// islands still show up as land wherever they survive mip-downsampling, just without the
 /// disproportionate coastal-fade halo they'd otherwise radiate into open ocean around them.
-pub fn erase_small_land_components(mask: &mut [u8], labels: &[u32], areas: &[u32], min_area_px: u32) {
+pub fn erase_small_land_components(
+    mask: &mut [u8],
+    labels: &[u32],
+    areas: &[u32],
+    min_area_px: u32,
+) {
     for (i, &label) in labels.iter().enumerate() {
         if label != 0 && areas[(label - 1) as usize] < min_area_px {
             mask[i] = 255;
@@ -134,7 +139,13 @@ pub fn filter_seeds_near_mask_boundary(
     coastline_seeds
         .iter()
         .zip(field.iter())
-        .map(|(&s, &d)| if s >= 128 && d <= max_distance_px { 255 } else { 0 })
+        .map(|(&s, &d)| {
+            if s >= 128 && d <= max_distance_px {
+                255
+            } else {
+                0
+            }
+        })
         .collect()
 }
 
@@ -184,7 +195,12 @@ pub fn normalize_distance(distance: &[f32], mask: &[u8], cap_px: f32) -> Vec<u8>
 /// "distance from shore, staying on water" with land/water swapped. The same `seeds` are used
 /// for both passes - the coastline itself has no land/water side, only the `mask`/inverted-`mask`
 /// zero-out step afterward decides which side of it each pixel's distance belongs to.
-pub fn compute_signed_shore_distance(mask: &[u8], seeds: &[u8], width: usize, height: usize) -> Vec<f32> {
+pub fn compute_signed_shore_distance(
+    mask: &[u8],
+    seeds: &[u8],
+    width: usize,
+    height: usize,
+) -> Vec<f32> {
     let water_distance = compute_shore_distance(mask, seeds, width, height);
     let inverted_mask: Vec<u8> = mask.iter().map(|&m| 255 - m).collect();
     let land_distance = compute_shore_distance(&inverted_mask, seeds, width, height);
@@ -317,12 +333,12 @@ fn edt_1d(f: &mut [f32]) {
 
     k = 0;
     let mut d: Vec<f32> = vec![0.0; n];
-    for q in 0..n {
+    for (q, item) in d.iter_mut().enumerate().take(n) {
         while z[k + 1] < q as f32 {
             k += 1;
         }
         let diff = q as f32 - v[k] as f32;
-        d[q] = diff * diff + f[v[k]];
+        *item = diff * diff + f[v[k]];
     }
 
     f.copy_from_slice(&d);

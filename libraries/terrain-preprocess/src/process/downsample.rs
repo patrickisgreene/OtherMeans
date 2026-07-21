@@ -17,7 +17,7 @@ pub fn downsample_and_stitch<T: Copy + GdalType + PartialEq + NumCast>(
     context: &PreprocessContext,
     progress_callback: Option<&ProgressCallback>,
 ) -> PreprocessResult<Vec<TileCoordinate>> {
-    let tiles_to_downsample = compute_tiles_to_downsample(&input_tiles);
+    let tiles_to_downsample = compute_tiles_to_downsample(input_tiles);
 
     let mut output_tiles = input_tiles.iter().copied().collect_vec();
     output_tiles.extend(tiles_to_downsample.iter().flatten());
@@ -114,10 +114,10 @@ fn compute_tiles_to_downsample(input_tiles: &[TileCoordinate]) -> Vec<Vec<TileCo
 
     while !new_tiles.is_empty() {
         for tile in new_tiles.drain().collect_vec() {
-            if let Some(parent) = tile.parent() {
-                if tiles_to_downsample.insert(parent) {
-                    new_tiles.insert(parent);
-                }
+            if let Some(parent) = tile.parent()
+                && tiles_to_downsample.insert(parent)
+            {
+                new_tiles.insert(parent);
             }
         }
     }

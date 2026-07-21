@@ -14,8 +14,11 @@ struct EarthParams {
     ocean_fresnel_color: vec3<f32>,
     ocean_ambient: vec3<f32>,
     ocean_chlorophyll_color: vec3<f32>,
+    ocean_polar_color: vec3<f32>,
+    ocean_equatorial_color: vec3<f32>,
     bathymetry_strength: f32,
     chlorophyll_strength: f32,
+    ocean_latitude_strength: f32,
 
     wave_scale_a: f32,
     wave_scale_b: f32,

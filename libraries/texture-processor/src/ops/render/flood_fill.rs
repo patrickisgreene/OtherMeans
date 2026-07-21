@@ -48,7 +48,7 @@ pub fn flood_fill(global: Cli, args: FloodFill) -> Result<(), ProcessError> {
 
     let mut filled = vec![false; (width as usize) * (height as usize)];
 
-    for pair in args.start_points.chunks_exact(2) {
+    for pair in args.start_points.as_chunks::<2>().0 {
         let (lat, lon) = (pair[0], pair[1]);
         if !(-90.0..=90.0).contains(&lat) || !(-180.0..=180.0).contains(&lon) {
             return Err(ProcessError::InvalidInput(format!(
@@ -90,7 +90,14 @@ pub fn flood_fill(global: Cli, args: FloodFill) -> Result<(), ProcessError> {
 /// diagonal line (exactly what `render-shapefile`'s line rasterizer draws)
 /// has no orthogonally-touching wall pixels along it, so plain 4- or
 /// 8-connected fill leaks straight through the gap between them.
-fn flood_from(source: &GrayImage, filled: &mut [bool], width: u32, height: u32, start_x: u32, start_y: u32) {
+fn flood_from(
+    source: &GrayImage,
+    filled: &mut [bool],
+    width: u32,
+    height: u32,
+    start_x: u32,
+    start_y: u32,
+) {
     let is_wall = |x: u32, y: u32| source.get_pixel(x, y).0[0] >= WALL_THRESHOLD;
     let index = |x: u32, y: u32| (y as usize) * (width as usize) + (x as usize);
 
