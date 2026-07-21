@@ -16,7 +16,8 @@ rm -f $EARTH_DIR/height-float32.tif
 gdal_translate -ot Float32 $EARTH_DIR/height.tif $EARTH_DIR/height-float32.tif
 
 gdal_edit.py -a_srs IAU_2015:39900 -a_ullr -180 90 180 -90 $EARTH_DIR/height-float32.tif
-gdal_edit.py -a_srs IAU_2015:39900 -a_ullr -180 90 180 -90 $EARTH_DIR/earth.tif
+gdal_edit.py -a_srs IAU_2015:39900 -a_ullr -180 90 180 -90 $EARTH_DIR/land.tif
+gdal_edit.py -a_srs IAU_2015:39900 -a_ullr -180 90 180 -90 $EARTH_DIR/water.tif
 
 $WORK_DIR/target/release/terrain-preprocess \
     --src-path $WORK_DIR/resources/earth/height-float32.tif \
@@ -33,7 +34,7 @@ $WORK_DIR/target/release/terrain-preprocess \
     --shape earth
 
 $WORK_DIR/target/release/terrain-preprocess \
-    --src-path $WORK_DIR/resources/earth/earth.tif \
+    --src-path $WORK_DIR/resources/earth/land.tif \
     --terrain-path $WORK_DIR/assets/earth/ \
     --overwrite \
     --lod-count 6 \
@@ -42,6 +43,21 @@ $WORK_DIR/target/release/terrain-preprocess \
     --data-type Byte \
     --attachment-label earth \
     --texture-size 512 \
+    --border-size 4 \
+    --mip-level-count 4 \
+    --format rgb8u \
+    --shape earth
+
+$WORK_DIR/target/release/terrain-preprocess \
+    --src-path $WORK_DIR/resources/earth/water.tif \
+    --terrain-path $WORK_DIR/assets/earth/ \
+    --overwrite \
+    --lod-count 6 \
+    --fill-radius 0.0 \
+    --no-data source \
+    --data-type Byte \
+    --attachment-label water \
+    --texture-size 256 \
     --border-size 4 \
     --mip-level-count 4 \
     --format rgb8u \

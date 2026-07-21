@@ -160,13 +160,6 @@ pub fn compute_transforms<'a>(
         let pixel_start = (transform.uv_start / pixel_size).floor();
         let pixel_end = (transform.uv_end / pixel_size).ceil();
 
-        // println!(
-        //     "Snapping to the quadtree pixel grid caused the size of the reprojected dataset to be adjusted from {} to {}. This is an up-scaling of {:.2}%.",
-        //     transform.size,
-        //     size,
-        //     (size.as_dvec2() / transform.size.as_dvec2()).element_product() * 100.0 - 100.0
-        // );
-
         transform.lod = max_lod;
         transform.size = (pixel_end - pixel_start).as_u64vec2();
         transform.geo_transform = GeoTransform::from([

@@ -64,12 +64,6 @@ fn split<T: Copy + GdalType + PartialEq + NumCast>(
             let tile_offset = (face.pixel_start - tile_pixel_start).max(IVec2::ZERO)
                 + context.attachment.border_size as i32;
 
-            // print!("tile: {tile_xy}, ");
-            // print!("window size: {}, ", copy_size);
-            // print!("src window position: {}, ", src_offset);
-            // print!("tile window position: {}, ", tile_offset);
-            // println!();
-
             let mut has_data = false;
 
             let copy_buffers: Vec<Buffer<T>> = src_dataset

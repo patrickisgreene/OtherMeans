@@ -231,10 +231,10 @@ pub fn update_terrain_parameter(
 ) {
     for mut tile_atlas in tile_atlases.iter_mut() {
         if input.pressed(KeyCode::Equal) {
-            tile_atlas.height_scale += 0.1;
+            tile_atlas.height_scale += 100.0;
         }
         if input.pressed(KeyCode::Minus) {
-            tile_atlas.height_scale -= 0.1;
+            tile_atlas.height_scale -= 100.0;
         }
     }
 }
@@ -249,7 +249,7 @@ pub fn update_view_parameter(
         if input.just_pressed(KeyCode::KeyN) {
             tile_tree.blend_distance -= 0.25 * face_size;
             tile_tree.load_distance -= 0.25 * face_size;
-            println!(
+            debug!(
                 "Decreased the blend and load distance to {}.",
                 tile_tree.blend_distance / face_size
             );
@@ -257,7 +257,7 @@ pub fn update_view_parameter(
         if input.just_pressed(KeyCode::KeyE) {
             tile_tree.blend_distance += 0.25 * face_size;
             tile_tree.load_distance += 0.25 * face_size;
-            println!(
+            debug!(
                 "Increased the blend and load distance to {}.",
                 tile_tree.blend_distance / face_size
             );
@@ -266,7 +266,7 @@ pub fn update_view_parameter(
         if input.just_pressed(KeyCode::KeyI) {
             tile_tree.morph_distance -= face_size;
             tile_tree.subdivision_distance -= face_size;
-            println!(
+            debug!(
                 "Decreased the morph distance to {}.",
                 tile_tree.morph_distance / face_size
             );
@@ -274,7 +274,7 @@ pub fn update_view_parameter(
         if input.just_pressed(KeyCode::KeyO) {
             tile_tree.morph_distance += face_size;
             tile_tree.subdivision_distance += face_size;
-            println!(
+            debug!(
                 "Increased the morph distance to {}.",
                 tile_tree.morph_distance / face_size
             );
@@ -282,11 +282,11 @@ pub fn update_view_parameter(
 
         if input.just_pressed(KeyCode::KeyX) && tile_tree.grid_size > 2 {
             tile_tree.grid_size -= 2;
-            println!("Decreased the grid size to {}.", tile_tree.grid_size);
+            debug!("Decreased the grid size to {}.", tile_tree.grid_size);
         }
         if input.just_pressed(KeyCode::KeyJ) {
             tile_tree.grid_size += 2;
-            println!("Increased the grid size to {}.", tile_tree.grid_size);
+            debug!("Increased the grid size to {}.", tile_tree.grid_size);
         }
     }
 }

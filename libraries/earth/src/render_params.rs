@@ -20,6 +20,16 @@ pub struct EarthParams {
     pub ocean_specular_color: Vec3,
     pub ocean_fresnel_color: Vec3,
     pub ocean_ambient: Vec3,
+    /// Tint blended in over chlorophyll-rich (coastal upwelling / river plume) water.
+    pub ocean_chlorophyll_color: Vec3,
+    /// Brightness contrast applied from the real GEBCO bathymetric hillshade (water_attachment's
+    /// red channel), centered on its ~0.7 mean so typical seafloor renders at neutral
+    /// brightness. 0 = no relief shading (flat color), higher = more ridge/trench contrast.
+    pub bathymetry_strength: f32,
+    /// Multiplier on the raw chlorophyll byte (water_attachment's green channel, mean ~0.03)
+    /// before it saturates into the chlorophyll tint - real concentrations are low outside
+    /// productive coastal zones, so this needs to be well above 1 to be visible at all.
+    pub chlorophyll_strength: f32,
 
     // Wave normal (shaders/earth/water.wgsl)
     pub wave_scale_a: f32,
@@ -51,11 +61,14 @@ impl Default for EarthParams {
         Self {
             ocean_transition_band: 5.0,
 
-            ocean_deep_color: Vec3::new(0.007, 0.018, 0.090),
-            ocean_shallow_color: Vec3::new(0.022, 0.072, 0.180) * 1.2,
+            ocean_deep_color: Vec3::new(0.010, 0.035, 0.110),
+            ocean_shallow_color: Vec3::new(0.035, 0.130, 0.260),
             ocean_specular_color: Vec3::new(1.0, 1.0, 1.0),
             ocean_fresnel_color: Vec3::new(0.08, 0.18, 0.35),
             ocean_ambient: Vec3::new(0.003, 0.008, 0.025),
+            ocean_chlorophyll_color: Vec3::new(0.055, 0.150, 0.095),
+            bathymetry_strength: 1.2,
+            chlorophyll_strength: 3.0,
 
             wave_scale_a: 8.0,
             wave_scale_b: 13.0,

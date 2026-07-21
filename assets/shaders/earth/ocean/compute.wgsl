@@ -84,17 +84,35 @@ fn smooth_noise2(p: vec2<f32>) -> f32 {
 }
 
 fn water_surface_color(
-    ocean_blend:   f32,
-    sphere_normal: vec3<f32>,
-    view_dir:      vec3<f32>,
-    light_dir:     vec3<f32>,
-    wave_normal:   vec3<f32>,
+    ocean_blend:       f32,
+    sphere_normal:     vec3<f32>,
+    view_dir:          vec3<f32>,
+    light_dir:         vec3<f32>,
+    wave_normal:       vec3<f32>,
+    bathymetry_relief: f32,
+    chlorophyll:       f32,
 ) -> vec4<f32> {
-    // No standalone bathymetry attachment anymore - the height texture floors the seabed to 0
-    // at sea level (see resources/earth/preprocess.sh), so there's no real depth left to read.
-    // Reuse the land/ocean blend itself as a depth stand-in: 0 (shallow) right at the
+    // The height texture floors the seabed to 0 at sea level (see
+    // resources/earth/preprocess.sh), so there's no real depth left to read - the land/ocean
+    // blend is still used as a depth stand-in for the base gradient: 0 (shallow) right at the
     // coastline, saturating to 1 (deep) once fully out in open ocean.
     var color = mix(earth_constants.ocean_shallow_color, earth_constants.ocean_deep_color, ocean_blend);
+
+    // Real NASA GEBCO hillshaded seafloor relief (ridges, trenches, seamounts - see
+    // resources/earth/scripts/bathyometry.sh), packed into water_attachment's red channel.
+    // It's a shaded-relief illustration rather than a literal depth value, averaging around
+    // 0.7 - centering on that mean before scaling means typical seafloor renders at neutral
+    // brightness, with ridges/shelves brightening and trenches/abyssal plains darkening from
+    // there, instead of every pixel just being tinted by its raw (mostly-bright) byte value.
+    let relief_shade = clamp(1.0 + (bathymetry_relief - 0.7) * earth_constants.bathymetry_strength, 0.3, 1.8);
+    color *= relief_shade;
+
+    // Real satellite-derived chlorophyll concentration (coastal upwelling/river plumes read
+    // high, open ocean near zero - see resources/earth/scripts/chlorophyll.sh), packed into
+    // water_attachment's green channel. Tinted in rather than substituted outright, so
+    // productive coastal water reads as "murkier", not a flat green wash.
+    let chlorophyll_amount = saturate(chlorophyll * earth_constants.chlorophyll_strength);
+    color = mix(color, earth_constants.ocean_chlorophyll_color, chlorophyll_amount * 0.7);
 
     // Wave crest shimmer: brightens faces where the wave normal is tilted away
     // from the viewer, catching ambient light at crest edges.

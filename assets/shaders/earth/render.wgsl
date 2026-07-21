@@ -17,7 +17,8 @@ fn sample_attachment_float(tile: AtlasTile, attachment: texture_2d_array<f32>, c
 // lighting model can bypass PBR entirely instead of being lit twice - so this only ever runs
 // for land or the land/ocean blend zone.
 fn render_earth(tile: AtlasTile, info: FragmentInfo, surface_gradient: vec3<f32>, wave_normal: vec3<f32>,
-       ocean_blend: f32, sphere_normal: vec3<f32>, view_dir: vec3<f32>, light_dir: vec3<f32>) -> vec4<f32> {
+       ocean_blend: f32, sphere_normal: vec3<f32>, view_dir: vec3<f32>, light_dir: vec3<f32>,
+       bathymetry_relief: f32, chlorophyll: f32) -> vec4<f32> {
     let sample_color = sample_attachment_float(tile, earth_attachment, attachments.earth).rgb;
     var land_color = vec4<f32>(sample_color, 1.0);
     // Fade relief shading toward neutral near water to avoid dark halos at island edges.
@@ -28,6 +29,6 @@ fn render_earth(tile: AtlasTile, info: FragmentInfo, surface_gradient: vec3<f32>
         return land_color;
     }
 
-    let ocean_color = water_surface_color(ocean_blend, sphere_normal, view_dir, light_dir, wave_normal);
+    let ocean_color = water_surface_color(ocean_blend, sphere_normal, view_dir, light_dir, wave_normal, bathymetry_relief, chlorophyll);
     return mix(land_color, ocean_color, ocean_blend);
 }
