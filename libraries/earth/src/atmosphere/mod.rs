@@ -93,7 +93,7 @@ impl EarthAtmosphereSettings {
     }
 }
 
-pub const SHADER_ASSET_PATH: &str = "shaders/atmosphere.wgsl";
+pub const SHADER_ASSET_PATH: &str = "shaders/atmosphere/atmosphere.wgsl";
 
 impl Default for EarthAtmosphereSettings {
     fn default() -> EarthAtmosphereSettings {
