@@ -73,12 +73,8 @@ impl FromStr for PreprocessShape {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let shape = match s.trim().to_lowercase().as_str() {
             "earth" | "wgs84" => TerrainShape::WGS84,
-            "mars" => TerrainShape::Sphere {
-                radius: 3_396_190.0,
-            },
-            "moon" => TerrainShape::Sphere {
-                radius: 1_737_400.0,
-            },
+            "mars" => TerrainShape::MARS,
+            "moon" => TerrainShape::MOON,
             other => TerrainShape::Sphere {
                 radius: other.parse::<f64>()?,
             },

@@ -15,6 +15,14 @@ impl TerrainShape {
         minor_axis: 6356752.314245,
     };
 
+    pub const MARS: Self = TerrainShape::Sphere {
+        radius: 3_396_190.0,
+    };
+
+    pub const MOON: Self = TerrainShape::Sphere {
+        radius: 1_737_400.0,
+    };
+
     pub fn face_size(self) -> f64 {
         2.0 * std::f64::consts::PI / 4.0 * self.scale_scalar()
     }
