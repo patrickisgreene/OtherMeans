@@ -1,10 +1,9 @@
 use bevy::render::render_resource::TextureFormat;
 use serde::{Deserialize, Serialize};
 use std::{fmt::Error, str::FromStr};
-use strum_macros::EnumIter;
 
 /// The data format of an attachment.
-#[derive(Serialize, Deserialize, EnumIter, Clone, Copy, Debug, PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum AttachmentFormat {
     /// Three channels  8 bit unsigned integer
     Rgb8U,
@@ -35,6 +34,15 @@ impl FromStr for AttachmentFormat {
 }
 
 impl AttachmentFormat {
+    pub const ALL: [Self; 6] = [
+        Self::Rgb8U,
+        Self::Rgba8U,
+        Self::R16U,
+        Self::R16I,
+        Self::Rg16U,
+        Self::R32F,
+    ];
+
     pub(crate) fn render_format(self) -> TextureFormat {
         match self {
             AttachmentFormat::Rgb8U => TextureFormat::Rgba8UnormSrgb,

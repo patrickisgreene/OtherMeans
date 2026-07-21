@@ -21,8 +21,6 @@ serde.workspace = true
 async-channel.workspace = true
 indexmap.workspace = true
 slab.workspace = true
-strum.workspace = true
-strum_macros.workspace = true
 
 [dev-dependencies]
 bevy = { workspace = true, default-features = true, features = ["bevy_dev_tools"] }

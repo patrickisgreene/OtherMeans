@@ -4,12 +4,11 @@ use bevy::{
     prelude::*,
     render::render_resource::SpecializedComputePipeline,
 };
-use strum::IntoEnumIterator;
 
 use crate::{
+    data::AttachmentFormat,
     mipmap::{MipPipelineKey, create_mip_layout},
     shaders::MIP_SHADER,
-    data::AttachmentFormat,
 };
 
 #[derive(Resource)]
@@ -22,7 +21,8 @@ impl FromWorld for MipPipelines {
     fn from_world(world: &mut World) -> Self {
         let asset_server = world.resource::<AssetServer>();
 
-        let mip_layouts = AttachmentFormat::iter()
+        let mip_layouts = AttachmentFormat::ALL
+            .into_iter()
             .map(|format| (format, create_mip_layout(format)))
             .collect();
         let mip_shader = asset_server.load(MIP_SHADER);
