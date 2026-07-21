@@ -38,6 +38,10 @@ pub struct FresnelGroupBody;
 #[derive(Component, Default, Clone)]
 pub struct ShoreFoamGroupBody;
 
+/// Marker for the "Atmosphere" group's body; see [`LodGroupBody`].
+#[derive(Component, Default, Clone)]
+pub struct AtmosphereGroupBody;
+
 /// Marker pairing a [`FeathersColorSwatch`] spawned by [`color_field`] with the `EarthConstants`
 /// field it previews, so [`sync_color_swatches`] can keep the swatch's color live as the field
 /// is edited via the menu's R/G/B sliders.

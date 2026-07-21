@@ -9,7 +9,7 @@ use terrain::debug::DebugTerrain;
 use terrain::view::TerrainViewComponents;
 
 use crate::debug::{ColorPlaneOf, ColorPreviewOf};
-use crate::{EarthMaterial, EarthParams};
+use crate::{EarthAtmosphereSettings, EarthMaterial, EarthParams};
 
 /// A labeled slider that writes into every live [`TileTree`] (there's normally exactly one,
 /// keyed by (terrain, view) - see `initialize()`) whenever it's dragged, via `setter`. Silently
@@ -81,6 +81,44 @@ pub fn terrain_slider(
                 on(move |change: On<ValueChange<f32>>, mut tile_atlases: Query<&mut TileAtlas>| {
                     for mut tile_atlas in tile_atlases.iter_mut() {
                         setter(&mut tile_atlas, change.value);
+                    }
+                })
+            )
+        ]
+    }
+}
+
+/// A labeled slider that writes into every live [`EarthAtmosphereSettings`] (there's normally
+/// exactly one - the camera spawned in `initialize()`) whenever it's dragged, via `setter`. Same
+/// pattern as [`terrain_slider`], just targeting the camera's atmosphere post-process settings
+/// component instead of a `TileAtlas`.
+pub fn atmosphere_slider(
+    label_text: &str,
+    min: f32,
+    max: f32,
+    step: f32,
+    value: f32,
+    setter: impl Fn(&mut EarthAtmosphereSettings, f32) + Send + Sync + Clone + 'static,
+) -> impl Scene {
+    bsn! {
+        Node {
+            flex_direction: FlexDirection::Row,
+            justify_content: JustifyContent::SpaceBetween
+        }
+        Children [
+            label_dim(label_text),
+            (
+                @FeathersSlider {
+                    @min: min,
+                    @max: max,
+                    @value: value,
+                }
+                SliderStep(step)
+                SliderPrecision(3)
+                on(slider_self_update)
+                on(move |change: On<ValueChange<f32>>, mut settings: Query<&mut EarthAtmosphereSettings>| {
+                    for mut settings in settings.iter_mut() {
+                        setter(&mut settings, change.value);
                     }
                 })
             )

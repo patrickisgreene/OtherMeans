@@ -207,6 +207,24 @@ pub fn debug_panel() -> impl Scene {
                                             ]
                                         ),
                                     ],
+                                    group() Children [
+                                        group_header() Children [
+                                            disclosure_toggle::<AtmosphereGroupBody>(),
+                                            (Text("Atmosphere") ThemedText),
+                                        ],
+                                        (
+                                            group_body()
+                                            AtmosphereGroupBody
+                                            Node { display: Display::None }
+                                            Children [
+                                                // EarthAtmosphereSettings::default() values (atmosphere/mod.rs) - the
+                                                // rest of that struct's fields are recomputed every frame from the
+                                                // camera/light (see atmosphere/systems.rs) so aren't exposed here.
+                                                atmosphere_slider("Radius Scale", 1.0, 1.5, 0.005, 1.125, |s, v| s.atmosphere_radius_scale = v),
+                                                atmosphere_slider("Ambient Scatter Strength", 0.0, 20.0, 0.1, 5.0, |s, v| s.ambient_scatter_strength = v),
+                                            ]
+                                        ),
+                                    ],
                                 ],
                             ]
                         ]
