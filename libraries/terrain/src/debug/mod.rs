@@ -70,9 +70,6 @@ pub struct DebugTerrain {
     pub sample_grad: bool,
     pub high_precision: bool,
     pub freeze: bool,
-    pub test1: bool,
-    pub test2: bool,
-    pub test3: bool,
 }
 
 impl Default for DebugTerrain {
@@ -87,14 +84,11 @@ impl Default for DebugTerrain {
             show_normals: false,
             morph: true,
             blend: true,
-            tile_tree_lod: false,
+            tile_tree_lod: true,
             lighting: true,
             sample_grad: true,
             high_precision: true,
             freeze: false,
-            test1: false,
-            test2: false,
-            test3: false,
         }
     }
 }
@@ -200,27 +194,6 @@ pub fn toggle_debug(input: Res<ButtonInput<KeyCode>>, mut debug: ResMut<DebugTer
         println!(
             "{} the view frustum.",
             if debug.freeze { "Froze" } else { "Unfroze" }
-        )
-    }
-    if input.just_pressed(KeyCode::Digit1) {
-        debug.test1 = !debug.test1;
-        println!(
-            "Toggled the debug flag 1 {}.",
-            if debug.test1 { "on" } else { "off" }
-        )
-    }
-    if input.just_pressed(KeyCode::Digit2) {
-        debug.test2 = !debug.test2;
-        println!(
-            "Toggled the debug flag 2 {}.",
-            if debug.test2 { "on" } else { "off" }
-        )
-    }
-    if input.just_pressed(KeyCode::Digit3) {
-        debug.test3 = !debug.test3;
-        println!(
-            "Toggled the debug flag 3 {}.",
-            if debug.test3 { "on" } else { "off" }
         )
     }
 }

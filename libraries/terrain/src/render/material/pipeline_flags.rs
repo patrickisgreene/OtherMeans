@@ -21,9 +21,6 @@ bitflags::bitflags! {
         const LIGHTING           = 1 << 11;
         const SAMPLE_GRAD        = 1 << 12;
         const HIGH_PRECISION     = 1 << 13;
-        const TEST1              = 1 << 14;
-        const TEST2              = 1 << 15;
-        const TEST3              = 1 << 16;
         const MSAA_RESERVED_BITS = TerrainPipelineFlags::MSAA_MASK_BITS << TerrainPipelineFlags::MSAA_SHIFT_BITS;
     }
 }
@@ -78,15 +75,6 @@ impl TerrainPipelineFlags {
         }
         if debug.high_precision {
             key |= TerrainPipelineFlags::HIGH_PRECISION;
-        }
-        if debug.test1 {
-            key |= TerrainPipelineFlags::TEST1;
-        }
-        if debug.test2 {
-            key |= TerrainPipelineFlags::TEST2;
-        }
-        if debug.test3 {
-            key |= TerrainPipelineFlags::TEST3;
         }
 
         key
@@ -145,15 +133,6 @@ impl TerrainPipelineFlags {
 
         if self.contains(TerrainPipelineFlags::HIGH_PRECISION) {
             shader_defs.push("HIGH_PRECISION".into());
-        }
-        if self.contains(TerrainPipelineFlags::TEST1) {
-            shader_defs.push("TEST1".into());
-        }
-        if self.contains(TerrainPipelineFlags::TEST2) {
-            shader_defs.push("TEST2".into());
-        }
-        if self.contains(TerrainPipelineFlags::TEST3) {
-            shader_defs.push("TEST3".into());
         }
 
         shader_defs

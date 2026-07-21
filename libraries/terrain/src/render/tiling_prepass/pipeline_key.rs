@@ -15,9 +15,6 @@ bitflags::bitflags! {
         const HIGH_PRECISION = 1 <<  5;
         const MORPH          = 1 <<  6;
         const BLEND          = 1 <<  7;
-        const TEST1          = 1 <<  8;
-        const TEST2          = 1 <<  9;
-        const TEST3          = 1 << 10;
     }
 }
 
@@ -33,15 +30,6 @@ impl TilingPrepassPipelineKey {
         }
         if debug.blend {
             key |= TilingPrepassPipelineKey::BLEND;
-        }
-        if debug.test1 {
-            key |= TilingPrepassPipelineKey::TEST1;
-        }
-        if debug.test2 {
-            key |= TilingPrepassPipelineKey::TEST2;
-        }
-        if debug.test3 {
-            key |= TilingPrepassPipelineKey::TEST3;
         }
 
         key
@@ -63,15 +51,6 @@ impl TilingPrepassPipelineKey {
         }
         if self.contains(TilingPrepassPipelineKey::BLEND) {
             shader_defs.push("BLEND".into());
-        }
-        if self.contains(TilingPrepassPipelineKey::TEST1) {
-            shader_defs.push("TEST1".into());
-        }
-        if self.contains(TilingPrepassPipelineKey::TEST2) {
-            shader_defs.push("TEST2".into());
-        }
-        if self.contains(TilingPrepassPipelineKey::TEST3) {
-            shader_defs.push("TEST3".into());
         }
 
         shader_defs

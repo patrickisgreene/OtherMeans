@@ -83,12 +83,6 @@ fn fragment_debug(info: ptr<function, FragmentInfo>, output: ptr<function, Fragm
 #endif
 #ifdef SHOW_NORMALS
     (*output).color = vec4<f32>(normal, 1.0);
-    // (*output).color = vec4<f32>(surface_gradient, 1.0);
-#endif
-#ifdef TEST3
-    if (high_precision((*info).world_coordinate.view_distance)) {
-        (*output).color = mix((*output).color, vec4<f32>(0.3), 0.5);
-    }
 #endif
 }
 
