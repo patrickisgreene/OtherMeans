@@ -54,12 +54,27 @@ pub struct EarthAtmosphereSettings {
     pub _padding3: f32,
     /// Low bits of camera position (f64 split)
     pub camera_position_low: Vec3,
-    /// Padding to align mat4
-    pub _padding4: f32,
+    /// Elapsed app time in seconds - fills the padding slot after camera_position_low, used to
+    /// animate the cloud layer (advected by wind_texture, see atmosphere.wgsl).
+    pub time: f32,
     pub proj_mat: Mat4,
     pub inverse_proj: Mat4,
     pub view_mat: Mat4,
     pub inverse_view: Mat4,
+
+    /// Cloud tint, multiplied over the lit cloud density.
+    pub cloud_color: Vec3,
+    /// Cloud coverage threshold (0 = fully overcast, 1 = no clouds) applied to the Perlin FBM
+    /// noise before it's shaped into density - packed with cloud_color for alignment.
+    pub cloud_coverage: f32,
+    /// Cloud shell altitude, as a multiple of the planet radius (like atmosphere_radius_scale).
+    pub cloud_altitude_scale: f32,
+    /// Noise frequency - higher values give smaller, more numerous cloud features.
+    pub cloud_scale: f32,
+    /// Time/wind advection speed multiplier.
+    pub cloud_speed: f32,
+    /// Density curve sharpness - higher values give harder-edged clouds.
+    pub cloud_density: f32,
 }
 
 impl EarthAtmosphereSettings {
@@ -92,11 +107,18 @@ impl Default for EarthAtmosphereSettings {
             camera_position_high: Default::default(),
             _padding3: Default::default(),
             camera_position_low: Default::default(),
-            _padding4: Default::default(),
+            time: Default::default(),
             proj_mat: Default::default(),
             inverse_proj: Default::default(),
             view_mat: Default::default(),
             inverse_view: Default::default(),
+
+            cloud_color: Vec3::new(1.0, 1.0, 1.0),
+            cloud_coverage: 0.55,
+            cloud_altitude_scale: 1.006,
+            cloud_scale: 3.0,
+            cloud_speed: 0.015,
+            cloud_density: 1.5,
         }
     }
 }

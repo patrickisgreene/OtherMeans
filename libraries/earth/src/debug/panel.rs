@@ -222,6 +222,14 @@ pub fn debug_panel() -> impl Scene {
                                                 // camera/light (see atmosphere/systems.rs) so aren't exposed here.
                                                 atmosphere_slider("Radius Scale", 1.0, 1.5, 0.005, 1.125, |s, v| s.atmosphere_radius_scale = v),
                                                 atmosphere_slider("Ambient Scatter Strength", 0.0, 20.0, 0.1, 5.0, |s, v| s.ambient_scatter_strength = v),
+                                                atmosphere_slider("Cloud Color R", 0.0, 1.0, 0.01, 1.0, |s, v| s.cloud_color.x = v),
+                                                atmosphere_slider("Cloud Color G", 0.0, 1.0, 0.01, 1.0, |s, v| s.cloud_color.y = v),
+                                                atmosphere_slider("Cloud Color B", 0.0, 1.0, 0.01, 1.0, |s, v| s.cloud_color.z = v),
+                                                atmosphere_slider("Cloud Coverage", 0.0, 1.0, 0.01, 0.55, |s, v| s.cloud_coverage = v),
+                                                atmosphere_slider("Cloud Altitude Scale", 1.0, 1.05, 0.0005, 1.006, |s, v| s.cloud_altitude_scale = v),
+                                                atmosphere_slider("Cloud Noise Scale", 0.5, 15.0, 0.1, 3.0, |s, v| s.cloud_scale = v),
+                                                atmosphere_slider("Cloud Wind Speed", 0.0, 0.2, 0.001, 0.015, |s, v| s.cloud_speed = v),
+                                                atmosphere_slider("Cloud Sharpness", 0.1, 5.0, 0.05, 1.5, |s, v| s.cloud_density = v),
                                             ]
                                         ),
                                     ],

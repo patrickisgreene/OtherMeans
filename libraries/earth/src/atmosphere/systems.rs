@@ -11,6 +11,7 @@ pub const EARTH_RADIUS: f64 = 6_371_000.0;
 /// Updates the PostProcessSettings with the camera position using 64-bit precision from big_space.
 pub fn update_post_process_settings(
     grids: Grids,
+    time: Res<Time>,
     mut camera_query: Query<
         (
             Entity,
@@ -28,6 +29,8 @@ pub fn update_post_process_settings(
         let Some(grid) = grids.parent_grid(entity) else {
             continue;
         };
+
+        settings.time = time.elapsed_secs();
 
         // Get 64-bit precision camera position from big_space
         let camera_position_f64 = grid.grid_position_double(cell, transform);

@@ -3,6 +3,7 @@ use bevy::{
     material::descriptor::BindGroupLayoutDescriptor,
     prelude::*,
     render::{
+        extract_resource::ExtractResource,
         render_resource::{
             BindGroupLayoutEntries, CachedRenderPipelineId, ColorTargetState, ColorWrites,
             FragmentState, PipelineCache, RenderPipelineDescriptor, Sampler, SamplerBindingType,
@@ -15,6 +16,14 @@ use bevy::{
 };
 
 use super::{EarthAtmosphereSettings, SHADER_ASSET_PATH};
+
+/// Handle to the small equirectangular wind-flow texture (see
+/// assets/textures/earth/wind-flow.png) sampled by the atmosphere shader to advect the cloud
+/// noise - a static, one-off asset (not part of the regular terrain baking pipeline), loaded
+/// once in `EarthAtmospherePlugin::build` and extracted into the render world every frame like
+/// `EarthAtmosphereSettings`.
+#[derive(Resource, Clone, ExtractResource)]
+pub struct WindTexture(pub Handle<Image>);
 
 // This contains global data used by the render pipeline. This will be created once on startup.
 //
@@ -55,6 +64,10 @@ impl EarthAtmospherePipeline {
                     uniform_buffer::<ViewUniform>(true),
                     // binding 4: The settings uniform that will control the effect
                     uniform_buffer::<EarthAtmosphereSettings>(true),
+                    // binding 5: The wind-flow texture used to advect the cloud noise
+                    texture_2d(TextureSampleType::Float { filterable: true }),
+                    // binding 6: The wind-flow texture's own sampler (repeats over longitude)
+                    sampler(SamplerBindingType::Filtering),
                 ),
             ),
         );

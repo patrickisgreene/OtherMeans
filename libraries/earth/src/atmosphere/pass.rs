@@ -2,17 +2,22 @@ use bevy::{
     prelude::*,
     render::{
         extract_component::{ComponentUniforms, DynamicUniformIndex},
+        render_asset::RenderAssets,
         render_resource::{
             BindGroupEntries, Operations, PipelineCache, RenderPassColorAttachment,
             RenderPassDescriptor,
         },
         renderer::{RenderContext, ViewQuery},
+        texture::{FallbackImage, GpuImage},
         view::{ViewTarget, ViewUniformOffset, ViewUniforms},
     },
 };
 use terrain::render::pass::TerrainViewDepthTexture;
 
-use super::{EarthAtmosphereSettings, pipeline::EarthAtmospherePipeline};
+use super::{
+    EarthAtmosphereSettings,
+    pipeline::{EarthAtmospherePipeline, WindTexture},
+};
 
 /// Applies the atmosphere post-process effect for the current view.
 ///
@@ -68,6 +73,17 @@ pub fn post_process_pass(
         return;
     };
 
+    // Wind-flow texture used to advect the cloud noise - falls back to the engine's default
+    // fallback image for the one or two frames before it finishes loading, same pattern
+    // terrain's own GpuTerrain::new uses for its attachment textures (see
+    // libraries/terrain/src/render/bind_group/gpu.rs).
+    let wind_texture = world.resource::<WindTexture>();
+    let gpu_images = world.resource::<RenderAssets<GpuImage>>();
+    let fallback_image = world.resource::<FallbackImage>();
+    let wind_gpu_image = gpu_images
+        .get(&wind_texture.0)
+        .unwrap_or(&fallback_image.d2);
+
     // This will start a new "post process write", obtaining two texture
     // views from the view target - a `source` and a `destination`.
     // `source` is the "current" main texture and you _must_ write into
@@ -99,6 +115,10 @@ pub fn post_process_pass(
             view_binding.clone(),
             // binding 4: Set the settings binding
             settings_binding.clone(),
+            // binding 5: The wind-flow texture view
+            &wind_gpu_image.texture_view,
+            // binding 6: The wind-flow texture's sampler
+            &wind_gpu_image.sampler,
         )),
     );
 
