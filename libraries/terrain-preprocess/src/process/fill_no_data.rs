@@ -1,6 +1,6 @@
 use crate::{
-    dataset::{PreprocessContext, update_tile_dataset},
-    gdal_extension::{CountingProgressCallback, ProgressCallback, fill_no_data},
+    core::dataset::{PreprocessContext, update_tile_dataset},
+    core::gdal_extension::{CountingProgressCallback, ProgressCallback, fill_no_data},
     result::{PreprocessError, PreprocessResult},
 };
 use gdal::raster::{Buffer, GdalDataType, GdalType};

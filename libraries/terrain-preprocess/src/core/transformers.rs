@@ -1,5 +1,5 @@
 use crate::{
-    gdal_extension::{GDALCustomTransformer, GDALTransformerInfo, Transformer},
+    core::gdal_extension::{GDALCustomTransformer, GDALTransformerInfo, Transformer},
     result::{PreprocessError, PreprocessResult},
 };
 use gdal::{Dataset, GeoTransform, GeoTransformEx, errors::GdalError, spatial_ref::SpatialRef};

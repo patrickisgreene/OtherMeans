@@ -1,21 +1,15 @@
 mod cli;
-mod dataset;
-mod downsample;
-mod fill_no_data;
-mod gdal_extension;
-mod reproject;
+mod core;
+mod process;
 mod result;
-mod split;
-mod stitch;
-mod transformers;
 
 use crate::{
     cli::PreprocessBar,
-    dataset::{PreprocessContext, clear_directory, delete_directory},
-    downsample::downsample_and_stitch,
-    fill_no_data::create_mask_and_fill_no_data,
-    reproject::reproject,
-    split::split_and_stitch,
+    core::dataset::{PreprocessContext, clear_directory, delete_directory},
+    process::create_mask_and_fill_no_data,
+    process::downsample_and_stitch,
+    process::reproject,
+    process::split_and_stitch,
 };
 use gdal::{
     Dataset,
@@ -28,7 +22,7 @@ use terrain::prelude::*;
 pub mod prelude {
     pub use crate::{
         cli::Cli,
-        dataset::{PreprocessContext, PreprocessDataType, PreprocessNoData, PreprocessShape},
+        core::dataset::{PreprocessContext, PreprocessDataType, PreprocessNoData, PreprocessShape},
         preprocess,
     };
 }

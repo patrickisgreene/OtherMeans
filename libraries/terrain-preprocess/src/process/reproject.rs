@@ -1,8 +1,8 @@
 use crate::{
-    dataset::{FaceInfo, PreprocessContext, create_empty_dataset},
-    gdal_extension::{GDALCustomTransformer, ProgressCallback, SuggestedWarpOutput, warp},
+    core::dataset::{FaceInfo, PreprocessContext, create_empty_dataset},
+    core::gdal_extension::{GDALCustomTransformer, ProgressCallback, SuggestedWarpOutput, warp},
+    core::transformers::CustomTransformer,
     result::PreprocessResult,
-    transformers::CustomTransformer,
 };
 use gdal::{Dataset, GeoTransform, GeoTransformEx, raster::GdalType};
 use glam::{DVec2, IVec2, U64Vec2};

@@ -1,6 +1,6 @@
 use crate::{
-    dataset::{PreprocessContext, load_tile_dataset_if_exists, update_tile_dataset},
-    gdal_extension::CountingProgressCallback,
+    core::dataset::{PreprocessContext, load_tile_dataset_if_exists, update_tile_dataset},
+    core::gdal_extension::CountingProgressCallback,
     result::{PreprocessError, PreprocessResult},
 };
 use gdal::Dataset;
@@ -145,7 +145,7 @@ fn neighbour_data<T: Copy + GdalType>(
     Ok(())
 }
 
-pub(crate) fn stitch<T: Copy + GdalType + NumCast>(
+pub fn stitch<T: Copy + GdalType + NumCast>(
     tiles: &[TileCoordinate],
     context: &PreprocessContext,
     progress_callback: &CountingProgressCallback,

@@ -1,5 +1,5 @@
 use crate::{
-    dataset::PreprocessContext,
+    core::dataset::PreprocessContext,
     result::{PreprocessError, PreprocessResult},
 };
 use gag::Gag;

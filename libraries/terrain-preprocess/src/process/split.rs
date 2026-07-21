@@ -1,8 +1,8 @@
+use super::stitch::stitch;
 use crate::{
-    dataset::{FaceInfo, PreprocessContext, create_tile_dataset},
-    gdal_extension::{CountingProgressCallback, ProgressCallback, SharedReadOnlyDataset},
+    core::dataset::{FaceInfo, PreprocessContext, create_tile_dataset},
+    core::gdal_extension::{CountingProgressCallback, ProgressCallback, SharedReadOnlyDataset},
     result::{PreprocessError, PreprocessResult},
-    stitch::stitch,
 };
 use gdal::raster::{Buffer, GdalType};
 use glam::IVec2;

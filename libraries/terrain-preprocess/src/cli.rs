@@ -1,6 +1,6 @@
 use crate::{
-    dataset::{PreprocessDataType, PreprocessNoData, PreprocessShape},
-    gdal_extension::ProgressCallback,
+    core::dataset::{PreprocessDataType, PreprocessNoData, PreprocessShape},
+    core::gdal_extension::ProgressCallback,
 };
 use clap::Parser;
 use indicatif::{ProgressBar, ProgressStyle};
