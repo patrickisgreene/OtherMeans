@@ -1,37 +1,16 @@
-use crate::{
-    config::TerrainComponents,
-    data::{attachment::AttachmentFormat, tile_atlas::gpu::GpuTileAtlas},
-};
+use crate::{config::TerrainComponents, data::tile_atlas::gpu::GpuTileAtlas};
 use bevy::{
     prelude::*,
-    render::{
-        render_resource::{binding_types::*, *},
-        renderer::RenderContext,
-    },
+    render::{render_resource::*, renderer::RenderContext},
 };
 
+mod mip_layout;
 mod pipeline_key;
 mod pipelines;
 
-pub(crate) use self::pipeline_key::*;
-pub(crate) use self::pipelines::*;
-
-pub(crate) fn create_mip_layout(format: AttachmentFormat) -> BindGroupLayoutDescriptor {
-    BindGroupLayoutDescriptor::new(
-        "mip_bind_group_layout",
-        &BindGroupLayoutEntries::sequential(
-            ShaderStages::COMPUTE,
-            (
-                uniform_buffer::<u32>(false), // atlas_index
-                texture_2d_array(TextureSampleType::Float { filterable: true }), // parent
-                texture_storage_2d_array(
-                    format.processing_format(),
-                    StorageTextureAccess::WriteOnly,
-                ), // child
-            ),
-        ),
-    )
-}
+pub(crate) use mip_layout::AsMipLayout;
+pub(crate) use pipeline_key::*;
+pub(crate) use pipelines::*;
 
 pub(crate) fn mip_prepass(world: &World, mut ctx: RenderContext) {
     let pipeline_cache = world.resource::<PipelineCache>();
@@ -45,3 +24,5 @@ pub(crate) fn mip_prepass(world: &World, mut ctx: RenderContext) {
         gpu_tile_atlas.generate_mip(&mut pass, pipeline_cache);
     }
 }
+
+pub(crate) const MIP_SHADER: &str = "embedded://terrain/shaders/mipmap.wgsl";

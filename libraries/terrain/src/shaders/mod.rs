@@ -7,13 +7,8 @@ pub const DEFAULT_FRAGMENT_SHADER: &str = "embedded://terrain/shaders/render/fra
 pub const PREPARE_PREPASS_SHADER: &str =
     "embedded://terrain/shaders/tiling_prepass/prepare_prepass.wgsl";
 pub const REFINE_TILES_SHADER: &str = "embedded://terrain/shaders/tiling_prepass/refine_tiles.wgsl";
-// pub(crate) const SPLIT_SHADER: &str = "embedded://terrain/shaders/preprocess/split.wgsl";
-// pub(crate) const STITCH_SHADER: &str = "embedded://terrain/shaders/preprocess/stitch.wgsl";
-// pub(crate) const DOWNSAMPLE_SHADER: &str =
-//     "embedded://terrain/shaders/preprocess/downsample.wgsl";
 pub(crate) const PICKING_SHADER: &str = "embedded://terrain/shaders/picking.wgsl";
 pub(crate) const DEPTH_COPY_SHADER: &str = "embedded://terrain/shaders/depth_copy.wgsl";
-pub(crate) const MIP_SHADER: &str = "embedded://terrain/shaders/mipmap.wgsl";
 
 #[derive(Default, Resource)]
 pub(crate) struct InternalShaders(Vec<Handle<Shader>>);
@@ -81,15 +76,3 @@ pub(crate) fn load_terrain_shaders(app: &mut App, attachments: &[AttachmentLabel
         ],
     );
 }
-
-// pub(crate) fn load_preprocess_shaders(app: &mut App) {
-//     embedded_asset!(app, "preprocess/preprocessing.wgsl");
-//     embedded_asset!(app, "preprocess/split.wgsl");
-//     embedded_asset!(app, "preprocess/stitch.wgsl");
-//     embedded_asset!(app, "preprocess/downsample.wgsl");
-//
-//     InternalShaders::load(
-//         app,
-//         &["embedded://terrain/shaders/preprocess/preprocessing.wgsl"],
-//     );
-// }

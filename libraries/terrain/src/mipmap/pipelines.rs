@@ -7,8 +7,7 @@ use bevy::{
 
 use crate::{
     data::AttachmentFormat,
-    mipmap::{MipPipelineKey, create_mip_layout},
-    shaders::MIP_SHADER,
+    mipmap::{AsMipLayout, MIP_SHADER, MipPipelineKey},
 };
 
 #[derive(Resource)]
@@ -17,21 +16,17 @@ pub struct MipPipelines {
     mip_shader: Handle<Shader>,
 }
 
-impl FromWorld for MipPipelines {
-    fn from_world(world: &mut World) -> Self {
-        let asset_server = world.resource::<AssetServer>();
+pub(crate) fn init_mip_pipelines(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let mip_layouts = AttachmentFormat::ALL
+        .into_iter()
+        .map(|format| (format, format.as_mip_layout()))
+        .collect();
+    let mip_shader = asset_server.load(MIP_SHADER);
 
-        let mip_layouts = AttachmentFormat::ALL
-            .into_iter()
-            .map(|format| (format, create_mip_layout(format)))
-            .collect();
-        let mip_shader = asset_server.load(MIP_SHADER);
-
-        Self {
-            mip_layouts,
-            mip_shader,
-        }
-    }
+    commands.insert_resource(MipPipelines {
+        mip_layouts,
+        mip_shader,
+    });
 }
 
 impl SpecializedComputePipeline for MipPipelines {
@@ -41,7 +36,6 @@ impl SpecializedComputePipeline for MipPipelines {
         ComputePipelineDescriptor {
             label: Some("mip_pipeline".into()),
             layout: vec![self.mip_layouts[&key.format].clone()],
-            //push_constant_ranges: default(),
             shader: self.mip_shader.clone(),
             shader_defs: key.shader_defs(),
             entry_point: Some("main".into()),

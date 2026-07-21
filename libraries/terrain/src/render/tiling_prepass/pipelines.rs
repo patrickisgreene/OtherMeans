@@ -7,13 +7,11 @@ use bevy::{
     },
 };
 
-use crate::{
-    render::{
-        IndirectBindGroup, PrepassViewBindGroup, TerrainBindGroup, TerrainViewBindGroup,
-        TilingPrepassPipelineKey,
-    },
-    shaders::{PREPARE_PREPASS_SHADER, REFINE_TILES_SHADER},
+use crate::render::{
+    IndirectBindGroup, PrepassViewBindGroup, TerrainBindGroup, TerrainViewBindGroup,
+    TilingPrepassPipelineKey,
 };
+use crate::shaders::{PREPARE_PREPASS_SHADER, REFINE_TILES_SHADER};
 
 #[derive(Resource)]
 pub struct TerrainTilingPrepassPipelines {
@@ -25,27 +23,27 @@ pub struct TerrainTilingPrepassPipelines {
     refine_tiles_shader: Handle<Shader>,
 }
 
-impl FromWorld for TerrainTilingPrepassPipelines {
-    fn from_world(world: &mut World) -> Self {
-        let device = world.resource::<RenderDevice>();
+pub fn init_tiling_prepass_pipelines(
+    mut commands: Commands,
+    device: Res<RenderDevice>,
+    asset_server: Res<AssetServer>,
+) {
+    let terrain_layout = TerrainBindGroup::bind_group_layout_descriptor(&device);
+    let terrain_view_layout = TerrainViewBindGroup::bind_group_layout_descriptor(&device);
+    let indirect_layout = IndirectBindGroup::bind_group_layout_descriptor(&device);
+    let prepass_view_layout = PrepassViewBindGroup::bind_group_layout_descriptor(&device);
 
-        let terrain_layout = TerrainBindGroup::bind_group_layout_descriptor(device);
-        let terrain_view_layout = TerrainViewBindGroup::bind_group_layout_descriptor(device);
-        let indirect_layout = IndirectBindGroup::bind_group_layout_descriptor(device);
-        let prepass_view_layout = PrepassViewBindGroup::bind_group_layout_descriptor(device);
+    let prepare_prepass_shader = asset_server.load(PREPARE_PREPASS_SHADER);
+    let refine_tiles_shader = asset_server.load(REFINE_TILES_SHADER);
 
-        let prepare_prepass_shader = world.load_asset(PREPARE_PREPASS_SHADER);
-        let refine_tiles_shader = world.load_asset(REFINE_TILES_SHADER);
-
-        TerrainTilingPrepassPipelines {
-            terrain_view_layout,
-            indirect_layout,
-            prepass_view_layout,
-            terrain_layout,
-            prepare_prepass_shader,
-            refine_tiles_shader,
-        }
-    }
+    commands.insert_resource(TerrainTilingPrepassPipelines {
+        terrain_view_layout,
+        indirect_layout,
+        prepass_view_layout,
+        terrain_layout,
+        prepare_prepass_shader,
+        refine_tiles_shader,
+    });
 }
 
 impl SpecializedComputePipeline for TerrainTilingPrepassPipelines {

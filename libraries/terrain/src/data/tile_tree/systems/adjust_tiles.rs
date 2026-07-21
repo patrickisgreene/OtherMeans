@@ -14,7 +14,7 @@ pub fn adjust_to_tile_atlas(
     for (&(terrain, _view), tile_tree) in tile_trees.iter_mut() {
         let tile_atlas = tile_atlases.get(terrain).unwrap();
 
-        if !tile_tree.dirty && !tile_atlas.changed {
+        if !tile_tree.tiles_dirty && !tile_atlas.changed {
             continue;
         }
 
@@ -22,7 +22,7 @@ pub fn adjust_to_tile_atlas(
             *entry = tile_atlas.get_best_tile(tile.coordinate);
         }
 
-        tile_tree.dirty = true;
+        tile_tree.tiles_dirty = true;
     }
 
     for mut tile_atlas in &mut tile_atlases {

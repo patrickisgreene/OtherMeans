@@ -1,7 +1,8 @@
 use crate::data::{AttachmentData, AttachmentTile, TileAtlas};
 use bevy::{
-    asset::{AssetServer, Assets},
+    asset::{AssetId, AssetServer, Assets},
     image::Image,
+    platform::collections::HashMap,
     prelude::*,
 };
 use slab::Slab;
@@ -9,12 +10,17 @@ use slab::Slab;
 #[derive(Component)]
 pub struct DefaultLoader {
     loading_tiles: Slab<super::LoadingTile>,
+    /// Maps an in-flight tile's asset id to its slot in `loading_tiles`, so completed/failed
+    /// loads can be resolved directly from `AssetEvent`/`AssetLoadFailedEvent` ids instead of
+    /// polling every in-flight tile's load state each frame.
+    pending: HashMap<AssetId<Image>, usize>,
 }
 
 impl Default for DefaultLoader {
     fn default() -> Self {
         Self {
             loading_tiles: Slab::with_capacity(32),
+            pending: default(),
         }
     }
 }
@@ -28,20 +34,24 @@ impl DefaultLoader {
     pub fn finish_loading(
         &mut self,
         atlas: &mut TileAtlas,
-        asset_server: &mut AssetServer,
-        images: &mut Assets<Image>,
+        images: &Assets<Image>,
+        loaded_ids: &[AssetId<Image>],
+        failed_ids: &[AssetId<Image>],
     ) {
-        self.loading_tiles.retain(|_, tile| {
-            if asset_server.is_loaded(tile.handle.id()) {
-                let image = images.get(tile.handle.id()).unwrap();
+        for &id in loaded_ids {
+            if let Some(index) = self.pending.remove(&id) {
+                let tile = self.loading_tiles.remove(index);
+                let image = images.get(id).unwrap();
                 let data = AttachmentData::from_bytes(image.data.as_ref().unwrap(), tile.format);
-                atlas.tile_loaded(tile.tile.clone(), data);
-
-                false
-            } else {
-                !asset_server.load_state(tile.handle.id()).is_failed()
+                atlas.tile_loaded(tile.tile, data);
             }
-        });
+        }
+
+        for &id in failed_ids {
+            if let Some(index) = self.pending.remove(&id) {
+                self.loading_tiles.remove(index);
+            }
+        }
     }
 
     pub fn start_loading(&mut self, atlas: &mut TileAtlas, asset_server: &mut AssetServer) {
@@ -53,11 +63,15 @@ impl DefaultLoader {
                     .coordinate
                     .path(&attachment.path.join(String::from(&tile.label)));
 
-                self.loading_tiles.insert(super::LoadingTile {
-                    handle: asset_server.load(path),
+                let handle: Handle<Image> = asset_server.load(path);
+                let id = handle.id();
+
+                let index = self.loading_tiles.insert(super::LoadingTile {
+                    handle,
                     tile,
                     format: attachment.format,
                 });
+                self.pending.insert(id, index);
             } else {
                 break;
             }

@@ -10,7 +10,7 @@ use bevy::{
 };
 
 mod pipeline_key;
-mod pipelines;
+pub mod pipelines;
 pub mod systems;
 
 pub use pipeline_key::TilingPrepassPipelineKey;

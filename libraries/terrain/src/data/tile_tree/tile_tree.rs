@@ -72,9 +72,15 @@ pub struct TileTree {
     pub approximate_height: f32,
     pub order: u32,
 
-    /// Set whenever `update` actually recomputed tile requests this frame (i.e. the view moved).
+    /// Set whenever `update` ran this frame (i.e. the view moved). Gates recomputation of data
+    /// that depends continuously on the view position (surface approximation, view uniform).
     /// Consumed and reset by the downstream systems in the `PostUpdate` chain.
     pub(crate) dirty: bool,
+    /// Set whenever `update` actually reassigned a tile's coordinate or flipped a request/release
+    /// state (i.e. the view crossed into a different tile/LOD cell), or a tile finished loading.
+    /// Gates the more expensive tile-grid rewrite and its GPU upload, which only depend on the
+    /// discrete tile assignment, not continuous view position.
+    pub(crate) tiles_dirty: bool,
 
     pub tile_tree_buffer: Handle<ShaderBuffer>,
     pub terrain_view_buffer: Handle<ShaderBuffer>,
@@ -157,6 +163,7 @@ impl TileTree {
             approximate_height: 0.0,
             order: view_config.order,
             dirty: false,
+            tiles_dirty: false,
             tile_tree_buffer,
             terrain_view_buffer,
             approximate_height_buffer,
@@ -206,7 +213,12 @@ impl TileTree {
         tile_local_position.distance(self.view_local_position)
     }
 
-    pub fn update(&mut self) {
+    /// Recomputes tile requests/releases for the current view position. Returns whether any
+    /// tile's coordinate assignment or request/release state actually changed, so callers can
+    /// skip downstream work (tile-grid rewrite, GPU upload) that only depends on the discrete
+    /// tile assignment rather than the continuous view position.
+    pub fn update(&mut self) -> bool {
+        let mut changed = false;
         let view_coordinate = Coordinate::from_local_position(self.view_local_position, self.shape);
         self.view_face = view_coordinate.face;
 
@@ -250,6 +262,7 @@ impl TileTree {
                         }
 
                         tile.coordinate = tile_coordinate;
+                        changed = true;
                     }
 
                     // request or release tile based on its distance to the view
@@ -257,15 +270,19 @@ impl TileTree {
                         (super::RequestState::Released, super::RequestState::Requested) => {
                             tile.state = super::RequestState::Requested;
                             self.requested_tiles.push(tile.coordinate);
+                            changed = true;
                         }
                         (super::RequestState::Requested, super::RequestState::Released) => {
                             tile.state = super::RequestState::Released;
                             self.released_tiles.push(tile.coordinate);
+                            changed = true;
                         }
                         (_, _) => {}
                     }
                 }
             }
         }
+
+        changed
     }
 }

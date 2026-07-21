@@ -33,7 +33,8 @@ $WORK_DIR/target/release/texture-processor \
     --input $BUILD_DIR/coastline.tif \
     --output $BUILD_DIR/coastline-mask.tif \
     --start-point -48.8767 -123.3933 \
-    --start-point 43.37809535609304 35.6757685067261
+    --start-point 43.37809535609304 35.6757685067261 \
+    --start-point 42.322100836388024 50.5668900146244
 
 
 $WORK_DIR/target/release/texture-processor \

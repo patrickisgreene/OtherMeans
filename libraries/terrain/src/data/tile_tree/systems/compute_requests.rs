@@ -34,7 +34,9 @@ pub fn compute_requests(
         tile_tree.view_local_position = grid.grid_position_double(cell, &transform);
         tile_tree.view_world_position = transform.translation;
         tile_tree.half_spaces = half_spaces;
-        tile_tree.update();
         tile_tree.dirty = true;
+        if tile_tree.update() {
+            tile_tree.tiles_dirty = true;
+        }
     }
 }

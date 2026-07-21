@@ -23,14 +23,15 @@ pub fn prepare_terrain_view(
     mut param: StaticSystemParam<<TerrainViewBindGroup as AsBindGroup>::Param>,
 ) {
     for gpu_terrain_view in &mut gpu_terrain_views.values_mut() {
-        // Todo: be smarter about bind group recreation
-        let bind_group = gpu_terrain_view.terrain_view.as_bind_group(
-            &prepass_pipeline.terrain_view_layout,
-            &device,
-            &pipeline_cache,
-            &mut param,
-        );
-        gpu_terrain_view.terrain_view_bind_group = bind_group.ok().map(|b| b.bind_group);
+        if gpu_terrain_view.terrain_view_bind_group.is_none() {
+            let bind_group = gpu_terrain_view.terrain_view.as_bind_group(
+                &prepass_pipeline.terrain_view_layout,
+                &device,
+                &pipeline_cache,
+                &mut param,
+            );
+            gpu_terrain_view.terrain_view_bind_group = bind_group.ok().map(|b| b.bind_group);
+        }
     }
 }
 
@@ -67,13 +68,14 @@ pub fn prepare_refine_tiles(
     mut param: StaticSystemParam<<PrepassViewBindGroup as AsBindGroup>::Param>,
 ) {
     for gpu_terrain_view in gpu_terrain_views.values_mut() {
-        // Todo: be smarter about bind group recreation
-        let bind_group = gpu_terrain_view.prepass_view.as_bind_group(
-            &prepass_pipeline.prepass_view_layout,
-            &device,
-            &pipeline_cache,
-            &mut param,
-        );
-        gpu_terrain_view.prepass_view_bind_group = bind_group.ok().map(|b| b.bind_group);
+        if gpu_terrain_view.prepass_view_bind_group.is_none() {
+            let bind_group = gpu_terrain_view.prepass_view.as_bind_group(
+                &prepass_pipeline.prepass_view_layout,
+                &device,
+                &pipeline_cache,
+                &mut param,
+            );
+            gpu_terrain_view.prepass_view_bind_group = bind_group.ok().map(|b| b.bind_group);
+        }
     }
 }

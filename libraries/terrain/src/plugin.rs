@@ -4,9 +4,9 @@ use crate::{
     formats::TiffLoader,
     mipmap::{MipPipelines, mip_prepass},
     render::{
-        DepthCopyPipeline, GpuTerrain, GpuTerrainView, TerrainItem, TerrainTilingPrepassPipelines,
-        TilingPrepassItem, pass::systems::extract_terrain_phases, prepare_terrain_depth_textures,
-        terrain_pass, tiling_prepass,
+        GpuTerrain, GpuTerrainView, TerrainItem, TerrainTilingPrepassPipelines, TilingPrepassItem,
+        pass::systems::extract_terrain_phases, prepare_terrain_depth_textures, terrain_pass,
+        tiling_prepass,
     },
     shaders::{InternalShaders, load_terrain_shaders},
     view::TerrainViewComponents,
@@ -15,7 +15,7 @@ use bevy::{
     core_pipeline::{Core3dSystems, core_3d::main_opaque_pass_3d, schedule::Core3d},
     prelude::*,
     render::{
-        Render, RenderApp, RenderSystems,
+        Render, RenderApp, RenderStartup, RenderSystems,
         render_phase::{DrawFunctions, ViewSortedRenderPhases, sort_phase_system},
         render_resource::*,
         renderer::{RenderGraph, RenderGraphSystems},
@@ -90,6 +90,14 @@ impl Plugin for TerrainPlugin {
             .init_resource::<DrawFunctions<TerrainItem>>()
             .init_resource::<ViewSortedRenderPhases<TerrainItem>>()
             .add_systems(
+                RenderStartup,
+                (
+                    crate::mipmap::init_mip_pipelines,
+                    crate::render::pipelines::init_tiling_prepass_pipelines,
+                    crate::render::pass::init_depth_copy_pipeline,
+                ),
+            )
+            .add_systems(
                 ExtractSchedule,
                 (
                     extract_terrain_phases,
@@ -144,10 +152,5 @@ impl Plugin for TerrainPlugin {
             .clone();
 
         load_terrain_shaders(app, &attachments);
-
-        app.sub_app_mut(RenderApp)
-            .init_resource::<TerrainTilingPrepassPipelines>()
-            .init_resource::<MipPipelines>()
-            .init_resource::<DepthCopyPipeline>();
     }
 }

@@ -57,17 +57,6 @@ pub fn terrain_pass(
         return;
     }
 
-    // Todo: prepare this in a separate system
-    let terrain_depth_view = terrain_depth.texture.create_view(&TextureViewDescriptor {
-        aspect: TextureAspect::DepthOnly,
-        ..default()
-    });
-    let depth_copy_bind_group = ctx.render_device().create_bind_group(
-        None,
-        &depth_copy_pipeline.layout,
-        &BindGroupEntries::single(&terrain_depth_view),
-    );
-
     let color_attachments = [Some(target.get_color_attachment())];
     let terrain_depth_stencil_attachment = Some(terrain_depth.get_attachment());
     let depth_stencil_attachment = Some(depth.get_attachment(StoreOp::Store));
@@ -94,7 +83,7 @@ pub fn terrain_pass(
             depth_stencil_attachment,
             ..default()
         });
-        render_pass.set_bind_group(0, &depth_copy_bind_group, &[]);
+        render_pass.set_bind_group(0, &terrain_depth.depth_copy_bind_group, &[]);
         render_pass.set_render_pipeline(pipeline);
         render_pass.draw(0..3, 0..1);
     }
