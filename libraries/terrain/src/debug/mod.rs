@@ -2,7 +2,7 @@
 //! data of the plugin.
 use crate::{
     data::{TileAtlas, TileTree, tile_tree::systems::generate_surface_approximation},
-    debug::{debug_camera_controller, debug_surface_approximation, orbital_camera_controller},
+    debug::{debug_surface_approximation, orbital_camera_controller},
     view::TerrainViewComponents,
 };
 
@@ -13,11 +13,10 @@ use bevy::{
 };
 
 mod approximation_debug;
-mod camera;
 mod orbital_camera;
 
-pub(crate) use self::{approximation_debug::*, camera::*, orbital_camera::*};
-pub use self::{camera::DebugCameraController, orbital_camera::OrbitalCameraController};
+pub use self::orbital_camera::OrbitalCameraController;
+pub(crate) use self::{approximation_debug::*, orbital_camera::*};
 
 #[derive(Asset, AsBindGroup, TypePath, Clone, Default)]
 pub struct DebugTerrainMaterial {}
@@ -40,7 +39,6 @@ impl Plugin for TerrainDebugPlugin {
                     update_view_parameter,
                     finish_loading_images,
                     orbital_camera_controller,
-                    debug_camera_controller,
                 ),
             )
             .add_systems(

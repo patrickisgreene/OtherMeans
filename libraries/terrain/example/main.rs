@@ -94,7 +94,6 @@ fn initialize(
             .spawn_spatial((
                 Transform::from_translation(-Vec3::X * RADIUS as f32 * 3.0)
                     .looking_to(Vec3::X, Vec3::Y),
-                DebugCameraController::new(RADIUS),
                 AmbientLight {
                     brightness: 100.0,
                     ..default()

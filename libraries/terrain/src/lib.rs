@@ -63,10 +63,7 @@ pub mod prelude {
     pub use crate::{
         config::TerrainConfig,
         data::{AttachmentConfig, AttachmentFormat, AttachmentLabel, TileAtlas, TileTree},
-        debug::{
-            DebugCameraController, DebugTerrainMaterial, LoadingImages, OrbitalCameraController,
-            TerrainDebugPlugin,
-        },
+        debug::{DebugTerrainMaterial, LoadingImages, OrbitalCameraController, TerrainDebugPlugin},
         math::{TerrainShape, TileCoordinate},
         picking::{PickingData, TerrainPickingPlugin},
         plugin::{TerrainPlugin, TerrainSettings},
