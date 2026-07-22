@@ -9,6 +9,7 @@ COASTLINE_URL=https://naturalearth.s3.amazonaws.com/10m_physical/ne_10m_coastlin
 LAKES_URL=https://naturalearth.s3.amazonaws.com/10m_physical/ne_10m_lakes.zip
 OCEAN_URL=https://naturalearth.s3.amazonaws.com/10m_physical/ne_10m_ocean.zip
 CHLOROPHYLL_URL=https://coastwatch.pfeg.noaa.gov/erddap/files/erdMPIC8day_R2022NRT/AQUA_MODIS.20220226_20220305.L3m.8D.PIC.pic.4km.NRT.nc
+PLACES_URL=https://naturalearth.s3.amazonaws.com/10m_cultural/ne_10m_populated_places.zip
 
 mkdir -p $WORK_DIR/resources/earth/data
 
@@ -19,6 +20,7 @@ wget -nc -O $WORK_DIR/resources/earth/data/coastline.zip $COASTLINE_URL
 wget -nc -O $WORK_DIR/resources/earth/data/lakes.zip $LAKES_URL
 wget -nc -O $WORK_DIR/resources/earth/data/ocean.zip $OCEAN_URL
 wget -nc -O $WORK_DIR/resources/earth/data/chlorophyll.nc $CHLOROPHYLL_URL
+wget -nc -O $WORK_DIR/resources/earth/data/places.zip $PLACES_URL
 
 unzip -n $WORK_DIR/resources/earth/data/coastline.zip \
       -d $WORK_DIR/resources/earth/data/coastline
@@ -28,3 +30,6 @@ unzip -n $WORK_DIR/resources/earth/data/lakes.zip \
 
 unzip -n $WORK_DIR/resources/earth/data/ocean.zip \
       -d $WORK_DIR/resources/earth/data/ocean
+
+unzip -n $WORK_DIR/resources/earth/data/places.zip \
+      -d $WORK_DIR/resources/earth/data/places
