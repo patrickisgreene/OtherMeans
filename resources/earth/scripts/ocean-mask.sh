@@ -4,11 +4,13 @@ WORK_DIR=$(git rev-parse --show-toplevel)
 DATA_DIR=$WORK_DIR/resources/earth/data
 THUMBS_DIR=$WORK_DIR/resources/earth/thumbnails
 BUILD_DIR=$WORK_DIR/resources/earth/intermediates
+ASSETS_DIR=$WORK_DIR/assets/earth
 
 cargo build -p texture-processor --release
 
 mkdir -p $BUILD_DIR
 mkdir -p $THUMBS_DIR
+mkdir -p $ASSETS_DIR
 
 $WORK_DIR/target/release/texture-processor \
     --overwrite \
@@ -78,6 +80,15 @@ $WORK_DIR/target/release/texture-processor \
     --height 540 \
     --input $BUILD_DIR/ocean-mask.tif \
     --output $THUMBS_DIR/ocean-mask.tif
+
+$WORK_DIR/target/release/texture-processor \
+    --overwrite \
+    scale-image \
+    --width 5400 \
+    --height 2700 \
+    --filter-type nearest \
+    --input $BUILD_DIR/ocean-mask.tif \
+    --output $ASSETS_DIR/ocean-mask.tif
 
 $WORK_DIR/target/release/texture-processor \
     --overwrite \

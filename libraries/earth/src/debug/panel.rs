@@ -61,13 +61,16 @@ pub fn debug_panel() -> impl Scene {
                                             LodGroupBody
                                             Node { display: Display::None }
                                             Children [
-                                                // TerrainViewConfig::default() values (view.rs) -
-                                                // the panel starts wherever TileTree::new()
-                                                // actually put them, since these are
-                                                // face-size-relative distances.
-                                                lod_slider("Morph Distance", 1.0, 50.0, 0.5, 22.0, |tile_tree, value| {tile_tree.morph_distance = value;}),
-                                                lod_slider("Blend Distance", 0.25, 20.0, 0.25, 2.25, |tile_tree, value| {tile_tree.blend_distance = value;}),
-                                                lod_slider("Load Distance", 0.25, 20.0, 0.25, 2.7, |tile_tree, value| {tile_tree.load_distance = value;}),
+                                                // TerrainViewConfig::default() values (view.rs) - these are
+                                                // face-size-relative multipliers, but TileTree::new() stores
+                                                // them already multiplied by face_size (~1e7m for Earth) on
+                                                // the live TileTree (morph/blend/load_distance). Setters must
+                                                // re-multiply by face_size, or they overwrite a ~10-million-metre
+                                                // field with a tiny 0.25-20 value, which starves every LOD except
+                                                // the always-requested coarsest one (lod 0) of tile requests.
+                                                lod_slider("Morph Distance", 1.0, 50.0, 0.5, 40.0, |tile_tree, value| {tile_tree.morph_distance = value * tile_tree.shape.face_size();}),
+                                                lod_slider("Blend Distance", 0.25, 20.0, 0.25, 5.0, |tile_tree, value| {tile_tree.blend_distance = value * tile_tree.shape.face_size();}),
+                                                lod_slider("Load Distance", 0.25, 20.0, 0.25, 6.0, |tile_tree, value| {tile_tree.load_distance = value * tile_tree.shape.face_size();}),
                                                 lod_slider("Grid Size", 2.0, 64.0, 2.0, 16.0, |tile_tree, value| {tile_tree.grid_size = value as u32;}),
                                             ]
                                         ),

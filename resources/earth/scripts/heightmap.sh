@@ -4,11 +4,13 @@ WORK_DIR=$(git rev-parse --show-toplevel)
 DATA_DIR=$WORK_DIR/resources/earth/data
 THUMBS_DIR=$WORK_DIR/resources/earth/thumbnails
 BUILD_DIR=$WORK_DIR/resources/earth/intermediates
+ASSETS_DIR=$WORK_DIR/assets/earth
 
 cargo build -p texture-processor --release
 
 mkdir -p $BUILD_DIR
 mkdir -p $THUMBS_DIR
+mkdir -p $ASSETS_DIR
 
 # Ocean/lake pixels are forced to exactly 0.0 using the vector-derived ocean mask (real
 # coastline + lakes shapefiles, see ocean-mask.sh) rather than trusting the raw topography
@@ -36,3 +38,11 @@ $WORK_DIR/target/release/texture-processor \
     --height 540 \
     --input $WORK_DIR/resources/earth/height.tif \
     --output $THUMBS_DIR/height.tif
+
+# Coarse whole-globe copy for CPU-side sampling at runtime (e.g. buildings placement) - see
+# libraries/buildings/src/height.rs. Values are still normalized (0..1, land only, 0.0 =
+# ocean sentinel) same as the source; consumers must multiply by the terrain's runtime
+# `height_scale` to get real-world metres, matching what the terrain mesh itself displaces by.
+gdal_translate -ot Byte -scale 0 1 0 255 -r bilinear -outsize 5400 2700 \
+    $WORK_DIR/resources/earth/height.tif \
+    $ASSETS_DIR/height.tif

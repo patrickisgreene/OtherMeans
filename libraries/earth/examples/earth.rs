@@ -26,6 +26,7 @@ fn main() {
                 .disable::<TransformPlugin>(),
             earth::EarthPlugin,
             earth::debug::EarthDebugPlugin,
+            buildings::BuildingsPlugin,
             FpsOverlayPlugin::default(),
         ))
         .add_systems(Update, initialize)

@@ -1,4 +1,4 @@
 *
 !.gitignore
 !preprocess.sh
-!scripts
+!scripts/*.sh

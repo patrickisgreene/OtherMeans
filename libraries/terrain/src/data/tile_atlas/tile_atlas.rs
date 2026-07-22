@@ -122,6 +122,23 @@ impl TileAtlas {
         }
     }
 
+    /// Returns the coordinates of all tiles at `lod` that are currently requested by at least
+    /// one [`TileTree`](crate::data::TileTree) and have finished loading their attachments.
+    /// This is the same definition of "active tile" used internally by [`Self::get_best_tile`].
+    pub fn active_tiles_at_lod(&self, lod: u32) -> impl Iterator<Item = TileCoordinate> + '_ {
+        self.tile_states.iter().filter_map(move |(&coord, state)| {
+            (coord.lod == lod
+                && state.requests > 0
+                && matches!(state.state, super::LoadingState::Loaded))
+            .then_some(coord)
+        })
+    }
+
+    /// Convenience wrapper around [`Self::active_tiles_at_lod`] using `self.lod_count - 1`.
+    pub fn active_tiles_at_highest_lod(&self) -> impl Iterator<Item = TileCoordinate> + '_ {
+        self.active_tiles_at_lod(self.lod_count.saturating_sub(1))
+    }
+
     pub(crate) fn tile_loaded(&mut self, tile: AttachmentTile, data: AttachmentData) {
         if let Some(tile_state) = self.tile_states.get_mut(&tile.coordinate) {
             tile_state.state = match tile_state.state {

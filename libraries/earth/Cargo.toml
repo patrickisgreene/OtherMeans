@@ -10,3 +10,4 @@ bevy = { workspace = true, features = ["bevy_feathers"] }
 
 [dev-dependencies]
 bevy = { workspace = true, features = ["file_watcher", "bevy_dev_tools"] }
+buildings.workspace = true

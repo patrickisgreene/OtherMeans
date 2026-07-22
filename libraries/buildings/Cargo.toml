@@ -1,0 +1,12 @@
+[package]
+name = "buildings"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+terrain.workspace = true
+big_space.workspace = true
+bevy.workspace = true
+bytemuck.workspace = true
+image.workspace = true
+thiserror.workspace = true

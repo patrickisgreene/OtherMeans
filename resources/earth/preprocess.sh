@@ -12,6 +12,7 @@ $SCRIPT_DIR/distance-field.sh
 $SCRIPT_DIR/earth.sh
 $SCRIPT_DIR/heightmap.sh
 $SCRIPT_DIR/cities.sh
+$SCRIPT_DIR/population.sh
 
 rm -f $EARTH_DIR/height-float32.tif
 gdal_translate -ot Float32 $EARTH_DIR/height.tif $EARTH_DIR/height-float32.tif
