@@ -7,5 +7,9 @@ edition.workspace = true
 bevy.workspace = true
 serde.workspace = true
 smol_str.workspace = true
+big_space.workspace = true
+bevy_common_assets.workspace = true
 
+earth.workspace = true
 cities.workspace = true
+terrain.workspace = true

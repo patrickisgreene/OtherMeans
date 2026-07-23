@@ -3,6 +3,7 @@ pub mod preprocess;
 
 use bevy::prelude::*;
 use bevy_common_assets::ron::RonAssetPlugin;
+use serde::{Deserialize, Serialize};
 
 pub struct CitiesPlugin;
 
@@ -12,4 +13,9 @@ impl Plugin for CitiesPlugin {
             "cities.ron",
         ]));
     }
+}
+
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+pub enum CityFilter {
+    MinPopulation(u32),
 }

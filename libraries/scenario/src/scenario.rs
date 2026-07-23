@@ -6,9 +6,10 @@ use std::collections::HashMap;
 use crate::{CombatantId, ControlledTerritory, StatisticModifier, WeaponsPlacementStrategy};
 use cities::descriptor::CountryId;
 
-#[derive(Resource, Default, Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Asset, TypePath, Default, Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Scenario {
     pub combatants: HashSet<CombatantId>,
+    pub city_filters: Vec<cities::CityFilter>,
     pub territory: HashMap<CombatantId, Vec<ControlledTerritory>>,
     pub effect_modifiers: HashMap<CombatantId, HashMap<SmolStr, StatisticModifier>>,
     pub weapons_placement: WeaponsPlacementStrategy,
