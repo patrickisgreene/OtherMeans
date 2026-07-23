@@ -1,0 +1,18 @@
+Weapon(
+    id: "lgm-30g",
+    name: "Minuteman III",
+    domain: Missile,
+    guidance: Inertial,
+    movement: Movement(
+        range: Limited(13000),
+        speed: 24000
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 36030,
+        "radar-crosssection": 1.0
+    }
+)

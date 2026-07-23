@@ -1,0 +1,17 @@
+Weapon(
+    id: "cvn-78",
+    name: "Gerald R. Ford-class",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        speed: 56
+    ),
+    payload: Capacity(
+        weight: 55000,
+        domains: []
+    ),
+    attributes: {
+        "weight": 100000000,
+        "radar-crosssection": 1.0
+    }
+)

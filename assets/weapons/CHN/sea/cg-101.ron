@@ -1,0 +1,18 @@
+Weapon(
+    id: "cg-101",
+    name: "Type 055",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(10000),
+        speed: 56
+    ),
+    payload: Capacity(
+        weight: 9500,
+        domains: []
+    ),
+    attributes: {
+        "weight": 13000000,
+        "radar-crosssection": 0.9
+    }
+)

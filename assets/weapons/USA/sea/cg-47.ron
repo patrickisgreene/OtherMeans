@@ -1,0 +1,18 @@
+Weapon(
+    id: "cg-47",
+    name: "Ticonderoga-class",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(11000),
+        speed: 59
+    ),
+    payload: Capacity(
+        weight: 8500,
+        domains: []
+    ),
+    attributes:{
+        "weight": 9800000,
+        "radar-crosssection": 0.9
+    }
+)

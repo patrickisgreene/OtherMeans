@@ -1,0 +1,18 @@
+Weapon(
+    id: "a-10",
+    name: "Warthog",
+    domain: Air,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(1290),
+        speed: 706
+    ),
+    payload: Capacity(
+        weight: 7260,
+        domains: []
+    ),
+    attributes: {
+        "weight": 11321,
+        "radar-crosssection": 0.8
+    }
+)

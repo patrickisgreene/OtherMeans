@@ -1,0 +1,18 @@
+Weapon(
+    id: "pcl-181",
+    name: "PCL-181",
+    domain: Land,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(1000),
+        speed: 90
+    ),
+    payload: Capacity(
+        weight: 1700,
+        domains: []
+    ),
+    attributes:{
+        "weight": 25000,
+        "radar-crosssection": 0.9
+    }
+)

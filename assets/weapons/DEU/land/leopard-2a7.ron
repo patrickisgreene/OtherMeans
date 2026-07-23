@@ -1,0 +1,18 @@
+Weapon(
+    id: "leopard-2a7",
+    name: "Leopard 2A7",
+    domain: Land,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(450),
+        speed: 68
+    ),
+    payload: Capacity(
+        weight: 1050,
+        domains: []
+    ),
+    attributes: {
+        "weight": 67500,
+        "radar-crosssection": 1.0
+    }
+)

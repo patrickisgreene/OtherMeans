@@ -1,0 +1,17 @@
+Weapon(
+    id: "ssbn-955",
+    name: "Borei-class",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        speed: 54
+    ),
+    payload: Capacity(
+        weight: 13000,
+        domains: []
+    ),
+    attributes:{
+        "weight": 24000000,
+        "radar-crosssection": 0.4
+    }
+)

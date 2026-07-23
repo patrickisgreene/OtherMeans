@@ -1,0 +1,17 @@
+Weapon(
+    id: "kab-1500lg",
+    name: "KAB-1500",
+    domain: Bomb,
+    guidance: Laser,
+    movement: Movement(
+        speed: 0
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 1560,
+        "radar-crosssection": 0.3
+    }
+)

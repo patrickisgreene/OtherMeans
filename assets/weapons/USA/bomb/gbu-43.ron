@@ -1,0 +1,17 @@
+Weapon(
+    id: "gbu-43",
+    name: "GBU-43 MOAB",
+    domain: Bomb,
+    guidance: Gps,
+    movement: Movement(
+        speed: 0
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 9800,
+        "radar-crosssection": 1.0
+    }
+)

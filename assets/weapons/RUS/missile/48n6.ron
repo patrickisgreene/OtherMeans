@@ -1,0 +1,18 @@
+Weapon(
+    id: "48n6",
+    name: "S-400 Missile",
+    domain: Missile,
+    guidance: Radar,
+    movement: Movement(
+        range: Limited(400),
+        speed: 5880
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes:{
+        "weight": 1800,
+        "radar-crosssection": 0.15
+    }
+)

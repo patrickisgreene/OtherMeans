@@ -1,0 +1,18 @@
+Weapon(
+    id: "bvraam",
+    name: "Meteor",
+    domain: Missile,
+    guidance: Radar,
+    movement: Movement(
+        range: Limited(200),
+        speed: 4248
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 185,
+        "radar-crosssection": 0.02
+    }
+)

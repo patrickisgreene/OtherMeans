@@ -1,0 +1,17 @@
+Weapon(
+    id: "ssn-s119",
+    name: "Astute-class",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        speed: 54
+    ),
+    payload: Capacity(
+        weight: 5500,
+        domains: []
+    ),
+    attributes: {
+        "weight": 7800000,
+        "radar-crosssection": 0.25
+    }
+)

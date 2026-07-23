@@ -1,0 +1,17 @@
+Weapon(
+    id: "sudarshan",
+    name: "Sudarshan LGB",
+    domain: Bomb,
+    guidance: Laser,
+    movement: Movement(
+        speed: 0
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 454,
+        "radar-crosssection": 0.18
+    }
+)

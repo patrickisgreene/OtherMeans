@@ -1,0 +1,18 @@
+Weapon(
+    id: "cv-063",
+    name: "Admiral Kuznetsov",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(8500),
+        speed: 58
+    ),
+    payload: Capacity(
+        weight: 30000,
+        domains: []
+    ),
+    attributes:{
+        "weight": 58500000,
+        "radar-crosssection": 1.0
+    }
+)

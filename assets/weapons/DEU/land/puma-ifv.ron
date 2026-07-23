@@ -1,0 +1,18 @@
+Weapon(
+    id: "puma-ifv",
+    name: "Puma",
+    domain: Land,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(600),
+        speed: 70
+    ),
+    payload: Capacity(
+        weight: 550,
+        domains: []
+    ),
+    attributes: {
+        "weight": 31500,
+        "radar-crosssection": 0.85
+    }
+)

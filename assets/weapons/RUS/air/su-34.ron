@@ -1,0 +1,18 @@
+Weapon(
+    id: "su-34",
+    name: "Fullback",
+    domain: Air,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(4000),
+        speed: 1900
+    ),
+    payload: Capacity(
+        weight: 12000,
+        domains: []
+    ),
+    attributes: {
+        "weight": 22500,
+        "radar-crosssection": 1.0
+    }
+)

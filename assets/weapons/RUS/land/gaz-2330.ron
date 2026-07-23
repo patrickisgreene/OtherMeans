@@ -1,0 +1,18 @@
+Weapon(
+    id: "gaz-2330",
+    name: "Tigr",
+    domain: Land,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(1000),
+        speed: 125
+    ),
+    payload: Capacity(
+        weight: 220,
+        domains: []
+    ),
+    attributes: {
+        "weight": 7100,
+        "radar-crosssection": 0.65
+    }
+)

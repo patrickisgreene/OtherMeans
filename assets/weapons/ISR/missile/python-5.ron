@@ -1,0 +1,18 @@
+Weapon(
+    id: "python-5",
+    name: "Python 5",
+    domain: Missile,
+    guidance: Infrared,
+    movement: Movement(
+        range: Limited(20),
+        speed: 3500
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 105,
+        "radar-crosssection": 0.015
+    }
+)

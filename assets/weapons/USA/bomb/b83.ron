@@ -1,0 +1,17 @@
+Weapon(
+    id: "b83",
+    name: "B83 Nuclear Bomb",
+    domain: Bomb,
+    guidance: Dumb,
+    movement: Movement(
+        speed: 0
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 1100,
+        "radar-crosssection": 0.6
+    }
+)

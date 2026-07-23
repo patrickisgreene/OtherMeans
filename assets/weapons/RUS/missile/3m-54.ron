@@ -1,0 +1,18 @@
+Weapon(
+    id: "3m-54",
+    name: "Kalibr",
+    domain: Missile,
+    guidance: Radar,
+    movement: Movement(
+        range: Limited(2500),
+        speed: 3000
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 2300,
+        "radar-crosssection": 0.1
+    }
+)

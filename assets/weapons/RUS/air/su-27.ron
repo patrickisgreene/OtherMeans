@@ -1,0 +1,18 @@
+Weapon(
+    id: "su-27",
+    name: "Flanker",
+    domain: Air,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(3530),
+        speed: 2500
+    ),
+    payload: Capacity(
+        weight: 6000,
+        domains: []
+    ),
+    attributes: {
+        "weight": 16380,
+        "radar-crosssection": 1.0
+    }
+)

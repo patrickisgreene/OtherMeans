@@ -1,0 +1,18 @@
+Weapon(
+    id: "challenger-3",
+    name: "Challenger 3",
+    domain: Land,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(550),
+        speed: 60
+    ),
+    payload: Capacity(
+        weight: 1000,
+        domains: []
+    ),
+    attributes: {
+        "weight": 66700,
+        "radar-crosssection": 1.0
+    }
+)

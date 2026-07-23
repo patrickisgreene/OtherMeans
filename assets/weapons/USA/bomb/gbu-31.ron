@@ -1,0 +1,17 @@
+Weapon(
+    id: "gbu-31",
+    name: "GBU-31 JDAM",
+    domain: Bomb,
+    guidance: Gps,
+    movement: Movement(
+        speed: 0
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 920,
+        "radar-crosssection": 0.2
+    }
+)

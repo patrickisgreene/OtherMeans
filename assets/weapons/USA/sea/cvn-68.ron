@@ -1,0 +1,17 @@
+Weapon(
+    id: "cvn-68",
+    name: "Nimitz-class",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        speed: 56
+    ),
+    payload: Capacity(
+        weight: 50000,
+        domains: []
+    ),
+    attributes: {
+        "weight": 100000000,
+        "radar-crosssection": 1.0
+    }
+)

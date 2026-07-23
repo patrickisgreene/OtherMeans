@@ -1,0 +1,18 @@
+Weapon(
+    id: "d-652",
+    name: "Horizon-class",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(13000),
+        speed: 53
+    ),
+    payload: Capacity(
+        weight: 6000,
+        domains: []
+    ),
+    attributes: {
+        "weight": 7050000,
+        "radar-crosssection": 0.85
+    }
+)

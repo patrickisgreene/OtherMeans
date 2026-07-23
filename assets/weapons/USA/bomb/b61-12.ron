@@ -1,0 +1,17 @@
+Weapon(
+    id: "b61-12",
+    name: "B61 Nuclear Bomb",
+    domain: Bomb,
+    guidance: Gps,
+    movement: Movement(
+        speed: 0
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 320,
+        "radar-crosssection": 0.25
+    }
+)

@@ -1,0 +1,18 @@
+Weapon(
+    id: "m142",
+    name: "HIMARS",
+    domain: Land,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(480),
+        speed: 94
+    ),
+    payload: Capacity(
+        weight: 2500,
+        domains: []
+    ),
+    attributes: {
+        "weight": 11000,
+        "radar-crosssection": 0.9
+    }
+)

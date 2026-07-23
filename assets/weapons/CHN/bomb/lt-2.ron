@@ -1,0 +1,17 @@
+Weapon(
+    id: "lt-2",
+    name: "LT-2 Laser Bomb",
+    domain: Bomb,
+    guidance: Laser,
+    movement: Movement(
+        speed: 0
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes:{
+        "weight": 500,
+        "radar-crosssection": 0.2
+    }
+)

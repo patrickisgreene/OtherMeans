@@ -1,0 +1,17 @@
+Weapon(
+    id: "betab-500shp",
+    name: "BetAB-500",
+    domain: Bomb,
+    guidance: Dumb,
+    movement: Movement(
+        speed: 0
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 428,
+        "radar-crosssection": 0.4
+    }
+)

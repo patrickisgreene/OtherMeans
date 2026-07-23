@@ -1,0 +1,18 @@
+Weapon(
+    id: "boxer-apc",
+    name: "Boxer",
+    domain: Land,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(1050),
+        speed: 103
+    ),
+    payload: Capacity(
+        weight: 380,
+        domains: []
+    ),
+    attributes: {
+        "weight": 33000,
+        "radar-crosssection": 0.8
+    }
+)

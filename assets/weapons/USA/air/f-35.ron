@@ -1,0 +1,18 @@
+Weapon(
+    id: "f-35",
+    name: "Lightning II",
+    domain: Air,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(2220),
+        speed: 1960
+    ),
+    payload: Capacity(
+        weight: 8160,
+        domains: []
+    ),
+    attributes: {
+        "weight": 13290,
+        "radar-crosssection": 0.005
+    }
+)

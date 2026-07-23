@@ -1,0 +1,17 @@
+Weapon(
+    id: "ssbn-094",
+    name: "Type 094",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        speed: 48
+    ),
+    payload: Capacity(
+        weight: 10000,
+        domains: []
+    ),
+    attributes:{
+        "weight": 11500000,
+        "radar-crosssection": 0.35
+    }
+)

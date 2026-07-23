@@ -1,0 +1,18 @@
+Weapon(
+    id: "btr-82a",
+    name: "BTR-82A",
+    domain: Land,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(600),
+        speed: 100
+    ),
+    payload: Capacity(
+        weight: 350,
+        domains: []
+    ),
+    attributes: {
+        "weight": 14900,
+        "radar-crosssection": 0.75
+    }
+)

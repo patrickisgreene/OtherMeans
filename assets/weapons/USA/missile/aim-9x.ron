@@ -1,0 +1,18 @@
+Weapon(
+    id: "aim-9x",
+    name: "AIM-9 Sidewinder",
+    domain: Missile,
+    guidance: Infrared,
+    movement: Movement(
+        range: Limited(35),
+        speed: 3470
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 85,
+        "radar-crosssection": 0.01
+    }
+)

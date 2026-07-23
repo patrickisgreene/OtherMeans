@@ -1,0 +1,18 @@
+Weapon(
+    id: "css-x-20",
+    name: "DF-41",
+    domain: Missile,
+    guidance: Gps,
+    movement: Movement(
+        range: Limited(15000),
+        speed: 25000
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 60000,
+        "radar-crosssection": 0.9
+    }
+)

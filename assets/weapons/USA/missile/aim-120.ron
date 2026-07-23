@@ -1,0 +1,18 @@
+Weapon(
+    id: "aim-120",
+    name: "AIM-120 AMRAAM",
+    domain: Missile,
+    guidance: Radar,
+    movement: Movement(
+        range: Limited(180),
+        speed: 4248
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 161,
+        "radar-crosssection": 0.02
+    }
+)

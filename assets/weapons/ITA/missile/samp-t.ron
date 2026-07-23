@@ -1,0 +1,18 @@
+Weapon(
+    id: "samp-t",
+    name: "ASTER 30",
+    domain: Missile,
+    guidance: Radar,
+    movement: Movement(
+        range: Limited(120),
+        speed: 4500
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 450,
+        "radar-crosssection": 0.05
+    }
+)

@@ -1,0 +1,18 @@
+Weapon(
+    id: "tu-160",
+    name: "Blackjack",
+    domain: Air,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(12300),
+        speed: 2220
+    ),
+    payload: Capacity(
+        weight: 45000,
+        domains: []
+    ),
+    attributes: {
+        "weight": 110000,
+        "radar-crosssection": 1.0
+    }
+)

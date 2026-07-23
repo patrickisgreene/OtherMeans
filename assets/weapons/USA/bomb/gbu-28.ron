@@ -1,0 +1,17 @@
+Weapon(
+    id: "gbu-28",
+    name: "GBU-28 Bunker Buster",
+    domain: Bomb,
+    guidance: Gps,
+    movement: Movement(
+        speed: 0
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 2130,
+        "radar-crosssection": 0.35
+    }
+)

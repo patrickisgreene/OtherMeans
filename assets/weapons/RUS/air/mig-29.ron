@@ -1,0 +1,18 @@
+Weapon(
+    id: "mig-29",
+    name: "Fulcrum",
+    domain: Air,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(1430),
+        speed: 2445
+    ),
+    payload: Capacity(
+        weight: 4500,
+        domains: []
+    ),
+    attributes: {
+        "weight": 11000,
+        "radar-crosssection": 1.0
+    }
+)

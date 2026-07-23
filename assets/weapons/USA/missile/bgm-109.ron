@@ -1,0 +1,18 @@
+Weapon(
+    id: "bgm-109",
+    name: "Tomahawk",
+    domain: Missile,
+    guidance: Gps,
+    movement: Movement(
+        range: Limited(2500),
+        speed: 880
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 1315,
+        "radar-crosssection": 0.02
+    }
+)

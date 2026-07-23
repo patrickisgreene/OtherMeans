@@ -1,0 +1,18 @@
+Weapon(
+    id: "jltv",
+    name: "JLTV",
+    domain: Land,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(500),
+        speed: 110
+    ),
+    payload: Capacity(
+        weight: 200,
+        domains: []
+    ),
+    attributes: {
+        "weight": 6350,
+        "radar-crosssection": 0.6
+    }
+)

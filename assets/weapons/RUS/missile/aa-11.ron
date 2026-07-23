@@ -1,0 +1,18 @@
+Weapon(
+    id: "aa-11",
+    name: "R-73 Archer",
+    domain: Missile,
+    guidance: Infrared,
+    movement: Movement(
+        range: Limited(30),
+        speed: 2700
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 105,
+        "radar-crosssection": 0.015
+    }
+)

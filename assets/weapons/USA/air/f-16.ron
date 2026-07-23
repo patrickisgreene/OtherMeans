@@ -1,0 +1,18 @@
+Weapon(
+    id: "f-16",
+    name: "Fighting Falcon",
+    domain: Air,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(4220),
+        speed: 2124
+    ),
+    payload: Capacity(
+        weight: 7700,
+        domains: []
+    ),
+    attributes: {
+        "weight": 8670,
+        "radar-crosssection": 1.0
+    }
+)

@@ -1,0 +1,18 @@
+Weapon(
+    id: "f-15",
+    name: "Eagle",
+    domain: Air,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(4630),
+        speed: 2660
+    ),
+    payload: Capacity(
+        weight: 10400,
+        domains: []
+    ),
+    attributes: {
+        "weight": 12700,
+        "radar-crosssection": 1.0
+    }
+)

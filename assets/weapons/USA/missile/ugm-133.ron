@@ -1,0 +1,18 @@
+Weapon(
+    id: "ugm-133",
+    name: "Trident II",
+    domain: Missile,
+    guidance: Gps,
+    movement: Movement(
+        range: Limited(12000),
+        speed: 24000
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 59090,
+        "radar-crosssection": 0.8
+    }
+)

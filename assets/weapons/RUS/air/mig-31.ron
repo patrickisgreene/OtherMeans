@@ -1,0 +1,18 @@
+Weapon(
+    id: "mig-31",
+    name: "Foxhound",
+    domain: Air,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(3000),
+        speed: 3000
+    ),
+    payload: Capacity(
+        weight: 9000,
+        domains: []
+    ),
+    attributes: {
+        "weight": 21820,
+        "radar-crosssection": 1.0
+    }
+)

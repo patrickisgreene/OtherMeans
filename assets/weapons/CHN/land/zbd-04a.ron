@@ -1,0 +1,18 @@
+Weapon(
+    id: "zbd-04a",
+    name: "ZBD-04A",
+    domain: Land,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(500),
+        speed: 65
+    ),
+    payload: Capacity(
+        weight: 580,
+        domains: []
+    ),
+    attributes: {
+        "weight": 24500,
+        "radar-crosssection": 0.8
+    }
+)

@@ -1,0 +1,18 @@
+Weapon(
+    id: "bmp-3",
+    name: "BMP-3",
+    domain: Land,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(600),
+        speed: 70
+    ),
+    payload: Capacity(
+        weight: 600,
+        domains: []
+    ),
+    attributes: {
+        "weight": 18700,
+        "radar-crosssection": 0.8
+    }
+)

@@ -1,0 +1,17 @@
+Weapon(
+    id: "ssn-suffren",
+    name: "Barracuda-class",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        speed: 46
+    ),
+    payload: Capacity(
+        weight: 4000,
+        domains: []
+    ),
+    attributes: {
+        "weight": 5300000,
+        "radar-crosssection": 0.2
+    }
+)

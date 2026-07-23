@@ -1,0 +1,18 @@
+Weapon(
+    id: "cv-r08",
+    name: "Queen Elizabeth-class",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(18500),
+        speed: 46
+    ),
+    payload: Capacity(
+        weight: 35000,
+        domains: []
+    ),
+    attributes: {
+        "weight": 65000000,
+        "radar-crosssection": 1.0
+    }
+)

@@ -1,0 +1,18 @@
+Weapon(
+    id: "type-10",
+    name: "Type 10",
+    domain: Land,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(500),
+        speed: 70
+    ),
+    payload: Capacity(
+        weight: 1000,
+        domains: []
+    ),
+    attributes: {
+        "weight": 44000,
+        "radar-crosssection": 0.9
+    }
+)

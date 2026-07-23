@@ -1,0 +1,17 @@
+Weapon(
+    id: "mk-84",
+    name: "Mark 84",
+    domain: Bomb,
+    guidance: Dumb,
+    movement: Movement(
+        speed: 0
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 894,
+        "radar-crosssection": 0.5
+    }
+)

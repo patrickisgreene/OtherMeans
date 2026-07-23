@@ -1,0 +1,18 @@
+Weapon(
+    id: "m1126",
+    name: "Stryker",
+    domain: Land,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(531),
+        speed: 100
+    ),
+    payload: Capacity(
+        weight: 300,
+        domains: []
+    ),
+    attributes: {
+        "weight": 16470,
+        "radar-crosssection": 0.8
+    }
+)

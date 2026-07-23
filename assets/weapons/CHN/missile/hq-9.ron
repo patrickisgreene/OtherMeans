@@ -1,0 +1,18 @@
+Weapon(
+    id: "hq-9",
+    name: "HQ-9",
+    domain: Missile,
+    guidance: Radar,
+    movement: Movement(
+        range: Limited(200),
+        speed: 5800
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 1300,
+        "radar-crosssection": 0.12
+    }
+)

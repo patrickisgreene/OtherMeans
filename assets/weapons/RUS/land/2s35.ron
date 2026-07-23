@@ -1,0 +1,18 @@
+Weapon(
+    id: "2s35",
+    name: "2S35 Koalitsiya",
+    domain: Land,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(500),
+        speed: 70
+    ),
+    payload: Capacity(
+        weight: 1600,
+        domains: []
+    ),
+    attributes: {
+        "weight": 48000,
+        "radar-crosssection": 0.95
+    }
+)

@@ -1,0 +1,17 @@
+Weapon(
+    id: "cv-18",
+    name: "Type 003 Fujian",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        speed: 56
+    ),
+    payload: Capacity(
+        weight: 45000,
+        domains: []
+    ),
+    attributes: {
+        "weight": 80000000,
+        "radar-crosssection": 1.0
+    }
+)

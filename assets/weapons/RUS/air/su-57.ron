@@ -1,0 +1,18 @@
+Weapon(
+    id: "su-57",
+    name: "Felon",
+    domain: Air,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(3500),
+        speed: 2600
+    ),
+    payload: Capacity(
+        weight: 10000,
+        domains: []
+    ),
+    attributes: {
+        "weight": 18000,
+        "radar-crosssection": 0.01
+    }
+)

@@ -1,0 +1,18 @@
+Weapon(
+    id: "agm-88",
+    name: "AGM-88 HARM",
+    domain: Missile,
+    guidance: Radar,
+    movement: Movement(
+        range: Limited(150),
+        speed: 2284
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 361,
+        "radar-crosssection": 0.05
+    }
+)

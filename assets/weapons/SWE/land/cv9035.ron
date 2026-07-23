@@ -1,0 +1,18 @@
+Weapon(
+    id: "cv9035",
+    name: "CV90",
+    domain: Land,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(320),
+        speed: 70
+    ),
+    payload: Capacity(
+        weight: 520,
+        domains: []
+    ),
+    attributes:{
+        "weight": 35000,
+        "radar-crosssection": 0.85
+    }
+)

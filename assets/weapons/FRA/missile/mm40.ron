@@ -1,0 +1,18 @@
+Weapon(
+    id: "mm40",
+    name: "Exocet",
+    domain: Missile,
+    guidance: Inertial,
+    movement: Movement(
+        range: Limited(180),
+        speed: 1080
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes:{
+        "weight": 870,
+        "radar-crosssection": 0.08
+    }
+)

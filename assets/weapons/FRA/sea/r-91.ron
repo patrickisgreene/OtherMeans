@@ -1,0 +1,17 @@
+Weapon(
+    id: "r-91",
+    name: "Charles de Gaulle",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        speed: 50
+    ),
+    payload: Capacity(
+        weight: 22000,
+        domains: []
+    ),
+    attributes: {
+        "weight": 42500000,
+        "radar-crosssection": 0.95
+    }
+)

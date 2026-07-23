@@ -1,0 +1,17 @@
+Weapon(
+    id: "stormbreaker",
+    name: "Storm Breaker",
+    domain: Bomb,
+    guidance: Gps,
+    movement: Movement(
+        speed: 0
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 900,
+        "radar-crosssection": 0.25
+    }
+)

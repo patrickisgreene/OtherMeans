@@ -1,0 +1,17 @@
+Weapon(
+    id: "ssgn-885",
+    name: "Yasen-class",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        speed: 63
+    ),
+    payload: Capacity(
+        weight: 7000,
+        domains: []
+    ),
+    attributes: {
+        "weight": 13800000,
+        "radar-crosssection": 0.35
+    }
+)

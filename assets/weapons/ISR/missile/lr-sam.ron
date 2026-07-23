@@ -1,0 +1,18 @@
+Weapon(
+    id: "lr-sam",
+    name: "Barak 8",
+    domain: Missile,
+    guidance: Radar,
+    movement: Movement(
+        range: Limited(100),
+        speed: 4900
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes:{
+        "weight": 275,
+        "radar-crosssection": 0.03
+    }
+)

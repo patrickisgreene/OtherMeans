@@ -1,0 +1,17 @@
+Weapon(
+    id: "cbu-87",
+    name: "CBU-87 Cluster Bomb",
+    domain: Bomb,
+    guidance: Dumb,
+    movement: Movement(
+        speed: 0
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 430,
+        "radar-crosssection": 0.4
+    }
+)

@@ -1,0 +1,18 @@
+Weapon(
+    id: "pl-15",
+    name: "PL-15",
+    domain: Missile,
+    guidance: Radar,
+    movement: Movement(
+        range: Limited(300),
+        speed: 5880
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 210,
+        "radar-crosssection": 0.025
+    }
+)

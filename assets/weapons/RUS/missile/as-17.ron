@@ -1,0 +1,18 @@
+Weapon(
+    id: "as-17",
+    name: "Kh-31 Krypton",
+    domain: Missile,
+    guidance: Radar,
+    movement: Movement(
+        range: Limited(250),
+        speed: 3200
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes:{
+        "weight": 610,
+        "radar-crosssection": 0.08
+    }
+)

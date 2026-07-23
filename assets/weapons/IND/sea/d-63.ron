@@ -1,0 +1,18 @@
+Weapon(
+    id: "d-63",
+    name: "Kolkata-class",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(8000),
+        speed: 56
+    ),
+    payload: Capacity(
+        weight: 6800,
+        domains: []
+    ),
+    attributes: {
+        "weight": 7500000,
+        "radar-crosssection": 0.85
+    }
+)

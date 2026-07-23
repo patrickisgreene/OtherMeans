@@ -1,0 +1,18 @@
+Weapon(
+    id: "m-atv",
+    name: "Oshkosh M-ATV",
+    domain: Land,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(531),
+        speed: 105
+    ),
+    payload: Capacity(
+        weight: 250,
+        domains: []
+    ),
+    attributes:{
+        "weight": 12700,
+        "radar-crosssection": 0.7
+    }
+)

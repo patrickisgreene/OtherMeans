@@ -1,0 +1,18 @@
+Weapon(
+    id: "f-22",
+    name: "Raptor",
+    domain: Air,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(2960),
+        speed: 2414
+    ),
+    payload: Capacity(
+        weight: 10900,
+        domains: []
+    ),
+    attributes:{
+        "weight": 19700,
+        "radar-crosssection": 0.0001
+    }
+)

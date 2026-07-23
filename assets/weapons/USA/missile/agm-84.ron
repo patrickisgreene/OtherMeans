@@ -1,0 +1,18 @@
+Weapon(
+    id: "agm-84",
+    name: "Harpoon",
+    domain: Missile,
+    guidance: Radar,
+    movement: Movement(
+        range: Limited(280),
+        speed: 864
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 691,
+        "radar-crosssection": 0.1
+    }
+)

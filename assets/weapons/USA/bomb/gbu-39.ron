@@ -1,0 +1,17 @@
+Weapon(
+    id: "gbu-39",
+    name: "GBU-39 SDB",
+    domain: Bomb,
+    guidance: Gps,
+    movement: Movement(
+        speed: 0
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes:{
+        "weight": 113,
+        "radar-crosssection": 0.05
+    }
+)

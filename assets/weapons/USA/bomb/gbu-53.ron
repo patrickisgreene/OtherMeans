@@ -1,0 +1,17 @@
+Weapon(
+    id: "gbu-53",
+    name: "GBU-53 StormBreaker",
+    domain: Bomb,
+    guidance: Gps,
+    movement: Movement(
+        speed: 0
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes:{
+        "weight": 113,
+        "radar-crosssection": 0.05
+    }
+)

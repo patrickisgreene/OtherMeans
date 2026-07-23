@@ -1,0 +1,18 @@
+Weapon(
+    id: "lha-6",
+    name: "America-class",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(11500),
+        speed: 41
+    ),
+    payload: Capacity(
+        weight: 25000,
+        domains: []
+    ),
+    attributes: {
+        "weight": 45000000,
+        "radar-crosssection": 1.0
+    }
+)

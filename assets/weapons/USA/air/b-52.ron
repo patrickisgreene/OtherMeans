@@ -1,0 +1,18 @@
+Weapon(
+    id: "b-52",
+    name: "Stratofortress",
+    domain: Air,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(14080),
+        speed: 1047
+    ),
+    payload: Capacity(
+        weight: 31500,
+        domains: []
+    ),
+    attributes: {
+        "weight": 83250,
+        "radar-crosssection": 1.0
+    }
+)

@@ -1,0 +1,18 @@
+Weapon(
+    id: "t-90m",
+    name: "T-90M",
+    domain: Land,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(550),
+        speed: 60
+    ),
+    payload: Capacity(
+        weight: 950,
+        domains: []
+    ),
+    attributes:{
+        "weight": 46500,
+        "radar-crosssection": 0.95
+    }
+)

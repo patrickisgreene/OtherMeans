@@ -1,0 +1,17 @@
+Weapon(
+    id: "paveway-iv",
+    name: "Paveway IV",
+    domain: Bomb,
+    guidance: Gps,
+    movement: Movement(
+        speed: 0
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes:{
+        "weight": 227,
+        "radar-crosssection": 0.12
+    }
+)

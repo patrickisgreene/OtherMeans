@@ -1,0 +1,18 @@
+Weapon(
+    id: "fgs-751",
+    name: "FREMM",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(12000),
+        speed: 50
+    ),
+    payload: Capacity(
+        weight: 4500,
+        domains: []
+    ),
+    attributes: {
+        "weight": 6000000,
+        "radar-crosssection": 0.75
+    }
+)

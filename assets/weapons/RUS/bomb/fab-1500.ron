@@ -1,0 +1,17 @@
+Weapon(
+    id: "fab-1500",
+    name: "FAB-1500",
+    domain: Bomb,
+    guidance: Dumb,
+    movement: Movement(
+        speed: 0
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 1500,
+        "radar-crosssection": 0.7
+    }
+)

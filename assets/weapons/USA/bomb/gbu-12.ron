@@ -1,0 +1,17 @@
+Weapon(
+    id: "gbu-12",
+    name: "GBU-12 Paveway II",
+    domain: Bomb,
+    guidance: Laser,
+    movement: Movement(
+        speed: 0
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 277,
+        "radar-crosssection": 0.15
+    }
+)

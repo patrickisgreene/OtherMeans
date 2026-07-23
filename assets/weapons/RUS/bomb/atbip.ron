@@ -1,0 +1,17 @@
+Weapon(
+    id: "atbip",
+    name: "FOAB",
+    domain: Bomb,
+    guidance: Dumb,
+    movement: Movement(
+        speed: 0
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 7100,
+        "radar-crosssection": 1.0
+    }
+)

@@ -1,0 +1,13 @@
+[package]
+name = "weapons"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+ron.workspace = true
+bevy.workspace = true
+serde.workspace = true
+bitflags.workspace = true
+derive_more.workspace = true
+big_space.workspace = true
+bevy_common_assets.workspace = true

@@ -1,0 +1,17 @@
+Weapon(
+    id: "aasm",
+    name: "AASM Hammer",
+    domain: Bomb,
+    guidance: Gps,
+    movement: Movement(
+        speed: 0
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 300,
+        "radar-crosssection": 0.15
+    }
+)

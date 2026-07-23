@@ -1,0 +1,17 @@
+Weapon(
+    id: "cgn-096",
+    name: "Kirov-class",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        speed: 59
+    ),
+    payload: Capacity(
+        weight: 15000,
+        domains: []
+    ),
+    attributes:{
+        "weight": 28000000,
+        "radar-crosssection": 1.0
+    }
+)

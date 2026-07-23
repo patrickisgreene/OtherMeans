@@ -1,0 +1,18 @@
+Weapon(
+    id: "ddg-179",
+    name: "Maya-class",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(8000),
+        speed: 56
+    ),
+    payload: Capacity(
+        weight: 8200,
+        domains: []
+    ),
+    attributes: {
+        "weight": 10250000,
+        "radar-crosssection": 0.9
+    }
+)

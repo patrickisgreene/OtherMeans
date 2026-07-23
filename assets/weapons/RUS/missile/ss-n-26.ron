@@ -1,0 +1,18 @@
+Weapon(
+    id: "ss-n-26",
+    name: "P-800 Oniks",
+    domain: Missile,
+    guidance: Radar,
+    movement: Movement(
+        range: Limited(600),
+        speed: 2450
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 3000,
+        "radar-crosssection": 0.2
+    }
+)

@@ -1,0 +1,18 @@
+Weapon(
+    id: "leclerc",
+    name: "Leclerc",
+    domain: Land,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(550),
+        speed: 71
+    ),
+    payload: Capacity(
+        weight: 950,
+        domains: []
+    ),
+    attributes: {
+        "weight": 56500,
+        "radar-crosssection": 0.95
+    }
+)

@@ -1,0 +1,18 @@
+Weapon(
+    id: "cv-iac-1",
+    name: "INS Vikrant",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(13500),
+        speed: 52
+    ),
+    payload: Capacity(
+        weight: 24000,
+        domains: []
+    ),
+    attributes: {
+        "weight": 45000000,
+        "radar-crosssection": 0.95
+    }
+)

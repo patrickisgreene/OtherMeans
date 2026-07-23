@@ -1,0 +1,18 @@
+Weapon(
+    id: "mim-104",
+    name: "Patriot PAC-3",
+    domain: Missile,
+    guidance: Radar,
+    movement: Movement(
+        range: Limited(160),
+        speed: 5000
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 312,
+        "radar-crosssection": 0.03
+    }
+)

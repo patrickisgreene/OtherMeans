@@ -1,0 +1,18 @@
+Weapon(
+    id: "arjun-mk-ii",
+    name: "Arjun Mk 2",
+    domain: Land,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(450),
+        speed: 60
+    ),
+    payload: Capacity(
+        weight: 1000,
+        domains: []
+    ),
+    attributes:{
+        "weight": 68000,
+        "radar-crosssection": 1.0
+    }
+)

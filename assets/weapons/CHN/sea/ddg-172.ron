@@ -1,0 +1,18 @@
+Weapon(
+    id: "ddg-172",
+    name: "Type 052D",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(8000),
+        speed: 56
+    ),
+    payload: Capacity(
+        weight: 7000,
+        domains: []
+    ),
+    attributes: {
+        "weight": 7500000,
+        "radar-crosssection": 0.85
+    }
+)

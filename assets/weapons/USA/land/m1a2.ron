@@ -1,0 +1,18 @@
+Weapon(
+    id: "m1a2",
+    name: "Abrams",
+    domain: Land,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(426),
+        speed: 67
+    ),
+    payload: Capacity(
+        weight: 1000,
+        domains: []
+    ),
+    attributes: {
+        "weight": 63090,
+        "radar-crosssection": 1.0
+    }
+)

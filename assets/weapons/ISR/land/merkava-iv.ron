@@ -1,0 +1,18 @@
+Weapon(
+    id: "merkava-iv",
+    name: "Merkava Mk 4",
+    domain: Land,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(500),
+        speed: 64
+    ),
+    payload: Capacity(
+        weight: 1000,
+        domains: []
+    ),
+    attributes:{
+        "weight": 65000,
+        "radar-crosssection": 1.0
+    }
+)

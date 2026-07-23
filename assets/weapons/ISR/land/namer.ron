@@ -1,0 +1,18 @@
+Weapon(
+    id: "namer",
+    name: "Namer",
+    domain: Land,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(500),
+        speed: 60
+    ),
+    payload: Capacity(
+        weight: 400,
+        domains: []
+    ),
+    attributes: {
+        "weight": 60000,
+        "radar-crosssection": 0.9
+    }
+)

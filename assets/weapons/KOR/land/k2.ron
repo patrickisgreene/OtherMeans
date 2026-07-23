@@ -1,0 +1,18 @@
+Weapon(
+    id: "k2",
+    name: "K2 Black Panther",
+    domain: Land,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(450),
+        speed: 70
+    ),
+    payload: Capacity(
+        weight: 1050,
+        domains: []
+    ),
+    attributes: {
+        "weight": 55000,
+        "radar-crosssection": 0.95
+    }
+)

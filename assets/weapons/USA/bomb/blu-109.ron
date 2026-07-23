@@ -1,0 +1,17 @@
+Weapon(
+    id: "blu-109",
+    name: "BLU-109",
+    domain: Bomb,
+    guidance: Dumb,
+    movement: Movement(
+        speed: 0
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 876,
+        "radar-crosssection": 0.25
+    }
+)

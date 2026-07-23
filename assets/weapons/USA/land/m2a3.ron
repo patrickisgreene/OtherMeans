@@ -1,0 +1,18 @@
+Weapon(
+    id: "m2a3",
+    name: "Bradley",
+    domain: Land,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(402),
+        speed: 61
+    ),
+    payload: Capacity(
+        weight: 500,
+        domains: []
+    ),
+    attributes: {
+        "weight": 27600,
+        "radar-crosssection": 0.85
+    }
+)

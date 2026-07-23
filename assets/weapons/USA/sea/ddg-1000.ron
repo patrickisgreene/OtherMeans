@@ -1,0 +1,18 @@
+Weapon(
+    id: "ddg-1000",
+    name: "Zumwalt-class",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(9000),
+        speed: 56
+    ),
+    payload: Capacity(
+        weight: 9000,
+        domains: []
+    ),
+    attributes: {
+        "weight": 15700000,
+        "radar-crosssection": 0.1
+    }
+)

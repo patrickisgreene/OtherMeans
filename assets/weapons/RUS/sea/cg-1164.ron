@@ -1,0 +1,18 @@
+Weapon(
+    id: "cg-1164",
+    name: "Slava-class",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(15000),
+        speed: 59
+    ),
+    payload: Capacity(
+        weight: 9000,
+        domains: []
+    ),
+    attributes:{
+        "weight": 11500000,
+        "radar-crosssection": 0.9
+    }
+)

@@ -1,0 +1,17 @@
+Weapon(
+    id: "ssbn-726",
+    name: "Ohio-class SSBN",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        speed: 46
+    ),
+    payload: Capacity(
+        weight: 12000,
+        domains: []
+    ),
+    attributes: {
+        "weight": 18750000,
+        "radar-crosssection": 0.4
+    }
+)

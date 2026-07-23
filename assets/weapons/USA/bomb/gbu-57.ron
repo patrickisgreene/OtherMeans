@@ -1,0 +1,17 @@
+Weapon(
+    id: "gbu-57",
+    name: "GBU-57 MOP",
+    domain: Bomb,
+    guidance: Gps,
+    movement: Movement(
+        speed: 0
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 13600,
+        "radar-crosssection": 0.95
+    }
+)

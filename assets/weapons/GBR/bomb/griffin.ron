@@ -1,0 +1,17 @@
+Weapon(
+    id: "griffin",
+    name: "Griffin LGB",
+    domain: Bomb,
+    guidance: Laser,
+    movement: Movement(
+        speed: 0
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes:{
+        "weight": 20,
+        "radar-crosssection": 0.02
+    }
+)

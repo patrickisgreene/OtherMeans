@@ -1,0 +1,18 @@
+Weapon(
+    id: "ddg-991",
+    name: "Sejong the Great-class",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(10000),
+        speed: 56
+    ),
+    payload: Capacity(
+        weight: 8800,
+        domains: []
+    ),
+    attributes: {
+        "weight": 11000000,
+        "radar-crosssection": 0.9
+    }
+)

@@ -1,0 +1,18 @@
+Weapon(
+    id: "ztq-15",
+    name: "Type 15",
+    domain: Land,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(800),
+        speed: 70
+    ),
+    payload: Capacity(
+        weight: 700,
+        domains: []
+    ),
+    attributes: {
+        "weight": 33000,
+        "radar-crosssection": 0.85
+    }
+)

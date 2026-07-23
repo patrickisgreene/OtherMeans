@@ -1,0 +1,17 @@
+Weapon(
+    id: "odab-500pmv",
+    name: "ODAB-500",
+    domain: Bomb,
+    guidance: Dumb,
+    movement: Movement(
+        speed: 0
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes:{
+        "weight": 520,
+        "radar-crosssection": 0.45
+    }
+)

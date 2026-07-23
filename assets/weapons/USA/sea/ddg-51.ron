@@ -1,0 +1,18 @@
+Weapon(
+    id: "ddg-51",
+    name: "Arleigh Burke-class",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(8300),
+        speed: 56
+    ),
+    payload: Capacity(
+        weight: 8000,
+        domains: []
+    ),
+    attributes: {
+        "weight": 9700000,
+        "radar-crosssection": 0.85
+    }
+)

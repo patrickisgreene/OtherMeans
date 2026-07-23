@@ -1,0 +1,18 @@
+Weapon(
+    id: "aa-12",
+    name: "R-77 Adder",
+    domain: Missile,
+    guidance: Radar,
+    movement: Movement(
+        range: Limited(110),
+        speed: 4248
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes:{
+        "weight": 175,
+        "radar-crosssection": 0.02
+    }
+)

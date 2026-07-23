@@ -1,0 +1,18 @@
+Weapon(
+    id: "d-32",
+    name: "Type 45 Daring-class",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(13000),
+        speed: 52
+    ),
+    payload: Capacity(
+        weight: 6500,
+        domains: []
+    ),
+    attributes:{
+        "weight": 8000000,
+        "radar-crosssection": 0.85
+    }
+)

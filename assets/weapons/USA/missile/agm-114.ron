@@ -1,0 +1,18 @@
+Weapon(
+    id: "agm-114",
+    name: "AGM-114 Hellfire",
+    domain: Missile,
+    guidance: Radar,
+    movement: Movement(
+        range: Limited(11),
+        speed: 475
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 49,
+        "radar-crosssection": 0.008
+    }
+)

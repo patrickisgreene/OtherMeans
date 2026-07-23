@@ -1,0 +1,17 @@
+Weapon(
+    id: "spice-2000",
+    name: "Spice 2000",
+    domain: Bomb,
+    guidance: Gps,
+    movement: Movement(
+        speed: 0
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes:{
+        "weight": 1000,
+        "radar-crosssection": 0.3
+    }
+)

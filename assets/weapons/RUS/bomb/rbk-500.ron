@@ -1,0 +1,17 @@
+Weapon(
+    id: "rbk-500",
+    name: "RBK-500",
+    domain: Bomb,
+    guidance: Dumb,
+    movement: Movement(
+        speed: 0
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 500,
+        "radar-crosssection": 0.45
+    }
+)

@@ -1,0 +1,18 @@
+Weapon(
+    id: "yj-18",
+    name: "YJ-18",
+    domain: Missile,
+    guidance: Radar,
+    movement: Movement(
+        range: Limited(540),
+        speed: 3000
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 2500,
+        "radar-crosssection": 0.15
+    }
+)

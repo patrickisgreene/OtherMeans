@@ -1,0 +1,18 @@
+Weapon(
+    id: "ztz-99a",
+    name: "Type 99A",
+    domain: Land,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(600),
+        speed: 80
+    ),
+    payload: Capacity(
+        weight: 1000,
+        domains: []
+    ),
+    attributes:{
+        "weight": 54000,
+        "radar-crosssection": 0.95
+    }
+)

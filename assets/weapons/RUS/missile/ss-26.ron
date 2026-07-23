@@ -1,0 +1,18 @@
+Weapon(
+    id: "ss-26",
+    name: "Iskander-M",
+    domain: Missile,
+    guidance: Inertial,
+    movement: Movement(
+        range: Limited(500),
+        speed: 6860
+    ),
+    payload: Capacity(
+        weight: 0,
+        domains: []
+    ),
+    attributes: {
+        "weight": 3800,
+        "radar-crosssection": 0.3
+    }
+)

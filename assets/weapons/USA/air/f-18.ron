@@ -1,0 +1,18 @@
+Weapon(
+    id: "f-18",
+    name: "Super Hornet",
+    domain: Air,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(2346),
+        speed: 1915
+    ),
+    payload: Capacity(
+        weight: 8050,
+        domains: []
+    ),
+    attributes: {
+        "weight": 14552,
+        "radar-crosssection": 1.0
+    }
+)

@@ -1,0 +1,18 @@
+Weapon(
+    id: "dd-1155",
+    name: "Udaloy-class",
+    domain: Sea,
+    guidance: Human,
+    movement: Movement(
+        range: Limited(18500),
+        speed: 64
+    ),
+    payload: Capacity(
+        weight: 6000,
+        domains: []
+    ),
+    attributes: {
+        "weight": 8500000,
+        "radar-crosssection": 0.85
+    }
+)
