@@ -30,6 +30,7 @@ struct TerrainView {
     height_scale: f32,
     world_position: vec3<f32>,
     half_spaces: array<vec4<f32>, 6>,
+    viewport_shape: u32,
 #ifdef HIGH_PRECISION
     surface_approximation: array<SurfaceApproximation, 6>, // must be last field of this struct
 #endif

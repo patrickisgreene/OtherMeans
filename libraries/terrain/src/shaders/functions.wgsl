@@ -14,6 +14,18 @@ fn high_precision(view_distance: f32) -> bool {
 #endif
 }
 
+// Mirrors `TerrainViewport::distance` (Rust, math/viewport.rs): Euclidean for the default
+// spherical view region, Chebyshev/L-infinity (axis-aligned cube) for the square one. This is
+// the single choke point all LOD subdivision/morph/blend decisions flow through, so switching
+// `terrain_view.viewport_shape` reshapes the on-screen LOD pattern, not just tile streaming.
+fn terrain_view_distance(a: vec3<f32>, b: vec3<f32>) -> f32 {
+    if (terrain_view.viewport_shape == 1u) {
+        let d = abs(a - b);
+        return max(d.x, max(d.y, d.z));
+    }
+    return distance(a, b);
+}
+
 #ifdef VERTEX
 fn compute_coordinate(vertex_index: u32) -> Coordinate {
     // use first and last indices of the rows twice, to form degenerate triangles
@@ -103,7 +115,7 @@ fn compute_world_coordinate_imprecise(coordinate: Coordinate, height: f32) -> Wo
     let normal_world_from_unit = mat2x4_f32_to_mat3x3_unpack(terrain.unit_from_world_transpose_a, terrain.unit_from_world_transpose_b);
     let world_normal           = normalize(normal_world_from_unit * unit_normal);
 
-    let view_distance = distance(world_position + height * world_normal, terrain_view.world_position);
+    let view_distance = terrain_view_distance(world_position + height * world_normal, terrain_view.world_position);
 
     return WorldCoordinate(world_position, world_normal, view_distance);
 }
@@ -122,7 +134,7 @@ fn compute_world_coordinate_precise(coordinate: Coordinate, height: f32) -> Worl
                          approximation.p_uu * u * u + approximation.p_uv * u * v + approximation.p_vv * v * v;
     let world_normal = normalize(cross(approximation.p_v, approximation.p_u)); // normal at viewer coordinate good enough?
 
-    let view_distance = distance(world_position + height * world_normal, terrain_view.world_position);
+    let view_distance = terrain_view_distance(world_position + height * world_normal, terrain_view.world_position);
 
     return WorldCoordinate(world_position, world_normal, view_distance);
 }

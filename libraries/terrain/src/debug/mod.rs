@@ -3,6 +3,7 @@
 use crate::{
     data::{TileAtlas, TileTree, tile_tree::systems::generate_surface_approximation},
     debug::{debug_surface_approximation, orbital_camera_controller},
+    math::TerrainViewport,
     view::TerrainViewComponents,
 };
 
@@ -258,6 +259,14 @@ pub fn update_view_parameter(
         if input.just_pressed(KeyCode::KeyJ) {
             tile_tree.grid_size += 2;
             debug!("Increased the grid size to {}.", tile_tree.grid_size);
+        }
+
+        if input.just_pressed(KeyCode::KeyV) {
+            tile_tree.viewport = match tile_tree.viewport {
+                TerrainViewport::Sphere => TerrainViewport::Square,
+                TerrainViewport::Square => TerrainViewport::Sphere,
+            };
+            debug!("Toggled the viewport shape to {:?}.", tile_tree.viewport);
         }
     }
 }

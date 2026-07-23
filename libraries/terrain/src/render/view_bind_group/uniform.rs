@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy::render::render_resource::ShaderType;
 
 use crate::data::{TileTree, TileTreeEntry};
-use crate::math::ViewCoordinate;
+use crate::math::{TerrainViewport, ViewCoordinate};
 
 #[derive(Default, ShaderType)]
 pub struct TileTreeUniform {
@@ -29,6 +29,7 @@ pub(crate) struct TerrainViewUniform {
     coordinates: [ViewCoordinate; 6],
     world_position: Vec3,
     half_spaces: [Vec4; 6],
+    viewport_shape: u32,
     surface_approximation: [crate::math::SurfaceApproximation; 6],
 }
 
@@ -45,6 +46,10 @@ impl From<&TileTree> for TerrainViewUniform {
             load_distance: tile_tree.load_distance as f32,
             subdivision_distance: tile_tree.subdivision_distance as f32,
             precision_distance: tile_tree.precision_distance as f32,
+            viewport_shape: match tile_tree.viewport {
+                TerrainViewport::Sphere => 0,
+                TerrainViewport::Square => 1,
+            },
             morph_range: tile_tree.morph_range,
             blend_range: tile_tree.blend_range,
             face: tile_tree.view_face,
