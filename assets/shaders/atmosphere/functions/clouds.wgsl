@@ -81,12 +81,18 @@ fn compute_cloud_density(dir: vec3<f32>) -> f32 {
     let wind = sample_wind(dir);
 
     // Local east/north tangent basis at dir, used to turn the 2D wind vector into a 3D
-    // advection offset - degenerates at the poles (cross(up, dir) -> 0), nudged off zero since
-    // clouds directly over the poles are a visually negligible edge case, not worth branching on.
+    // advection offset. cross(up, dir) degenerates to zero at the poles, where "east" has no
+    // well-defined direction - rather than patching the direction (which, fed into an
+    // unbounded time integral below, previously produced a visible vortex/spiral artifact),
+    // fade the wind offset itself to zero as dir approaches either pole. pole_closeness is
+    // length(cross(up, dir)), i.e. cos(latitude): 1 at the equator, 0 at the poles.
     let up = vec3<f32>(0.0, 1.0, 0.0);
-    let east = normalize(cross(up, dir) + vec3<f32>(1.0e-4, 0.0, 0.0));
+    let east_raw = cross(up, dir);
+    let pole_closeness = length(east_raw);
+    let east = east_raw / max(pole_closeness, 1.0e-4);
     let north = cross(dir, east);
-    let offset = (east * wind.x + north * wind.y) * settings.time * settings.cloud_speed;
+    let pole_fade = smoothstep(0.0, 0.05, pole_closeness);
+    let offset = (east * wind.x + north * wind.y) * settings.time * settings.cloud_speed * pole_fade;
 
     let noise = cloud_fbm(dir * settings.cloud_scale + offset);
     let noise01 = saturate(noise * 0.5 + 0.5);
