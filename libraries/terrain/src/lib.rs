@@ -64,7 +64,7 @@ pub mod prelude {
         config::TerrainConfig,
         data::{AttachmentConfig, AttachmentFormat, AttachmentLabel, TileAtlas, TileTree},
         debug::{DebugTerrainMaterial, LoadingImages, OrbitalCameraController, TerrainDebugPlugin},
-        math::{TerrainShape, TileCoordinate},
+        math::{TerrainShape, TerrainViewport, TileCoordinate},
         picking::{PickingData, TerrainPickingPlugin},
         plugin::{TerrainPlugin, TerrainSettings},
         render::TerrainMaterialPlugin,

@@ -94,7 +94,10 @@ fn initialize(
         (earth, view),
         TileTree::new(
             &config,
-            &TerrainViewConfig::default(),
+            &TerrainViewConfig {
+                viewport: TerrainViewport::Square,
+                ..default()
+            },
             (earth, view),
             &mut commands,
             &mut buffers,

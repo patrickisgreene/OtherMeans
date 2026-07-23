@@ -2,6 +2,8 @@
 
 use bevy::{platform::collections::HashMap, prelude::*};
 
+use crate::math::TerrainViewport;
+
 /// Resource that stores components that are associated to a terrain entity and a view entity.
 #[derive(Deref, DerefMut, Resource)]
 pub struct TerrainViewComponents<C>(HashMap<(Entity, Entity), C>);
@@ -43,6 +45,8 @@ pub struct TerrainViewConfig {
     pub precision_distance: f64,
     pub view_lod: u32,
     pub order: u32,
+    /// The shape of the region within which tiles are requested at increasingly high LOD.
+    pub viewport: TerrainViewport,
 }
 
 impl Default for TerrainViewConfig {
@@ -61,6 +65,7 @@ impl Default for TerrainViewConfig {
             precision_distance: 0.001,
             view_lod: 10,
             order: 0,
+            viewport: TerrainViewport::default(),
         }
     }
 }

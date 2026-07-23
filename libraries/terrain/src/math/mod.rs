@@ -5,11 +5,13 @@ mod coordinate;
 mod spheroid;
 mod surface_approximation;
 mod terrain_shape;
+mod viewport;
 
 pub use self::{
     coordinate::{Coordinate, TileCoordinate, ViewCoordinate},
     surface_approximation::SurfaceApproximation,
     terrain_shape::TerrainShape,
+    viewport::TerrainViewport,
 };
 
 /// The square of the parameter c of the algebraic sigmoid function, used to convert between uv and st coordinates.

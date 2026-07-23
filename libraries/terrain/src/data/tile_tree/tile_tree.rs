@@ -1,6 +1,6 @@
 use crate::{
     config::TerrainConfig,
-    math::{Coordinate, TerrainShape, TileCoordinate},
+    math::{Coordinate, TerrainShape, TerrainViewport, TileCoordinate},
     render::TerrainViewUniform,
     view::TerrainViewConfig,
 };
@@ -52,6 +52,7 @@ pub struct TileTree {
     pub tree_size: u32,
     pub lod_count: u32,
     pub shape: TerrainShape,
+    pub viewport: TerrainViewport,
     pub geometry_tile_count: u32,
     pub refinement_count: u32,
     pub grid_size: u32,
@@ -129,6 +130,7 @@ impl TileTree {
             tree_size: view_config.tree_size,
             lod_count: config.lod_count,
             shape: config.shape,
+            viewport: view_config.viewport,
             geometry_tile_count: view_config.geometry_tile_count,
             refinement_count: view_config.refinement_count,
             grid_size: view_config.grid_size,
@@ -210,7 +212,8 @@ impl TileTree {
             Coordinate::new(tile.face, (tile.xy.as_dvec2() + offset) / tile_count)
                 .local_position(self.shape, self.approximate_height);
 
-        tile_local_position.distance(self.view_local_position)
+        self.viewport
+            .distance(tile_local_position, self.view_local_position)
     }
 
     /// Recomputes tile requests/releases for the current view position. Returns whether any

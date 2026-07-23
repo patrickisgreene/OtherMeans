@@ -2,6 +2,7 @@ use bevy::feathers::controls::{ButtonVariant, FeathersToolButton};
 use bevy::feathers::theme::ThemedText;
 use bevy::feathers::{constants::icons, containers::*, display::*};
 use terrain::debug::DebugTerrain;
+use terrain::math::TerrainViewport;
 
 use crate::debug::systems::disclosure_toggle;
 
@@ -72,6 +73,9 @@ pub fn debug_panel() -> impl Scene {
                                                 lod_slider("Blend Distance", 0.25, 20.0, 0.25, 5.0, |tile_tree, value| {tile_tree.blend_distance = value * tile_tree.shape.face_size();}),
                                                 lod_slider("Load Distance", 0.25, 20.0, 0.25, 6.0, |tile_tree, value| {tile_tree.load_distance = value * tile_tree.shape.face_size();}),
                                                 lod_slider("Grid Size", 2.0, 64.0, 2.0, 16.0, |tile_tree, value| {tile_tree.grid_size = value as u32;}),
+                                                lod_switch_checked("Square Viewport", |tile_tree, checked| {
+                                                    tile_tree.viewport = if checked { TerrainViewport::Square } else { TerrainViewport::Sphere };
+                                                }),
                                             ]
                                         ),
                                     ],

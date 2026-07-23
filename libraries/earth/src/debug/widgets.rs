@@ -50,6 +50,69 @@ pub fn lod_slider(
     }
 }
 
+/// A labeled toggle switch that writes into every live [`TileTree`] whenever it's flipped, via
+/// `setter` - same `tile_trees.values_mut()` pattern as [`lod_slider`], just for a `bool`
+/// instead of a slider value.
+pub fn lod_switch(
+    label_text: &str,
+    setter: impl Fn(&mut TileTree, bool) + Send + Sync + Clone + 'static,
+) -> impl Scene {
+    bsn! {
+        Node {
+            display: Display::Flex,
+            flex_direction: FlexDirection::Row,
+            align_items: AlignItems::Center,
+            justify_content: JustifyContent::SpaceBetween,
+            column_gap: px(8),
+        }
+        Children [
+            label_dim(label_text),
+            (
+                @FeathersToggleSwitch
+                on(checkbox_self_update)
+                on(move |change: On<ValueChange<bool>>, mut tile_trees: ResMut<TerrainViewComponents<TileTree>>| {
+                    for tile_tree in tile_trees.values_mut() {
+                        setter(tile_tree, change.value);
+                    }
+                })
+            ),
+        ]
+    }
+}
+
+/// Same as [`lod_switch`], but starts checked - for a `TileTree` field whose live default (set
+/// where the `TileTree` is constructed, not by `TerrainViewConfig::default()`) is already
+/// "on". `bsn!`'s `{expr}` interpolation only accepts a bare identifier here, not a conditional
+/// expression, so (as with [`debug_switch`]/[`debug_switch_checked`]) there's no single function
+/// that can toggle whether `Checked` is present based on a runtime `bool`.
+pub fn lod_switch_checked(
+    label_text: &str,
+    setter: impl Fn(&mut TileTree, bool) + Send + Sync + Clone + 'static,
+) -> impl Scene {
+    bsn! {
+        Node {
+            display: Display::Flex,
+            flex_direction: FlexDirection::Row,
+            align_items: AlignItems::Center,
+            justify_content: JustifyContent::SpaceBetween,
+            column_gap: px(8),
+        }
+        Children [
+            label_dim(label_text),
+            (
+                @FeathersToggleSwitch
+                Checked
+                on(checkbox_self_update)
+                on(move |change: On<ValueChange<bool>>, mut tile_trees: ResMut<TerrainViewComponents<TileTree>>| {
+                    for tile_tree in tile_trees.values_mut() {
+                        setter(tile_tree, change.value);
+                    }
+                })
+            ),
+        ]
+    }
+}
+
 /// A labeled slider that writes into every live [`TileAtlas`] (there's normally exactly one -
 /// the "earth" entity spawned in `initialize()`) whenever it's dragged, via `setter`. Silently
 /// does nothing before the terrain has finished loading, matching the same
