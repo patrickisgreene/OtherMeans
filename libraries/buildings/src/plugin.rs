@@ -4,6 +4,7 @@ use bevy::{
     prelude::*,
     render::{
         extract_component::ExtractComponentPlugin,
+        extract_resource::ExtractResourcePlugin,
         render_phase::AddRenderCommand,
         render_resource::SpecializedRenderPipelines,
         sync_component::SyncComponentPlugin,
@@ -20,8 +21,9 @@ use crate::render::{
         extract_building_instances, prepare_merged_building_buffer, queue_buildings,
         BuildingsRendererEntity, DrawBuildings, MergedBuildingInstances,
     },
+    fade::{prepare_fade_params_bind_group, prepare_fade_params_buffer, BuildingsFadeParams, FadeParamsBuffer},
     origin::BuildingTileOrigin,
-    pipeline::{init_buildings_pipeline, BuildingsPipeline},
+    pipeline::{init_buildings_pipeline, init_fade_params_bind_group_layout, BuildingsPipeline},
 };
 
 pub struct BuildingsPlugin;
@@ -36,10 +38,12 @@ impl Plugin for BuildingsPlugin {
             .register_asset_loader(OceanMaskLoader)
             .init_asset::<HeightMap>()
             .register_asset_loader(HeightMapLoader)
+            .init_resource::<BuildingsFadeParams>()
             .add_systems(Update, update_building_batches)
             .add_plugins((
                 SyncComponentPlugin::<BuildingInstances>::default(),
                 ExtractComponentPlugin::<BuildingTileOrigin>::default(),
+                ExtractResourcePlugin::<BuildingsFadeParams>::default(),
             ));
 
         app.sub_app_mut(RenderApp)
@@ -47,12 +51,22 @@ impl Plugin for BuildingsPlugin {
             .init_resource::<SpecializedRenderPipelines<BuildingsPipeline>>()
             .init_resource::<MergedBuildingInstances>()
             .init_resource::<BuildingsRendererEntity>()
-            .add_systems(RenderStartup, init_buildings_pipeline.after(MeshPipelineSystems))
+            .init_resource::<FadeParamsBuffer>()
+            .add_systems(
+                RenderStartup,
+                (
+                    init_fade_params_bind_group_layout,
+                    init_buildings_pipeline.after(MeshPipelineSystems),
+                )
+                    .chain(),
+            )
             .add_systems(ExtractSchedule, extract_building_instances)
             .add_systems(
                 Render,
                 (
                     prepare_merged_building_buffer.in_set(RenderSystems::PrepareResources),
+                    prepare_fade_params_buffer.in_set(RenderSystems::PrepareResources),
+                    prepare_fade_params_bind_group.in_set(RenderSystems::PrepareBindGroups),
                     queue_buildings.in_set(RenderSystems::QueueMeshes),
                 ),
             );

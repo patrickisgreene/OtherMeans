@@ -6,19 +6,20 @@ use bevy::{
 };
 use big_space::prelude::{CellCoord, Grid, Grids};
 use terrain::math::Coordinate;
-use terrain::prelude::{TerrainShape, TileAtlas, TileCoordinate};
+use terrain::prelude::{TerrainShape, TerrainViewComponents, TileAtlas, TileCoordinate, TileTree};
 
 use crate::height::HeightMap;
 use crate::ocean_mask::OceanMask;
 use crate::population::PopulationDensity;
+use crate::render::fade::BuildingsFadeParams;
 
 /// Number of building instances along each edge of an active tile.
-pub const GRID_SIZE: u32 = 100;
+pub const GRID_SIZE: u32 = 80;
 /// Fraction of a building's footprint cell that the cube actually occupies, leaving gaps
 /// between buildings rather than a solid slab. Height is derived from this too (see
 /// `MIN_HEIGHT_FRACTION`/`MAX_HEIGHT_MULTIPLIER`), so this single constant scales whole
 /// buildings uniformly.
-const FOOTPRINT_FILL: f64 = 0.40;
+const FOOTPRINT_FILL: f64 = 0.20;
 const BUILDING_COLOR: [f32; 3] = [0.62, 0.58, 0.52];
 /// Height (relative to footprint width) of a building in the least-populated non-zero areas.
 const MIN_HEIGHT_FRACTION: f32 = 0.00001;
@@ -30,7 +31,7 @@ const MAX_HEIGHT_MULTIPLIER: f32 = 6.0;
 /// population counts into surprisingly high byte values, so without this floor almost any
 /// nonzero population — including near-empty rural areas — ends up spawning buildings. Tune
 /// this by eye; higher values mean sparser (but still nonzero) areas get skipped too.
-const MIN_DENSITY_BYTE: u8 = 80;
+const MIN_DENSITY_BYTE: u8 = 100;
 /// How much of a grid cell's free space (cell width minus footprint width) a building may be
 /// nudged by, as a fraction in `[0, 1]`. Breaks up the otherwise perfectly regular placement
 /// grid without letting buildings drift into a neighboring cell.
@@ -242,9 +243,20 @@ pub fn update_building_batches(
     populations: Res<Assets<PopulationDensity>>,
     ocean_masks: Res<Assets<OceanMask>>,
     height_maps: Res<Assets<HeightMap>>,
+    tile_trees: Res<TerrainViewComponents<TileTree>>,
+    mut fade_params: ResMut<BuildingsFadeParams>,
     grids: Grids,
     terrain_query: Query<(Entity, &TileAtlas)>,
 ) {
+    // Mirrors terrain's own LOD blend region (see `render::fade::BuildingsFadeParams`) so
+    // buildings fade out in sync with it instead of popping when a tile leaves the active set.
+    // There's only ever one (terrain, view) pair in this app.
+    if let Some(tile_tree) = tile_trees.values().next() {
+        fade_params.blend_distance = tile_tree.blend_distance as f32;
+        fade_params.blend_range = tile_tree.blend_range;
+        fade_params.max_lod = tile_tree.lod_count.saturating_sub(1) as f32;
+    }
+
     let population_handle = population_handle
         .get_or_insert_with(|| asset_server.load("earth/population.tif"))
         .clone();

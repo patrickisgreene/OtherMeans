@@ -2,8 +2,8 @@
 //!
 
 use crate::{
-    math::{TerrainShape, TileCoordinate},
     data::{AttachmentConfig, AttachmentLabel},
+    math::{TerrainShape, TileCoordinate},
 };
 use bevy::{ecs::entity::hash_map::EntityHashMap, platform::collections::HashMap, prelude::*};
 use serde::{Deserialize, Serialize};
@@ -49,7 +49,7 @@ pub struct TerrainConfig {
 }
 
 fn default_height_scale() -> f32 {
-    1.0
+    10000.0
 }
 
 impl Default for TerrainConfig {

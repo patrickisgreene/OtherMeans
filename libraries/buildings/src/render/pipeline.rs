@@ -3,12 +3,16 @@ use bevy::{
     mesh::VertexBufferLayout,
     pbr::{MeshPipeline, MeshPipelineKey},
     prelude::*,
-    render::{render_resource::*, renderer::RenderDevice},
+    render::{
+        render_resource::{binding_types::uniform_buffer, *},
+        renderer::RenderDevice,
+    },
     shader::Shader,
 };
 use bevy::core_pipeline::core_3d::CORE_3D_DEPTH_FORMAT;
 
 use crate::instances::InstanceData;
+use crate::render::fade::BuildingsFadeParams;
 
 pub const BUILDINGS_SHADER: &str = "embedded://buildings/shaders/buildings.wgsl";
 
@@ -63,21 +67,42 @@ pub struct CubeVertexBuffer {
     pub vertex_count: u32,
 }
 
+/// The bind group layout for the per-frame [`BuildingsFadeParams`] uniform (group 1).
+#[derive(Resource)]
+pub struct FadeParamsBindGroupLayout {
+    pub layout: BindGroupLayoutDescriptor,
+}
+
+pub fn init_fade_params_bind_group_layout(mut commands: Commands) {
+    let layout = BindGroupLayoutDescriptor::new(
+        "BuildingsFadeParams layout",
+        &BindGroupLayoutEntries::single(
+            ShaderStages::VERTEX,
+            uniform_buffer::<BuildingsFadeParams>(false),
+        ),
+    );
+
+    commands.insert_resource(FadeParamsBindGroupLayout { layout });
+}
+
 /// The pipeline used to render instanced building cubes.
 #[derive(Resource)]
 pub struct BuildingsPipeline {
     mesh_pipeline: MeshPipeline,
+    fade_layout: BindGroupLayoutDescriptor,
     shader: Handle<Shader>,
 }
 
 pub fn init_buildings_pipeline(
     mut commands: Commands,
     mesh_pipeline: Res<MeshPipeline>,
+    fade_layout: Res<FadeParamsBindGroupLayout>,
     asset_server: Res<AssetServer>,
     render_device: Res<RenderDevice>,
 ) {
     commands.insert_resource(BuildingsPipeline {
         mesh_pipeline: mesh_pipeline.clone(),
+        fade_layout: fade_layout.layout.clone(),
         shader: asset_server.load(BUILDINGS_SHADER),
     });
 
@@ -150,7 +175,7 @@ impl SpecializedRenderPipeline for BuildingsPipeline {
 
         RenderPipelineDescriptor {
             label: Some("buildings_pipeline".into()),
-            layout: vec![view_layout.main_layout.clone()],
+            layout: vec![view_layout.main_layout.clone(), self.fade_layout.clone()],
             vertex: VertexState {
                 shader: self.shader.clone(),
                 entry_point: Some("vertex".into()),
@@ -163,7 +188,7 @@ impl SpecializedRenderPipeline for BuildingsPipeline {
                 shader_defs: vec![],
                 targets: vec![Some(ColorTargetState {
                     format: key.view_key.target_format(),
-                    blend: None,
+                    blend: Some(BlendState::ALPHA_BLENDING),
                     write_mask: ColorWrites::ALL,
                 })],
             }),

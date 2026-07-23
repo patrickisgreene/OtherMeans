@@ -20,6 +20,7 @@ use bevy::{
 };
 
 use crate::instances::{BuildingInstances, InstanceData};
+use crate::render::fade::SetFadeParamsBindGroup;
 use crate::render::origin::BuildingTileOrigin;
 use crate::render::pipeline::{BuildingsPipeline, BuildingsPipelineKey, CubeVertexBuffer};
 
@@ -116,6 +117,7 @@ impl<P: PhaseItem> RenderCommand<P> for DrawBuildingsInstanced {
 pub type DrawBuildings = (
     SetItemPipeline,
     SetMeshViewBindGroup<0>,
+    SetFadeParamsBindGroup<1>,
     DrawBuildingsInstanced,
 );
 
