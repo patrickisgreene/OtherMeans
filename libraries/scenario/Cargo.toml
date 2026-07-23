@@ -1,0 +1,9 @@
+[package]
+name = "scenario"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+bevy.workspace = true
+serde.workspace = true
+smol_str.workspace = true

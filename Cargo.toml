@@ -47,6 +47,7 @@ earth.path = "libraries/earth"
 terrain.path = "libraries/terrain"
 statistics.path = "libraries/statistics"
 weapons.path = "libraries/weapons"
+scenario.path = "libraries/scenario"
 terrain-processor.path = "libraries/terrain-preprocess"
 texture-processor.path = "libraries/texture-processor"
 
