@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-#[derive(Component, Reflect, Deref, Debug, PartialEq, Clone, Copy, Hash, Eq)]
+#[derive(Component, Default, Reflect, Deref, Debug, PartialEq, Clone, Copy, Hash, Eq)]
 pub struct Statistic<const S: &'static str> {
     pub(crate) last: u8,
     #[deref]
@@ -10,6 +10,10 @@ pub struct Statistic<const S: &'static str> {
 impl<const S: &'static str> Statistic<S> {
     pub const MAX: u8 = u8::MAX;
     pub const MIN: u8 = u8::MIN;
+
+    pub fn new(value: u8) -> Self {
+        Self { last: value, value }
+    }
 
     pub fn set(&mut self, value: u8) {
         self.last = self.value;
@@ -29,6 +33,9 @@ pub struct CumulativeStatistic<const S: &'static str> {
 }
 
 impl<const S: &'static str> CumulativeStatistic<S> {
+    pub fn new(max: u32, value: u32) -> Self {
+        Self { max, value }
+    }
     pub fn get(&self) -> u32 {
         self.value
     }

@@ -37,7 +37,9 @@ where
             .init_resource::<SpecializedRenderPipelines<TerrainRenderPipeline<M>>>()
             .add_systems(
                 RenderStartup,
-                init_terrain_render_pipeline::<M>.after(MeshPipelineSystems),
+                init_terrain_render_pipeline::<M>
+                    .after(crate::render::pipelines::init_tiling_prepass_pipelines)
+                    .after(MeshPipelineSystems),
             )
             .add_systems(
                 Render,

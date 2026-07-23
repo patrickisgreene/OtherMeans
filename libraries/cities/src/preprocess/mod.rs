@@ -1,8 +1,10 @@
 mod cli;
 
+use std::str::FromStr;
+
 pub use cli::Cli;
 
-use crate::descriptor::{CitiesDatabase, CityDescriptor, Industries};
+use crate::descriptor::{CitiesDatabase, CityDescriptor, CountryId, Industries};
 use shapefile::Shape;
 use shapefile::dbase::{FieldValue, Record};
 use smol_str::SmolStr;
@@ -51,7 +53,7 @@ pub fn run_preprocessor() -> Result<(), Error> {
             lat,
             lon,
             name: field_string(&record, "NAME"),
-            country: field_string(&record, "ADM0NAME"),
+            country: CountryId::from_str(&field_string(&record, "ADM0NAME")).unwrap(),
             scale_rank: field_number(&record, "SCALERANK") as u8,
             label_rank: field_number(&record, "LABELRANK") as u8,
             population: field_number(&record, "POP_MAX") as u32,

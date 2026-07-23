@@ -2,8 +2,7 @@ use bevy::dev_tools::fps_overlay::FpsOverlayPlugin;
 use bevy::render::storage::ShaderBuffer;
 use bevy::shader::ShaderRef;
 use bevy::{prelude::*, reflect::TypePath, render::render_resource::*};
-use big_space::plugin::BigSpaceMinimalPlugins;
-use terrain::prelude::*;
+use terrain::{TerrainPlugins, prelude::*};
 
 const RADIUS: f64 = 6371000.0;
 
@@ -37,11 +36,7 @@ fn main() {
                 })
                 .build()
                 .disable::<TransformPlugin>(),
-            BigSpaceMinimalPlugins,
-            TerrainPlugin,
-            TerrainMaterialPlugin::<CustomMaterial>::default(),
-            TerrainDebugPlugin,
-            TerrainPickingPlugin,
+            TerrainPlugins::<CustomMaterial>::default(),
             FpsOverlayPlugin::default(),
         ))
         .insert_resource(TerrainSettings::new(vec!["albedo"]))

@@ -3,15 +3,11 @@ use serde::{Deserialize, Serialize};
 use smol_str::SmolStr;
 use std::collections::HashMap;
 
-use crate::{
-    CombatantId, ControlledTerritory, CountryId, StatisticModifier, TimeConfig,
-    WeaponsPlacementStrategy,
-};
+use crate::{CombatantId, ControlledTerritory, StatisticModifier, WeaponsPlacementStrategy};
+use cities::descriptor::CountryId;
 
 #[derive(Resource, Default, Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Scenario {
-    pub min_population: u32,
-    pub time_config: TimeConfig,
     pub combatants: HashSet<CombatantId>,
     pub territory: HashMap<CombatantId, Vec<ControlledTerritory>>,
     pub effect_modifiers: HashMap<CombatantId, HashMap<SmolStr, StatisticModifier>>,
@@ -24,7 +20,6 @@ impl Scenario {
         combatants.insert(CombatantId::PLAYER);
         Scenario {
             combatants,
-            min_population: 100_000,
             ..Default::default()
         }
     }

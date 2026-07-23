@@ -295,6 +295,7 @@ pub fn color_field(
                             @value: {initial.x},
                             @channel: ColorChannel::Red
                         }
+                        on(slider_self_update)
                         on(move |change: On<ValueChange<f32>>, mut materials: ResMut<Assets<EarthMaterial>>| {
                             for material in materials.iter_mut() {
                                 set_r(&mut material.1.constants, change.value);
@@ -306,6 +307,7 @@ pub fn color_field(
                             @value: {initial.y},
                             @channel: ColorChannel::Green
                         }
+                        on(slider_self_update)
                         on(move |change: On<ValueChange<f32>>, mut materials: ResMut<Assets<EarthMaterial>>| {
                             for material in materials.iter_mut() {
                                 set_g(&mut material.1.constants, change.value);
@@ -317,6 +319,7 @@ pub fn color_field(
                             @value: {initial.z},
                             @channel: ColorChannel::Blue
                         }
+                        on(slider_self_update)
                         on(move |change: On<ValueChange<f32>>, mut materials: ResMut<Assets<EarthMaterial>>| {
                             for material in materials.iter_mut() {
                                 set_b(&mut material.1.constants, change.value);

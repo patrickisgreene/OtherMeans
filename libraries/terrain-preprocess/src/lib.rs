@@ -8,6 +8,7 @@ use crate::{
     core::dataset::{PreprocessContext, clear_directory, delete_directory},
     process::create_mask_and_fill_no_data,
     process::downsample_and_stitch,
+    process::reconcile_face_edges,
     process::reproject,
     process::split_and_stitch,
 };
@@ -42,6 +43,8 @@ fn preprocess_gen<T: Copy + GdalType + PartialEq + NumCast>(
     let progress_bar = PreprocessBar::new("Reprojecting".to_string());
     let faces = reproject::<T>(src_dataset, context, Some(progress_bar.callback())).unwrap();
     progress_bar.finish();
+
+    reconcile_face_edges::<T>(&faces, context).unwrap();
 
     let progress_bar = PreprocessBar::new("Splitting".to_string());
     let tiles = split_and_stitch::<T>(faces, context, Some(progress_bar.callback())).unwrap();

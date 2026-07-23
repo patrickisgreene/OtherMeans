@@ -50,7 +50,7 @@ const NEIGHBOUR_OFFSETS: [IVec2; 8] = [
     IVec2::new(-1, 1),
 ];
 
-const NEIGHBOURING_FACES: [[u32; 5]; 6] = [
+pub const NEIGHBOURING_FACES: [[u32; 5]; 6] = [
     [0, 2, 1, 5, 4],
     [1, 2, 3, 5, 0],
     [2, 4, 3, 1, 0],
@@ -85,7 +85,7 @@ impl FaceRotation {
         }
     }
 
-    fn new(face: u32, other_face: u32) -> Self {
+    pub fn new(face: u32, other_face: u32) -> Self {
         let index = if face.is_multiple_of(2) {
             (6 + other_face - face) % 6
         } else {

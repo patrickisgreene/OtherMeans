@@ -44,6 +44,7 @@ bevy_common_assets = { version = "0.17.0", features = ["ron"] }
 
 buildings.path = "libraries/buildings"
 earth.path = "libraries/earth"
+cities.path = "libraries/cities"
 terrain.path = "libraries/terrain"
 statistics.path = "libraries/statistics"
 weapons.path = "libraries/weapons"

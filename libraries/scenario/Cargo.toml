@@ -7,3 +7,5 @@ edition.workspace = true
 bevy.workspace = true
 serde.workspace = true
 smol_str.workspace = true
+
+cities.workspace = true
