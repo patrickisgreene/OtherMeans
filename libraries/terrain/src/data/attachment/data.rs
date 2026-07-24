@@ -73,7 +73,7 @@ pub struct Attachment {
 }
 
 /// Bevy resolves asset-load paths relative to the configured asset root (e.g. `example/assets`),
-/// but `config.tc.ron`'s stored `path` may be an absolute filesystem path (whatever
+/// but `terrain.ron`'s stored `path` may be an absolute filesystem path (whatever
 /// `--terrain-path` was passed to terrain-preprocess with) - joining that in unchanged would
 /// duplicate the asset root in the final load path. Since the terrain's own tiles always live
 /// somewhere under the project's `assets` directory, find that component (wherever it falls,

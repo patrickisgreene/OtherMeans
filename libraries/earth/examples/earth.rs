@@ -51,7 +51,7 @@ fn initialize(
         return;
     }
     if config.is_none() {
-        *config = Some(asset_server.load("earth/config.tc.ron"));
+        *config = Some(asset_server.load("earth/terrain.ron"));
         return;
     }
     let handle = config.clone().unwrap();

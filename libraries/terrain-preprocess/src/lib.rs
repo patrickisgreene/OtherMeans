@@ -106,7 +106,7 @@ fn asset_relative_path(path: &std::path::Path) -> std::path::PathBuf {
 }
 
 fn save_terrain_config(tiles: Vec<TileCoordinate>, context: &PreprocessContext) {
-    let file_path = context.terrain_path.join("config.tc.ron");
+    let file_path = context.terrain_path.join("terrain.ron");
 
     let mut config = TerrainConfig::load_file(&file_path).unwrap_or_default();
 

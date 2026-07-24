@@ -69,7 +69,7 @@ fn initialize(
             return;
         }
     } else {
-        *config = Some(MarsConfig(asset_server.load("terrain/config.tc.ron")));
+        *config = Some(MarsConfig(asset_server.load("terrain/terrain.ron")));
         return;
     };
 
