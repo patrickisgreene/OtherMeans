@@ -48,6 +48,8 @@ pub struct TerrainConfig {
     pub tiles: Vec<TileCoordinate>,
 }
 
+// TODO: This only works for earth sized objects. It destroys the mars example.
+// find a way to set this based on the Terrain Shape.
 fn default_height_scale() -> f32 {
     100000.0
 }
