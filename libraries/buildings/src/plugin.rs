@@ -10,7 +10,6 @@ use bevy::{
 };
 
 use crate::instances::{BuildingInstances, update_building_batches};
-use crate::ocean_mask::{OceanMask, OceanMaskLoader};
 use crate::population::{PopulationDensity, PopulationDensityLoader};
 use crate::render::{
     draw::{
@@ -31,8 +30,6 @@ impl Plugin for BuildingsPlugin {
     fn build(&self, app: &mut App) {
         app.init_asset::<PopulationDensity>()
             .register_asset_loader(PopulationDensityLoader)
-            .init_asset::<OceanMask>()
-            .register_asset_loader(OceanMaskLoader)
             .init_resource::<BuildingsFadeParams>()
             .add_systems(Update, update_building_batches)
             .add_plugins((

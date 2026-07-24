@@ -15,7 +15,6 @@ use terrain::prelude::{
 use roads::descriptor::RoadNetwork;
 use roads::index::{RoadCoarseIndex, build_coarse_index, coarse_ancestor, tile_road_occupancy};
 
-use crate::ocean_mask::OceanMask;
 use crate::population::PopulationDensity;
 use crate::render::fade::BuildingsFadeParams;
 use crate::tile_height::{height_tile_path, sample_height_tile, tile_local_uv};
@@ -119,20 +118,22 @@ fn jitter_uv(coordinate: TileCoordinate, ix: u32, iy: u32, amplitude: f64) -> DV
 }
 
 /// Checks whether any of the 4 corners of a `half_uv`-radius square footprint centered at
-/// `center_uv` fall in water, per `ocean_mask`.
-fn footprint_touches_ocean(
-    face: u32,
+/// `center_uv` fall in water (elevation == 0.0), by sampling the height tile directly.
+fn footprint_in_ocean(
+    coordinate: TileCoordinate,
+    height_image: &Image,
+    height_attachment: &Attachment,
     center_uv: DVec2,
     half_uv: f64,
-    spherical: bool,
-    ocean_mask: &OceanMask,
+    height_scale: f32,
 ) -> bool {
     for dy in [-1.0, 1.0] {
         for dx in [-1.0, 1.0] {
             let corner_uv = center_uv + DVec2::new(dx, dy) * half_uv;
-            let corner_unit = Coordinate::new(face, corner_uv).unit_position(spherical);
-            let (lat, lon) = lat_lon_degrees(corner_unit);
-            if ocean_mask.is_water(lat, lon) {
+            let local_uv = tile_local_uv(corner_uv, coordinate);
+            let elevation =
+                sample_height_tile(height_image, height_attachment, local_uv) * height_scale;
+            if elevation == 0.0 {
                 return true;
             }
         }
@@ -141,12 +142,12 @@ fn footprint_touches_ocean(
 }
 
 /// Generates a grid of mono-colored cube instances covering `coordinate`'s footprint, skipping
-/// any sample point where `population` reports zero density, `ocean_mask` reports water, or
-/// `road_occupancy` (see `roads::index::tile_road_occupancy`, computed once per tile by the
-/// caller) flags that grid cell as having a road through it - so buildings don't spawn on top of
-/// `vehicles`' traffic - and scaling each surviving instance's height by its local density and
-/// placing it at its actual terrain elevation (via `height_image`/`height_attachment` and
-/// `height_scale`), plus the
+/// any sample point where `population` reports zero density, the height tile reports water
+/// (elevation == 0.0), or `road_occupancy` (see `roads::index::tile_road_occupancy`, computed
+/// once per tile by the caller) flags that grid cell as having a road through it - so buildings
+/// don't spawn on top of `vehicles`' traffic - and scaling each surviving instance's height by
+/// its local density and placing it at its actual terrain elevation (via `height_image`/`height_attachment`
+/// and `height_scale`), plus the
 /// big_space cell/translation the owning entity should be spawned at. Returns an empty instance
 /// list if the tile has no buildings anywhere in its footprint.
 ///
@@ -160,7 +161,6 @@ pub fn generate_tile_instances(
     height_scale: f32,
     grid: &Grid,
     population: &PopulationDensity,
-    ocean_mask: &OceanMask,
     height_image: &Image,
     height_attachment: &Attachment,
     road_occupancy: &[bool],
@@ -200,12 +200,13 @@ pub fn generate_tile_instances(
                 continue;
             }
 
-            if footprint_touches_ocean(
-                coordinate.face,
+            if footprint_in_ocean(
+                coordinate,
+                height_image,
+                height_attachment,
                 sample_uv,
                 half_footprint_uv,
-                spherical,
-                ocean_mask,
+                height_scale,
             ) {
                 continue;
             }
@@ -250,20 +251,17 @@ pub fn generate_tile_instances(
 /// Keeps one building-batch entity alive per terrain tile that is currently loaded at the
 /// highest LOD and has at least one populated, non-ocean sample point, spawning/despawning
 /// entities as the active tile set (and its population/ocean coverage) changes. Waits for the
-/// population density, ocean mask, and height map assets to finish loading before doing
-/// anything.
+/// population density and height map assets to finish loading before doing anything.
 #[allow(clippy::too_many_arguments)]
 pub fn update_building_batches(
     mut commands: Commands,
     mut known: Local<HashMap<TileCoordinate, Option<Entity>>>,
     mut population_handle: Local<Option<Handle<PopulationDensity>>>,
-    mut ocean_mask_handle: Local<Option<Handle<OceanMask>>>,
     mut height_tile_handles: Local<HashMap<TileCoordinate, Handle<Image>>>,
     mut road_network_handle: Local<Option<Handle<RoadNetwork>>>,
     mut road_coarse_index: Local<Option<RoadCoarseIndex>>,
     asset_server: Res<AssetServer>,
     populations: Res<Assets<PopulationDensity>>,
-    ocean_masks: Res<Assets<OceanMask>>,
     images: Res<Assets<Image>>,
     road_networks: Res<Assets<RoadNetwork>>,
     tile_trees: Res<TerrainViewComponents<TileTree>>,
@@ -284,13 +282,6 @@ pub fn update_building_batches(
         .get_or_insert_with(|| asset_server.load("earth/population.tif"))
         .clone();
     let Some(population) = populations.get(&population_handle) else {
-        return;
-    };
-
-    let ocean_mask_handle = ocean_mask_handle
-        .get_or_insert_with(|| asset_server.load("earth/ocean-mask.tif"))
-        .clone();
-    let Some(ocean_mask) = ocean_masks.get(&ocean_mask_handle) else {
         return;
     };
 
@@ -379,7 +370,6 @@ pub fn update_building_batches(
                 tile_atlas.height_scale,
                 grid,
                 population,
-                ocean_mask,
                 height_image,
                 height_attachment,
                 &road_occupancy,
