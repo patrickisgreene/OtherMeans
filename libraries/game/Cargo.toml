@@ -1,0 +1,10 @@
+[package]
+name = "game"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+bevy.workspace = true
+cities.workspace = true
+terrain.workspace = true
+scenario.workspace = true
