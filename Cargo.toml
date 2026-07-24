@@ -43,6 +43,7 @@ big_space = { git = "https://github.com/m-edlund/big_space", features = ["i32"],
 bevy_common_assets = { version = "0.17.0", features = ["ron"] }
 
 buildings.path = "libraries/buildings"
+camera.path = "libraries/camera"
 earth.path = "libraries/earth"
 cities.path = "libraries/cities"
 roads.path = "libraries/roads"
