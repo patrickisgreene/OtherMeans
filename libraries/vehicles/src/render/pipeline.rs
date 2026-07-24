@@ -1,3 +1,4 @@
+use bevy::core_pipeline::core_3d::CORE_3D_DEPTH_FORMAT;
 use bevy::{
     asset::{AssetServer, Handle},
     mesh::VertexBufferLayout,
@@ -9,12 +10,11 @@ use bevy::{
     },
     shader::Shader,
 };
-use bevy::core_pipeline::core_3d::CORE_3D_DEPTH_FORMAT;
 
 use crate::instances::InstanceData;
 use crate::render::time::VehiclesRenderParams;
 
-pub const VEHICLES_SHADER: &str = "embedded://vehicles/shaders/vehicles.wgsl";
+pub const VEHICLES_SHADER: &str = "shaders/vehicles.wgsl";
 
 /// A low-poly semi-truck silhouette: a tall box at the back (trailer, roof at local Y = +0.5,
 /// running flat from the back all the way to `TRAILER_FRONT_Z`) then a sloped section dropping
@@ -43,16 +43,16 @@ const TRAILER_FRONT_Z: f32 = 0.15;
 /// The 10 unique corners, indexed by `TRUCK_INDICES` below.
 fn truck_positions() -> [Vec3; 10] {
     [
-        Vec3::new(-0.5, -0.5, -0.5),               // 0: bottom-back-left
-        Vec3::new(0.5, -0.5, -0.5),                // 1: bottom-back-right
-        Vec3::new(-0.5, -0.5, 0.5),                // 2: bottom-front-left
-        Vec3::new(0.5, -0.5, 0.5),                 // 3: bottom-front-right
-        Vec3::new(-0.5, 0.5, -0.5),                // 4: top-back-left (trailer roof, back edge)
-        Vec3::new(0.5, 0.5, -0.5),                 // 5: top-back-right
-        Vec3::new(-0.5, 0.5, TRAILER_FRONT_Z),     // 6: top-trailer-left (trailer roof, front edge)
-        Vec3::new(0.5, 0.5, TRAILER_FRONT_Z),      // 7: top-trailer-right
-        Vec3::new(-0.5, CAB_ROOF_Y, 0.5),          // 8: top-cab-left (cab roof)
-        Vec3::new(0.5, CAB_ROOF_Y, 0.5),           // 9: top-cab-right
+        Vec3::new(-0.5, -0.5, -0.5),           // 0: bottom-back-left
+        Vec3::new(0.5, -0.5, -0.5),            // 1: bottom-back-right
+        Vec3::new(-0.5, -0.5, 0.5),            // 2: bottom-front-left
+        Vec3::new(0.5, -0.5, 0.5),             // 3: bottom-front-right
+        Vec3::new(-0.5, 0.5, -0.5),            // 4: top-back-left (trailer roof, back edge)
+        Vec3::new(0.5, 0.5, -0.5),             // 5: top-back-right
+        Vec3::new(-0.5, 0.5, TRAILER_FRONT_Z), // 6: top-trailer-left (trailer roof, front edge)
+        Vec3::new(0.5, 0.5, TRAILER_FRONT_Z),  // 7: top-trailer-right
+        Vec3::new(-0.5, CAB_ROOF_Y, 0.5),      // 8: top-cab-left (cab roof)
+        Vec3::new(0.5, CAB_ROOF_Y, 0.5),       // 9: top-cab-right
     ]
 }
 
@@ -199,7 +199,10 @@ fn truck_vertex_buffer_layout() -> VertexBufferLayout {
 /// into an `array<vec4<f32>, 8>` local variable.
 fn instance_buffer_layout() -> VertexBufferLayout {
     let mut attributes = Vec::new();
-    for (index, offset) in (0..crate::network::MAX_WAYPOINTS).map(|i| i * 16).enumerate() {
+    for (index, offset) in (0..crate::network::MAX_WAYPOINTS)
+        .map(|i| i * 16)
+        .enumerate()
+    {
         attributes.push(VertexAttribute {
             format: VertexFormat::Float32x4,
             offset: offset as u64,

@@ -1,28 +1,25 @@
 use bevy::{
-    asset::embedded_asset,
     pbr::MeshPipelineSystems,
     prelude::*,
     render::{
-        extract_component::ExtractComponentPlugin,
-        extract_resource::ExtractResourcePlugin,
-        render_phase::AddRenderCommand,
-        render_resource::SpecializedRenderPipelines,
-        sync_component::SyncComponentPlugin,
         ExtractSchedule, Render, RenderApp, RenderStartup, RenderSystems,
+        extract_component::ExtractComponentPlugin, extract_resource::ExtractResourcePlugin,
+        render_phase::AddRenderCommand, render_resource::SpecializedRenderPipelines,
+        sync_component::SyncComponentPlugin,
     },
 };
 
-use crate::instances::{update_vehicle_batches, VehicleInstances};
+use crate::instances::{VehicleInstances, update_vehicle_batches};
 use crate::render::{
     draw::{
-        extract_vehicle_instances, prepare_merged_vehicle_buffer, queue_vehicles, DrawVehicles,
-        MergedVehicleInstances, VehiclesRendererEntity,
+        DrawVehicles, MergedVehicleInstances, VehiclesRendererEntity, extract_vehicle_instances,
+        prepare_merged_vehicle_buffer, queue_vehicles,
     },
     origin::VehicleTileOrigin,
-    pipeline::{init_render_params_bind_group_layout, init_vehicles_pipeline, VehiclesPipeline},
+    pipeline::{VehiclesPipeline, init_render_params_bind_group_layout, init_vehicles_pipeline},
     time::{
-        prepare_render_params_bind_group, prepare_render_params_buffer,
-        update_vehicles_render_params, RenderParamsBuffer, VehiclesRenderParams,
+        RenderParamsBuffer, VehiclesRenderParams, prepare_render_params_bind_group,
+        prepare_render_params_buffer, update_vehicles_render_params,
     },
 };
 
@@ -35,10 +32,11 @@ pub struct VehiclesPlugin;
 
 impl Plugin for VehiclesPlugin {
     fn build(&self, app: &mut App) {
-        embedded_asset!(app, "shaders/vehicles.wgsl");
-
         app.init_resource::<VehiclesRenderParams>()
-            .add_systems(Update, (update_vehicle_batches, update_vehicles_render_params))
+            .add_systems(
+                Update,
+                (update_vehicle_batches, update_vehicles_render_params),
+            )
             .add_plugins((
                 SyncComponentPlugin::<VehicleInstances>::default(),
                 ExtractComponentPlugin::<VehicleTileOrigin>::default(),

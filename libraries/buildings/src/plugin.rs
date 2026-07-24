@@ -1,36 +1,34 @@
 use bevy::{
-    asset::embedded_asset,
     pbr::MeshPipelineSystems,
     prelude::*,
     render::{
-        extract_component::ExtractComponentPlugin,
-        extract_resource::ExtractResourcePlugin,
-        render_phase::AddRenderCommand,
-        render_resource::SpecializedRenderPipelines,
-        sync_component::SyncComponentPlugin,
         ExtractSchedule, Render, RenderApp, RenderStartup, RenderSystems,
+        extract_component::ExtractComponentPlugin, extract_resource::ExtractResourcePlugin,
+        render_phase::AddRenderCommand, render_resource::SpecializedRenderPipelines,
+        sync_component::SyncComponentPlugin,
     },
 };
 
-use crate::instances::{update_building_batches, BuildingInstances};
+use crate::instances::{BuildingInstances, update_building_batches};
 use crate::ocean_mask::{OceanMask, OceanMaskLoader};
 use crate::population::{PopulationDensity, PopulationDensityLoader};
 use crate::render::{
     draw::{
-        extract_building_instances, prepare_merged_building_buffer, queue_buildings,
         BuildingsRendererEntity, DrawBuildings, MergedBuildingInstances,
+        extract_building_instances, prepare_merged_building_buffer, queue_buildings,
     },
-    fade::{prepare_fade_params_bind_group, prepare_fade_params_buffer, BuildingsFadeParams, FadeParamsBuffer},
+    fade::{
+        BuildingsFadeParams, FadeParamsBuffer, prepare_fade_params_bind_group,
+        prepare_fade_params_buffer,
+    },
     origin::BuildingTileOrigin,
-    pipeline::{init_buildings_pipeline, init_fade_params_bind_group_layout, BuildingsPipeline},
+    pipeline::{BuildingsPipeline, init_buildings_pipeline, init_fade_params_bind_group_layout},
 };
 
 pub struct BuildingsPlugin;
 
 impl Plugin for BuildingsPlugin {
     fn build(&self, app: &mut App) {
-        embedded_asset!(app, "shaders/buildings.wgsl");
-
         app.init_asset::<PopulationDensity>()
             .register_asset_loader(PopulationDensityLoader)
             .init_asset::<OceanMask>()

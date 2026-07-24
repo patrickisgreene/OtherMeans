@@ -90,11 +90,7 @@ fn vertex(input: VertexInput) -> VertexOutput {
     let path_position = mix(segment_start.xyz, segment_end.xyz, t);
 
     let up = normalize(input.instance_normal.xyz);
-    // Flipping the raw tangent before projecting/cross-ing carries the sign through `right` and
-    // `forward` below, so a reverse-direction vehicle both faces and drives the opposite way,
-    // and automatically ends up on the opposite physical side of the road once offset by its
-    // own `right` (see `lane_offset`) - no separate "which side" logic needed.
-    var forward_raw = (segment_end.xyz - segment_start.xyz) * direction;
+    var forward_raw = segment_end.xyz - segment_start.xyz;
     if (dot(forward_raw, forward_raw) < 1e-6) {
         forward_raw = vec3<f32>(1.0, 0.0, 0.0);
     }
@@ -107,15 +103,11 @@ fn vertex(input: VertexInput) -> VertexOutput {
 
     let scaled = input.position * vec3<f32>(input.color_and_width.w, input.dimensions.y, input.dimensions.x);
     let offset = right * scaled.x + up * scaled.y + forward * scaled.z;
-    // Lane separation, scaled to the vehicle's own (deliberately oversized, so it reads at
-    // planet-camera distances) footprint width rather than a fixed metre value, so the two
-    // opposing lanes always land clearly apart regardless of how `color_and_width.w` is tuned.
-    let lane_offset = right * (input.color_and_width.w * 1.5);
     // Mirrors buildings' `+ normal * (height * 0.5)` (see
     // `libraries/buildings/src/instances.rs::generate_tile_instances`) - `path_position` is
     // exactly at ground elevation, so without this lift the box would be centered on the ground
     // point (half embedded below the visible surface) instead of resting on top of it.
-    let world_position = path_position + up * (input.dimensions.y * 0.5) + offset + lane_offset;
+    let world_position = path_position + up * (input.dimensions.y * 0.5) + offset;
 
     var output: VertexOutput;
     output.clip_position = position_world_to_clip(world_position);

@@ -1,3 +1,4 @@
+use bevy::core_pipeline::core_3d::CORE_3D_DEPTH_FORMAT;
 use bevy::{
     asset::{AssetServer, Handle},
     mesh::VertexBufferLayout,
@@ -9,12 +10,11 @@ use bevy::{
     },
     shader::Shader,
 };
-use bevy::core_pipeline::core_3d::CORE_3D_DEPTH_FORMAT;
 
 use crate::instances::InstanceData;
 use crate::render::fade::BuildingsFadeParams;
 
-pub const BUILDINGS_SHADER: &str = "embedded://buildings/shaders/buildings.wgsl";
+pub const BUILDINGS_SHADER: &str = "shaders/buildings.wgsl";
 
 #[repr(C)]
 #[derive(Clone, Copy, bytemuck::Pod, bytemuck::Zeroable)]
