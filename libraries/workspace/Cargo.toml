@@ -1,11 +1,8 @@
 [package]
-name = "camera"
+name = "workspace"
 version.workspace = true
 edition.workspace = true
 
 [dependencies]
+clap.workspace = true
 bevy.workspace = true
-big_space.workspace = true
-
-[dev-dependencies]
-workspace.workspace = true

@@ -4,7 +4,7 @@ use bevy::shader::ShaderRef;
 use bevy::{prelude::*, reflect::TypePath, render::render_resource::*};
 use terrain::{TerrainPlugins, prelude::*};
 
-const RADIUS: f64 = 6371000.0;
+use workspace::EARTH_RADIUS;
 
 #[derive(ShaderType, Clone)]
 struct GradientInfo {
@@ -29,13 +29,7 @@ impl Material for CustomMaterial {
 fn main() {
     App::new()
         .add_plugins((
-            DefaultPlugins
-                .set(AssetPlugin {
-                    file_path: "example/assets".into(),
-                    ..default()
-                })
-                .build()
-                .disable::<TransformPlugin>(),
+            workspace::default_plugins_big_space(Some("example/assets".into())),
             TerrainPlugins::<CustomMaterial>::default(),
             FpsOverlayPlugin::default(),
         ))
@@ -87,7 +81,7 @@ fn initialize(
         root = grid.id();
         view = grid
             .spawn_spatial((
-                Transform::from_translation(-Vec3::X * RADIUS as f32 * 3.0)
+                Transform::from_translation(-Vec3::X * EARTH_RADIUS as f32 * 3.0)
                     .looking_to(Vec3::X, Vec3::Y),
                 AmbientLight {
                     brightness: 100.0,

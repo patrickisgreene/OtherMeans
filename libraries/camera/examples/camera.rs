@@ -5,12 +5,12 @@ use bevy::{
 use big_space::{plugin::BigSpaceMinimalPlugins, prelude::*};
 use camera::{EarthCameraController, EarthCameraPlugin};
 
-const RADIUS: f32 = 6371000.;
+use workspace::EARTH_RADIUS;
 
 fn main() {
     App::new()
         .add_plugins((
-            DefaultPlugins.build().disable::<TransformPlugin>(),
+            workspace::default_plugins_big_space(Some("assets".into())),
             EarthCameraPlugin,
             BigSpaceMinimalPlugins,
             WireframePlugin::default(),
@@ -28,7 +28,7 @@ fn setup(
     commands.spawn_big_space(Grid::default(), |parent| {
         parent.spawn_spatial((
             FloatingOrigin,
-            Transform::from_translation(-Vec3::X * RADIUS as f32 * 3.0)
+            Transform::from_translation(-Vec3::X * EARTH_RADIUS as f32 * 3.0)
                 .looking_at(Vec3::ZERO, Vec3::Y),
             EarthCameraController::default(),
         ));
@@ -36,7 +36,7 @@ fn setup(
         parent.spawn_spatial((
             Name::new("Terrain"),
             Wireframe,
-            Mesh3d(meshes.add(Sphere::new(RADIUS))),
+            Mesh3d(meshes.add(Sphere::new(EARTH_RADIUS as f32))),
             MeshMaterial3d(materials.add(StandardMaterial {
                 unlit: true,
                 base_color_texture: assets.load("uv-checker.png").into(),

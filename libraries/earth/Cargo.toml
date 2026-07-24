@@ -9,6 +9,7 @@ big_space.workspace = true
 bevy = { workspace = true, features = ["bevy_feathers"] }
 
 [dev-dependencies]
+workspace.workspace = true
 bevy = { workspace = true, features = ["file_watcher", "bevy_dev_tools"] }
 buildings.workspace = true
 roads.workspace = true

@@ -23,6 +23,7 @@ indexmap.workspace = true
 slab.workspace = true
 
 [dev-dependencies]
+workspace.workspace = true
 bevy = { workspace = true, default-features = true, features = ["bevy_dev_tools"] }
 
 [[example]]

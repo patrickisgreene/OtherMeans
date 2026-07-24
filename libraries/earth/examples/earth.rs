@@ -1,29 +1,14 @@
 use bevy::dev_tools::fps_overlay::FpsOverlayPlugin;
 use bevy::prelude::*;
 use bevy::render::storage::ShaderBuffer;
-use bevy::window::PresentMode;
 use earth::EarthMaterial;
 use terrain::prelude::*;
-
-const RADIUS: f64 = 6371000.0;
+use workspace::EARTH_RADIUS;
 
 fn main() {
     App::new()
         .add_plugins((
-            DefaultPlugins
-                .set(AssetPlugin {
-                    file_path: "../../assets".into(),
-                    ..default()
-                })
-                .set(WindowPlugin {
-                    primary_window: Some(Window {
-                        present_mode: PresentMode::AutoVsync,
-                        ..default()
-                    }),
-                    ..default()
-                })
-                .build()
-                .disable::<TransformPlugin>(),
+            workspace::default_plugins_big_space(None),
             earth::EarthPlugin,
             earth::debug::EarthDebugPlugin,
             buildings::BuildingsPlugin,
@@ -65,7 +50,7 @@ fn initialize(
     commands.spawn_big_space(Grid::default(), |parent| {
         view = parent
             .spawn_spatial((
-                Transform::from_translation(-Vec3::X * RADIUS as f32 * 3.0)
+                Transform::from_translation(-Vec3::X * EARTH_RADIUS as f32 * 3.0)
                     .looking_to(Vec3::X, Vec3::Y),
                 AmbientLight {
                     brightness: 100.0,
