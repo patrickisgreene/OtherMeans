@@ -1,6 +1,10 @@
-use bevy::render::{
-    render_resource::{BindGroup, Buffer, BufferDescriptor, BufferUsages, ShaderType},
-    renderer::RenderDevice,
+use bevy::{
+    ecs::component::Component,
+    render::{
+        render_resource::{BindGroup, Buffer, BufferDescriptor, BufferUsages, ShaderType},
+        renderer::RenderDevice,
+        sync_component::SyncComponent,
+    },
 };
 
 use crate::{
@@ -12,6 +16,7 @@ use crate::{
     },
 };
 
+#[derive(Component)]
 pub struct GpuTerrainView {
     pub order: u32,
     pub refinement_count: u32,
@@ -84,4 +89,8 @@ impl GpuTerrainView {
             terrain_view_bind_group: None,
         }
     }
+}
+
+impl SyncComponent for TileTree {
+    type Target = GpuTerrainView;
 }

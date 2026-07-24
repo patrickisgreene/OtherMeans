@@ -2,7 +2,7 @@ use crate::{
     data::{INVALID_ATLAS_INDEX, INVALID_LOD},
     math::TileCoordinate,
 };
-use bevy::{prelude::*, render::render_resource::ShaderType};
+use bevy::render::render_resource::ShaderType;
 
 mod height_readback;
 pub mod systems;
@@ -62,6 +62,3 @@ impl Default for TileTreeEntry {
         }
     }
 }
-
-#[derive(Component)]
-pub struct TerrainViewKey(pub (Entity, Entity));

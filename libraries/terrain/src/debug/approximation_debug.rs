@@ -1,7 +1,6 @@
 use crate::{
     data::TileTree,
     math::{Coordinate, SurfaceApproximation},
-    view::TerrainViewComponents,
 };
 use bevy::{color::palettes::basic, math::DVec2, prelude::*};
 use itertools::Itertools;
@@ -11,7 +10,7 @@ const DEBUG_SCALE: f32 = 1.0 / (1 << 5) as f32;
 pub(crate) fn debug_surface_approximation(
     mut enable: Local<bool>,
     mut gizmos: Gizmos,
-    tile_trees: Res<TerrainViewComponents<TileTree>>,
+    tile_trees: Query<&TileTree>,
     input: Res<ButtonInput<KeyCode>>,
 ) {
     if input.just_pressed(KeyCode::KeyD) {
@@ -22,7 +21,7 @@ pub(crate) fn debug_surface_approximation(
         return;
     }
 
-    for tile_tree in tile_trees.values() {
+    for tile_tree in tile_trees.iter() {
         let shape = tile_tree.shape;
 
         for face in 0..shape.face_count() {

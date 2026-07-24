@@ -9,7 +9,7 @@ use big_space::prelude::{CellCoord, Grid, Grids};
 use terrain::data::attachment::Attachment;
 use terrain::math::Coordinate;
 use terrain::prelude::{
-    AttachmentLabel, TerrainShape, TerrainViewComponents, TileAtlas, TileCoordinate, TileTree,
+    AttachmentLabel, TerrainShape, TileAtlas, TileCoordinate, TileTree,
 };
 
 use roads::descriptor::RoadNetwork;
@@ -264,15 +264,15 @@ pub fn update_building_batches(
     populations: Res<Assets<PopulationDensity>>,
     images: Res<Assets<Image>>,
     road_networks: Res<Assets<RoadNetwork>>,
-    tile_trees: Res<TerrainViewComponents<TileTree>>,
+    tile_trees: Query<&TileTree>,
     mut fade_params: ResMut<BuildingsFadeParams>,
     grids: Grids,
     terrain_query: Query<(Entity, &TileAtlas)>,
 ) {
     // Mirrors terrain's own LOD blend region (see `render::fade::BuildingsFadeParams`) so
     // buildings fade out in sync with it instead of popping when a tile leaves the active set.
-    // There's only ever one (terrain, view) pair in this app.
-    if let Some(tile_tree) = tile_trees.values().next() {
+    // There's only ever one terrain entity in this app.
+    if let Some(tile_tree) = tile_trees.iter().next() {
         fade_params.blend_distance = tile_tree.blend_distance as f32;
         fade_params.blend_range = tile_tree.blend_range;
         fade_params.max_lod = tile_tree.lod_count.saturating_sub(1) as f32;

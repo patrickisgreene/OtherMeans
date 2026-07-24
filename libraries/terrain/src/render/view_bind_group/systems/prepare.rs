@@ -7,22 +7,19 @@ use bevy::{
     },
 };
 
-use crate::{
-    render::{
-        GpuTerrainView, IndirectBindGroup, PrepassViewBindGroup, TerrainTilingPrepassPipelines,
-        TerrainViewBindGroup,
-    },
-    view::TerrainViewComponents,
+use crate::render::{
+    GpuTerrainView, IndirectBindGroup, PrepassViewBindGroup, TerrainTilingPrepassPipelines,
+    TerrainViewBindGroup,
 };
 
 pub fn prepare_terrain_view(
     device: Res<RenderDevice>,
     pipeline_cache: Res<PipelineCache>,
     prepass_pipeline: Res<TerrainTilingPrepassPipelines>,
-    mut gpu_terrain_views: ResMut<TerrainViewComponents<GpuTerrainView>>,
+    mut gpu_terrain_views: Query<&mut GpuTerrainView>,
     mut param: StaticSystemParam<<TerrainViewBindGroup as AsBindGroup>::Param>,
 ) {
-    for gpu_terrain_view in &mut gpu_terrain_views.values_mut() {
+    for mut gpu_terrain_view in &mut gpu_terrain_views {
         if gpu_terrain_view.terrain_view_bind_group.is_none() {
             let bind_group = gpu_terrain_view.terrain_view.as_bind_group(
                 &prepass_pipeline.terrain_view_layout,
@@ -39,10 +36,11 @@ pub fn prepare_indirect(
     device: Res<RenderDevice>,
     prepass_pipeline: Res<TerrainTilingPrepassPipelines>,
     pipeline_cache: Res<PipelineCache>,
-    mut gpu_terrain_views: ResMut<TerrainViewComponents<GpuTerrainView>>,
+    mut gpu_terrain_views: Query<&mut GpuTerrainView>,
     mut param: StaticSystemParam<<IndirectBindGroup as AsBindGroup>::Param>,
 ) {
-    for gpu_terrain_view in &mut gpu_terrain_views.values_mut() {
+    for mut gpu_terrain_view in &mut gpu_terrain_views {
+        let gpu_terrain_view = &mut *gpu_terrain_view;
         let bind_group = &mut gpu_terrain_view.indirect_bind_group;
 
         if bind_group.is_none() {
@@ -64,10 +62,10 @@ pub fn prepare_refine_tiles(
     device: Res<RenderDevice>,
     pipeline_cache: Res<PipelineCache>,
     prepass_pipeline: Res<TerrainTilingPrepassPipelines>,
-    mut gpu_terrain_views: ResMut<TerrainViewComponents<GpuTerrainView>>,
+    mut gpu_terrain_views: Query<&mut GpuTerrainView>,
     mut param: StaticSystemParam<<PrepassViewBindGroup as AsBindGroup>::Param>,
 ) {
-    for gpu_terrain_view in gpu_terrain_views.values_mut() {
+    for mut gpu_terrain_view in &mut gpu_terrain_views {
         if gpu_terrain_view.prepass_view_bind_group.is_none() {
             let bind_group = gpu_terrain_view.prepass_view.as_bind_group(
                 &prepass_pipeline.prepass_view_layout,

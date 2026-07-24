@@ -68,15 +68,17 @@ pub mod prelude {
         picking::{PickingData, TerrainPickingPlugin},
         plugin::{TerrainPlugin, TerrainSettings},
         render::TerrainMaterialPlugin,
-        view::{TerrainViewComponents, TerrainViewConfig},
+        view::TerrainViewConfig,
     };
     pub use big_space::{commands::BigSpaceCommands, grid::Grid};
 }
 
 use std::marker::PhantomData;
 
-use bevy::{app::PluginGroupBuilder, prelude::*};
+use bevy::{app::PluginGroupBuilder, prelude::*, render::storage::ShaderBuffer};
 use big_space::plugin::BigSpaceMinimalPlugins;
+
+use crate::plugin::TerrainSettings;
 
 pub struct TerrainPlugins<M: Material> {
     _phantom: PhantomData<M>,
@@ -104,5 +106,45 @@ where
             .add(prelude::TerrainPickingPlugin)
             .add_group(BigSpaceMinimalPlugins)
             .add(prelude::TerrainMaterialPlugin::<M>::default())
+            .add(SpawnPlugin)
+    }
+}
+
+#[derive(Component, Debug, PartialEq, Clone)]
+pub struct TerrainConfigHandle(pub Handle<config::TerrainConfig>);
+
+pub struct SpawnPlugin;
+
+impl Plugin for SpawnPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Update, spawn_terrain_config);
+    }
+}
+
+fn spawn_terrain_config(
+    mut commands: Commands,
+    settings: Res<TerrainSettings>,
+    configs: Res<Assets<config::TerrainConfig>>,
+    view: Query<&view::TerrainViewConfig>,
+    mut buffers: ResMut<Assets<ShaderBuffer>>,
+    terrains: Query<(Entity, &TerrainConfigHandle), Without<data::tile_atlas::TileAtlas>>,
+) {
+    for (entity, TerrainConfigHandle(handle)) in terrains.iter() {
+        let Some(config) = configs.get(handle) else {
+            continue;
+        };
+
+        let tile_tree = data::tile_tree::TileTree::new(
+            &config,
+            view.single().unwrap(),
+            &mut commands,
+            &mut buffers,
+        );
+
+        commands.entity(entity).insert((
+            config.shape.transform(),
+            data::tile_atlas::TileAtlas::new(&config, &mut buffers, &settings),
+            tile_tree,
+        ));
     }
 }

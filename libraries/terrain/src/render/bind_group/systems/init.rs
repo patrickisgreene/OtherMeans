@@ -1,27 +1,32 @@
 use bevy::{
     prelude::*,
-    render::{Extract, renderer::RenderDevice, texture::FallbackImage},
+    render::{Extract, renderer::RenderDevice, sync_world::RenderEntity, texture::FallbackImage},
 };
 
 use crate::{
-    config::TerrainComponents,
     data::{TileAtlas, tile_atlas::gpu::GpuTileAtlas},
     render::GpuTerrain,
 };
 
 pub fn initialize(
+    mut commands: Commands,
     device: Res<RenderDevice>,
     fallback_image: Res<FallbackImage>,
-    mut gpu_terrains: ResMut<TerrainComponents<GpuTerrain>>,
-    gpu_tile_atlases: Res<TerrainComponents<GpuTileAtlas>>,
-    tile_atlases: Extract<Query<(Entity, &TileAtlas), Added<TileAtlas>>>,
+    gpu_tile_atlases: Query<&GpuTileAtlas>,
+    tile_atlases: Extract<Query<(RenderEntity, &TileAtlas), Added<TileAtlas>>>,
 ) {
-    for (terrain, tile_atlas) in &tile_atlases {
-        let gpu_tile_atlas = &gpu_tile_atlases[&terrain];
+    for (render_entity, tile_atlas) in &tile_atlases {
+        // Same race as `GpuTileAtlas::extract`: on the first frame `TileAtlas` was added,
+        // `GpuTileAtlas::initialize`'s deferred insert may not be visible yet this pass.
+        let Ok(gpu_tile_atlas) = gpu_tile_atlases.get(render_entity) else {
+            continue;
+        };
 
-        gpu_terrains.insert(
-            terrain,
-            GpuTerrain::new(&device, &fallback_image, tile_atlas, gpu_tile_atlas),
-        );
+        commands.entity(render_entity).insert(GpuTerrain::new(
+            &device,
+            &fallback_image,
+            tile_atlas,
+            gpu_tile_atlas,
+        ));
     }
 }

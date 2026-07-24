@@ -5,20 +5,9 @@ use crate::{
     data::{AttachmentConfig, AttachmentLabel},
     math::{TerrainShape, TileCoordinate},
 };
-use bevy::{ecs::entity::hash_map::EntityHashMap, platform::collections::HashMap, prelude::*};
+use bevy::{platform::collections::HashMap, prelude::*};
 use serde::{Deserialize, Serialize};
 use std::{fs, path::Path};
-
-/// Resource that stores components that are associated to a terrain entity.
-/// This is used to persist components in the render world.
-#[derive(Deref, DerefMut, Resource)]
-pub struct TerrainComponents<C>(EntityHashMap<C>);
-
-impl<C> Default for TerrainComponents<C> {
-    fn default() -> Self {
-        Self(default())
-    }
-}
 
 /// The configuration of a terrain.
 ///

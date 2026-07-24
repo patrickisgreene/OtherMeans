@@ -1,12 +1,10 @@
 use crate::{
-    config::TerrainComponents,
     data::tile_atlas::gpu::GpuTileAtlas,
     debug::DebugTerrain,
     render::{
         DrawTerrainCommand, GpuTerrainView, SetTerrainBindGroup, SetTerrainViewBindGroup,
         TerrainItem,
     },
-    view::TerrainViewComponents,
 };
 use bevy::{
     pbr::{MeshPipelineViewLayoutKey, SetMaterialBindGroup, SetMeshViewBindGroup, ViewKeyCache},
@@ -56,8 +54,7 @@ pub(crate) fn queue_terrain<M: Material>(
     terrain_pipeline: Res<TerrainRenderPipeline<M>>,
     mut pipelines: ResMut<SpecializedRenderPipelines<TerrainRenderPipeline<M>>>,
     mut terrain_phases: ResMut<ViewSortedRenderPhases<TerrainItem>>,
-    gpu_tile_atlases: Res<TerrainComponents<GpuTileAtlas>>,
-    gpu_terrain_views: Res<TerrainViewComponents<GpuTerrainView>>,
+    terrains: Query<(Entity, &MainEntity, &GpuTileAtlas, &GpuTerrainView)>,
     view_key_cache: Res<ViewKeyCache>,
     mut views: Query<(MainEntity, &Msaa)>,
 ) where
@@ -82,11 +79,7 @@ pub(crate) fn queue_terrain<M: Material>(
             .map(MeshPipelineViewLayoutKey::from)
             .unwrap_or(MeshPipelineViewLayoutKey::empty());
 
-        for (&terrain, gpu_tile_atlas) in gpu_tile_atlases.iter() {
-            let Some(gpu_terrain_view) = gpu_terrain_views.get(&(terrain, view)) else {
-                continue;
-            };
-
+        for (render_entity, main_entity, gpu_tile_atlas, gpu_terrain_view) in &terrains {
             let mut flags = TerrainPipelineFlags::from_msaa_samples(msaa.samples());
             if gpu_tile_atlas.is_spherical {
                 flags |= TerrainPipelineFlags::SPHERICAL;
@@ -109,7 +102,7 @@ pub(crate) fn queue_terrain<M: Material>(
             let pipeline = pipelines.specialize(&pipeline_cache, &terrain_pipeline, key);
 
             terrain_phase.add_transient(TerrainItem {
-                representative_entity: (terrain, terrain.into()), // technically wrong
+                representative_entity: (render_entity, *main_entity),
                 draw_function,
                 pipeline,
                 batch_range: 0..1,

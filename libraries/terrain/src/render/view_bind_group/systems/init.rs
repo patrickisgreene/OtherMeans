@@ -1,20 +1,18 @@
 use bevy::{
     prelude::*,
-    render::{Extract, renderer::RenderDevice},
+    render::{Extract, renderer::RenderDevice, sync_world::RenderEntity},
 };
 
-use crate::{data::TileTree, render::GpuTerrainView, view::TerrainViewComponents};
+use crate::{data::TileTree, render::GpuTerrainView};
 
 pub fn initialize(
+    mut commands: Commands,
     device: Res<RenderDevice>,
-    mut gpu_terrain_views: ResMut<TerrainViewComponents<GpuTerrainView>>,
-    tile_trees: Extract<Res<TerrainViewComponents<TileTree>>>,
+    tile_trees: Extract<Query<(RenderEntity, &TileTree), Added<TileTree>>>,
 ) {
-    for (&(terrain, view), tile_tree) in tile_trees.iter() {
-        if gpu_terrain_views.contains_key(&(terrain, view)) {
-            continue;
-        }
-
-        gpu_terrain_views.insert((terrain, view), GpuTerrainView::new(&device, tile_tree));
+    for (render_entity, tile_tree) in &tile_trees {
+        commands
+            .entity(render_entity)
+            .insert(GpuTerrainView::new(&device, tile_tree));
     }
 }

@@ -1,9 +1,6 @@
-use crate::{config::TerrainComponents, data::TileAtlas};
+use crate::data::TileAtlas;
 use bevy::{
-    ecs::{
-        query::ROQueryItem,
-        system::{SystemParamItem, lifetimeless::SRes},
-    },
+    ecs::query::ROQueryItem,
     math::{Affine3, Affine3Ext},
     prelude::*,
     render::{
@@ -81,19 +78,21 @@ impl TerrainUniform {
 pub struct SetTerrainBindGroup<const I: usize>;
 
 impl<const I: usize, P: PhaseItem> RenderCommand<P> for SetTerrainBindGroup<I> {
-    type Param = SRes<TerrainComponents<GpuTerrain>>;
+    type Param = ();
     type ViewQuery = ();
-    type ItemQuery = ();
+    type ItemQuery = &'static GpuTerrain;
 
     #[inline]
     fn render<'w, 's>(
-        item: &P,
+        _item: &P,
         _: ROQueryItem<'w, 's, Self::ViewQuery>,
-        _: Option<ROQueryItem<'w, 's, Self::ItemQuery>>,
-        gpu_terrains: SystemParamItem<'w, '_, Self::Param>,
+        gpu_terrain: Option<ROQueryItem<'w, 's, Self::ItemQuery>>,
+        _: bevy::ecs::system::SystemParamItem<'w, '_, Self::Param>,
         pass: &mut TrackedRenderPass<'w>,
     ) -> RenderCommandResult {
-        let gpu_terrain = &gpu_terrains.into_inner()[&item.main_entity()];
+        let Some(gpu_terrain) = gpu_terrain else {
+            return RenderCommandResult::Skip;
+        };
 
         if let Some(bind_group) = &gpu_terrain.terrain_bind_group {
             pass.set_bind_group(I, bind_group, &[]);

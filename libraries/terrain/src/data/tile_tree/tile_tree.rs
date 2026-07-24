@@ -82,6 +82,14 @@ pub struct TileTree {
     /// Gates the more expensive tile-grid rewrite and its GPU upload, which only depend on the
     /// discrete tile assignment, not continuous view position.
     pub(crate) tiles_dirty: bool,
+    /// Set once `compute_requests` has positioned this tile tree at least once. A freshly
+    /// constructed `TileTree` can appear several frames after the viewer's `Transform` last
+    /// changed (it's spawned asynchronously once its `TerrainConfig` asset finishes loading),
+    /// by which point `compute_requests`'s own change-detection cursor has already advanced
+    /// past that one-time "just spawned" change tick - gating the first update on this flag
+    /// (rather than solely on `Transform`'s change detection) guarantees a brand new tile tree
+    /// still gets positioned even if the camera never moves again afterward.
+    pub(crate) initialized: bool,
 
     pub tile_tree_buffer: Handle<ShaderBuffer>,
     pub terrain_view_buffer: Handle<ShaderBuffer>,
@@ -93,7 +101,6 @@ impl TileTree {
     pub fn new(
         config: &TerrainConfig,
         view_config: &TerrainViewConfig,
-        terrain_view: (Entity, Entity),
         commands: &mut Commands,
         buffers: &mut Assets<ShaderBuffer>, // Todo: solve this dependency with a component hook in the future
     ) -> Self {
@@ -119,7 +126,7 @@ impl TileTree {
 
         commands
             .spawn((
-                super::TerrainViewKey(terrain_view),
+                //super::TerrainKey(terrain),
                 Readback::buffer(approximate_height_buffer.clone()),
             ))
             .observe(super::approximate_height_readback);
@@ -166,6 +173,7 @@ impl TileTree {
             order: view_config.order,
             dirty: false,
             tiles_dirty: false,
+            initialized: false,
             tile_tree_buffer,
             terrain_view_buffer,
             approximate_height_buffer,

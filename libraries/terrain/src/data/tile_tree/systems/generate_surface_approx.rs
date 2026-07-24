@@ -1,9 +1,9 @@
 use bevy::prelude::*;
 
-use crate::{data::TileTree, view::TerrainViewComponents};
+use crate::data::TileTree;
 
-pub fn generate_surface_approximation(mut tile_trees: ResMut<TerrainViewComponents<TileTree>>) {
-    for tile_tree in tile_trees.values_mut() {
+pub fn generate_surface_approximation(mut tile_trees: Query<&mut TileTree>) {
+    for mut tile_tree in tile_trees.iter_mut() {
         if !tile_tree.dirty {
             continue;
         }

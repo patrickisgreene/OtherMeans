@@ -14,7 +14,6 @@ pub fn earth_camera_controller(
     mouse_buttons: Res<ButtonInput<MouseButton>>,
     mut mouse_wheel: MessageReader<MouseWheel>,
     windows: Query<&Window, With<PrimaryWindow>>,
-    //ui_query: Query<&Interaction, With<Node>>,
     mut camera: Query<(
         Entity,
         &Camera,
@@ -24,14 +23,6 @@ pub fn earth_camera_controller(
         &mut EarthCameraController,
     )>,
 ) {
-    // Return early if a UI element is currently active.
-    //if ui_query
-    //    .iter()
-    //    .any(|interaction| matches!(interaction, Interaction::Hovered | Interaction::Pressed))
-    //{
-    //    return;
-    //}
-
     let Ok((cam_entity, cam, cam_global, mut transform, mut cell_coord, mut controller)) =
         camera.single_mut()
     else {

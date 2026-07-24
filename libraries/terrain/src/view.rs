@@ -1,23 +1,13 @@
 //! Types for configuring terrain views.
 
-use bevy::{platform::collections::HashMap, prelude::*};
+use bevy::prelude::*;
 
 use crate::math::TerrainViewport;
-
-/// Resource that stores components that are associated to a terrain entity and a view entity.
-#[derive(Deref, DerefMut, Resource)]
-pub struct TerrainViewComponents<C>(HashMap<(Entity, Entity), C>);
-
-impl<C> Default for TerrainViewComponents<C> {
-    fn default() -> Self {
-        Self(default())
-    }
-}
 
 /// The configuration of a terrain view.
 ///
 /// A terrain view describes the quality settings the corresponding terrain will be rendered with.
-#[derive(Clone)]
+#[derive(Component, Clone)]
 pub struct TerrainViewConfig {
     /// The count of tiles in x and y direction per tile tree layer.
     pub tree_size: u32,

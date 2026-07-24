@@ -1,24 +1,22 @@
 use bevy::{camera::primitives::Frustum, prelude::*};
 use big_space::prelude::*;
 
-use crate::{data::TileTree, view::TerrainViewComponents};
+use crate::{data::TileTree, view::TerrainViewConfig};
 
 /// Traverses all tile_trees and updates the tile states,
 /// while selecting newly requested and released tiles.
 pub fn compute_requests(
-    camera: Query<&Camera>,
-    mut tile_trees: ResMut<TerrainViewComponents<TileTree>>,
+    mut tile_trees: Query<&mut TileTree>,
     grids: Grids,
-    views: Query<(Ref<Transform>, &CellCoord)>,
+    views: Query<(Entity, Ref<Transform>, &CellCoord, &Camera), With<TerrainViewConfig>>,
 ) {
-    for (&(_, view), tile_tree) in tile_trees.iter_mut() {
-        let (transform, cell) = views.get(view).unwrap();
+    for mut tile_tree in tile_trees.iter_mut() {
+        let (view, transform, cell, camera) = views.single().unwrap();
 
-        if !transform.is_changed() {
+        if !transform.is_changed() && tile_tree.initialized {
             continue;
         }
-
-        let camera = camera.get(view).unwrap();
+        tile_tree.initialized = true;
         let grid = grids.parent_grid(view).unwrap();
 
         // Todo: transform should be global transform?

@@ -1,5 +1,4 @@
 use crate::{
-    config::TerrainComponents,
     data::{
         AttachmentData, AttachmentLabel, AttachmentTileWithData, TileAtlas,
         attachment::gpu::GpuAttachment,
@@ -14,6 +13,7 @@ use bevy::{
         Extract, MainWorld,
         render_resource::*,
         renderer::{RenderDevice, RenderQueue},
+        sync_world::RenderEntity,
     },
     tasks::{AsyncComputeTaskPool, Task},
 };
@@ -86,13 +86,15 @@ impl GpuTileAtlas {
 
     /// Initializes the [`GpuTileAtlas`] of newly created terrains.
     pub(crate) fn initialize(
+        mut commands: Commands,
         device: Res<RenderDevice>,
-        mut gpu_tile_atlases: ResMut<TerrainComponents<GpuTileAtlas>>,
-        mut tile_atlases: Extract<Query<(Entity, &TileAtlas), Added<TileAtlas>>>,
+        mut tile_atlases: Extract<Query<(RenderEntity, &TileAtlas), Added<TileAtlas>>>,
         settings: Extract<Res<TerrainSettings>>,
     ) {
-        for (terrain, tile_atlas) in tile_atlases.iter_mut() {
-            gpu_tile_atlases.insert(terrain, GpuTileAtlas::new(&device, tile_atlas, &settings));
+        for (render_entity, tile_atlas) in tile_atlases.iter_mut() {
+            commands
+                .entity(render_entity)
+                .insert(GpuTileAtlas::new(&device, tile_atlas, &settings));
         }
     }
 
@@ -100,13 +102,20 @@ impl GpuTileAtlas {
     /// corresponding [`GpuTileAtlas`]es.
     pub(crate) fn extract(
         mut main_world: ResMut<MainWorld>,
-        mut gpu_tile_atlases: ResMut<TerrainComponents<GpuTileAtlas>>,
+        mut gpu_tile_atlases: Query<&mut GpuTileAtlas>,
         pipeline_cache: Res<PipelineCache>,
     ) {
-        let mut tile_atlases = main_world.query::<(Entity, &mut TileAtlas)>();
+        let mut tile_atlases = main_world.query::<(&RenderEntity, &mut TileAtlas)>();
 
-        for (terrain, mut tile_atlas) in tile_atlases.iter_mut(&mut main_world) {
-            let gpu_tile_atlas = gpu_tile_atlases.get_mut(&terrain).unwrap();
+        for (render_entity, mut tile_atlas) in tile_atlases.iter_mut(&mut main_world) {
+            // The render-world twin may not have its `GpuTileAtlas` yet on the same frame
+            // `TileAtlas` was first added (its `initialize` extract system's deferred
+            // insert isn't guaranteed to be visible within the same `ExtractSchedule` pass) -
+            // pick it up next frame instead of panicking.
+            let Ok(mut gpu_tile_atlas) = gpu_tile_atlases.get_mut(render_entity.id()) else {
+                continue;
+            };
+            let gpu_tile_atlas = &mut *gpu_tile_atlas;
 
             mem::swap(
                 &mut tile_atlas.uploading_tiles,
@@ -150,9 +159,9 @@ impl GpuTileAtlas {
         queue: Res<RenderQueue>,
         pipeline_cache: Res<PipelineCache>,
         mip_pipelines: Res<MipPipelines>,
-        mut gpu_tile_atlases: ResMut<TerrainComponents<GpuTileAtlas>>,
+        mut gpu_tile_atlases: Query<&mut GpuTileAtlas>,
     ) {
-        for gpu_tile_atlas in gpu_tile_atlases.values_mut() {
+        for mut gpu_tile_atlas in gpu_tile_atlases.iter_mut() {
             for attachment in gpu_tile_atlas.attachments.values_mut() {
                 attachment.prepare_mip_bind_groups(&device, &pipeline_cache, &mip_pipelines);
             }
@@ -165,9 +174,9 @@ impl GpuTileAtlas {
         pipeline_cache: Res<PipelineCache>,
         mip_pipelines: ResMut<MipPipelines>,
         mut pipelines: ResMut<SpecializedComputePipelines<MipPipelines>>,
-        mut gpu_tile_atlases: ResMut<TerrainComponents<GpuTileAtlas>>,
+        mut gpu_tile_atlases: Query<&mut GpuTileAtlas>,
     ) {
-        for gpu_tile_atlas in gpu_tile_atlases.values_mut() {
+        for mut gpu_tile_atlas in gpu_tile_atlases.iter_mut() {
             for attachment in gpu_tile_atlas.attachments.values_mut() {
                 attachment.mip_pipeline = pipelines.specialize(
                     &pipeline_cache,
@@ -180,8 +189,8 @@ impl GpuTileAtlas {
         }
     }
 
-    pub(crate) fn _cleanup(mut gpu_tile_atlases: ResMut<TerrainComponents<GpuTileAtlas>>) {
-        for gpu_tile_atlas in gpu_tile_atlases.values_mut() {
+    pub(crate) fn _cleanup(mut gpu_tile_atlases: Query<&mut GpuTileAtlas>) {
+        for mut gpu_tile_atlas in gpu_tile_atlases.iter_mut() {
             gpu_tile_atlas._start_downloading_tiles();
         }
     }

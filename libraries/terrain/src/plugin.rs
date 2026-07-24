@@ -1,24 +1,24 @@
 use crate::{
-    config::{TerrainComponents, TerrainConfig},
-    data::{AttachmentLabel, TileTree, tile_atlas::gpu::GpuTileAtlas},
+    config::TerrainConfig,
+    data::{AttachmentLabel, TileAtlas, TileTree, tile_atlas::gpu::GpuTileAtlas},
     formats::TiffLoader,
     mipmap::{MipPipelines, mip_prepass},
     render::{
-        GpuTerrain, GpuTerrainView, TerrainItem, TerrainTilingPrepassPipelines, TilingPrepassItem,
-        pass::systems::extract_terrain_phases, prepare_terrain_depth_textures, terrain_pass,
-        tiling_prepass,
+        TerrainItem, TerrainTilingPrepassPipelines, pass::systems::extract_terrain_phases,
+        prepare_terrain_depth_textures, terrain_pass, tiling_prepass,
     },
     shaders::{InternalShaders, load_terrain_shaders},
-    view::TerrainViewComponents,
 };
 use bevy::{
     core_pipeline::{Core3dSystems, core_3d::main_opaque_pass_3d, schedule::Core3d},
     prelude::*,
+    ecs::schedule::ApplyDeferred,
     render::{
         Render, RenderApp, RenderStartup, RenderSystems,
         render_phase::{DrawFunctions, ViewSortedRenderPhases, sort_phase_system},
         render_resource::*,
         renderer::{RenderGraph, RenderGraphSystems},
+        sync_component::SyncComponentPlugin,
     },
 };
 use bevy_common_assets::ron::RonAssetPlugin;
@@ -59,10 +59,13 @@ pub struct TerrainPlugin;
 
 impl Plugin for TerrainPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(RonAssetPlugin::<TerrainConfig>::new(&["terrain.ron"]))
+        app.add_plugins((
+            RonAssetPlugin::<TerrainConfig>::new(&["terrain.ron"]),
+            SyncComponentPlugin::<TileTree>::default(),
+            SyncComponentPlugin::<TileAtlas>::default(),
+        ))
             .init_asset::<TerrainConfig>()
             .init_resource::<InternalShaders>()
-            .init_resource::<TerrainViewComponents<TileTree>>()
             .init_resource::<TerrainSettings>()
             .init_asset_loader::<TiffLoader>()
             .add_systems(
@@ -83,10 +86,6 @@ impl Plugin for TerrainPlugin {
         app.sub_app_mut(RenderApp)
             .init_resource::<SpecializedComputePipelines<MipPipelines>>()
             .init_resource::<SpecializedComputePipelines<TerrainTilingPrepassPipelines>>()
-            .init_resource::<TerrainComponents<GpuTileAtlas>>()
-            .init_resource::<TerrainComponents<GpuTerrain>>()
-            .init_resource::<TerrainViewComponents<GpuTerrainView>>()
-            .init_resource::<TerrainViewComponents<TilingPrepassItem>>()
             .init_resource::<DrawFunctions<TerrainItem>>()
             .init_resource::<ViewSortedRenderPhases<TerrainItem>>()
             .add_systems(
@@ -101,9 +100,15 @@ impl Plugin for TerrainPlugin {
                 ExtractSchedule,
                 (
                     extract_terrain_phases,
-                    GpuTileAtlas::initialize,
-                    GpuTileAtlas::extract.after(GpuTileAtlas::initialize),
-                    crate::render::bind_group::systems::initialize.after(GpuTileAtlas::initialize),
+                    (
+                        GpuTileAtlas::initialize,
+                        ApplyDeferred,
+                        (
+                            GpuTileAtlas::extract,
+                            crate::render::bind_group::systems::initialize,
+                        ),
+                    )
+                        .chain(),
                     crate::render::view_bind_group::systems::initialize,
                 ),
             )

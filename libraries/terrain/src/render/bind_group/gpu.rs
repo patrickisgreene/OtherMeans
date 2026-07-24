@@ -17,6 +17,7 @@ use crate::{
     util::GpuBuffer,
 };
 
+#[derive(Component)]
 pub struct GpuTerrain {
     pub terrain_bind_group: Option<BindGroup>,
 

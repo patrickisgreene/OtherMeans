@@ -4,7 +4,6 @@ use crate::{
     data::{TileAtlas, TileTree, tile_tree::systems::generate_surface_approximation},
     debug::{debug_surface_approximation, orbital_camera_controller},
     math::TerrainViewport,
-    view::TerrainViewComponents,
 };
 
 use bevy::{
@@ -213,9 +212,9 @@ pub fn update_terrain_parameter(
 
 pub fn update_view_parameter(
     input: Res<ButtonInput<KeyCode>>,
-    mut tile_trees: ResMut<TerrainViewComponents<TileTree>>,
+    mut tile_trees: Query<&mut TileTree>,
 ) {
-    for tile_tree in tile_trees.values_mut() {
+    for mut tile_tree in tile_trees.iter_mut() {
         let face_size = tile_tree.shape.face_size();
 
         if input.just_pressed(KeyCode::KeyN) {

@@ -2,7 +2,7 @@ use crate::{
     config::TerrainConfig,
     data::{
         Attachment, AttachmentData, AttachmentLabel, AttachmentTile, AttachmentTileWithData,
-        DefaultLoader, TileTreeEntry,
+        DefaultLoader, TileTreeEntry, tile_atlas::gpu::GpuTileAtlas,
     },
     math::{TerrainShape, TileCoordinate},
     plugin::TerrainSettings,
@@ -13,7 +13,7 @@ use bevy::{
     camera::visibility::{VisibilityClass, add_visibility_class},
     platform::collections::{HashMap, HashSet},
     prelude::*,
-    render::{render_resource::*, storage::ShaderBuffer},
+    render::{render_resource::*, storage::ShaderBuffer, sync_component::SyncComponent},
     tasks::Task,
 };
 use big_space::prelude::*;
@@ -216,4 +216,8 @@ impl TileAtlas {
             // Todo: we should cancel loading tiles, that have not yet started loading and a no longer requested
         }
     }
+}
+
+impl SyncComponent for TileAtlas {
+    type Target = GpuTileAtlas;
 }

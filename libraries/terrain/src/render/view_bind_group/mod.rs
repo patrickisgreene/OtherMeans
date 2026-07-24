@@ -1,14 +1,9 @@
-use crate::view::TerrainViewComponents;
 use bevy::{
-    ecs::{
-        query::ROQueryItem,
-        system::{SystemParamItem, lifetimeless::SRes},
-    },
+    ecs::query::ROQueryItem,
     prelude::*,
     render::{
         render_phase::{PhaseItem, RenderCommand, RenderCommandResult, TrackedRenderPass},
         render_resource::*,
-        sync_world::MainEntity,
     },
 };
 
@@ -49,19 +44,21 @@ pub(crate) struct PrepassState {
 pub struct SetTerrainViewBindGroup<const I: usize>;
 
 impl<const I: usize, P: PhaseItem> RenderCommand<P> for SetTerrainViewBindGroup<I> {
-    type Param = SRes<TerrainViewComponents<GpuTerrainView>>;
-    type ViewQuery = MainEntity;
-    type ItemQuery = ();
+    type Param = ();
+    type ViewQuery = ();
+    type ItemQuery = &'static GpuTerrainView;
 
     #[inline]
     fn render<'w, 's>(
-        item: &P,
-        view: ROQueryItem<'w, 's, Self::ViewQuery>,
-        _: Option<ROQueryItem<'w, 's, Self::ItemQuery>>,
-        gpu_terrain_views: SystemParamItem<'w, '_, Self::Param>,
+        _item: &P,
+        _view: ROQueryItem<'w, 's, Self::ViewQuery>,
+        gpu_terrain_view: Option<ROQueryItem<'w, 's, Self::ItemQuery>>,
+        _: bevy::ecs::system::SystemParamItem<'w, '_, Self::Param>,
         pass: &mut TrackedRenderPass<'w>,
     ) -> RenderCommandResult {
-        let gpu_terrain_view = &gpu_terrain_views.into_inner()[&(item.main_entity().id(), view)];
+        let Some(gpu_terrain_view) = gpu_terrain_view else {
+            return RenderCommandResult::Skip;
+        };
 
         if let Some(bind_group) = &gpu_terrain_view.terrain_view_bind_group {
             pass.set_bind_group(I, bind_group, &[]);
@@ -75,19 +72,21 @@ impl<const I: usize, P: PhaseItem> RenderCommand<P> for SetTerrainViewBindGroup<
 pub(crate) struct DrawTerrainCommand;
 
 impl<P: PhaseItem> RenderCommand<P> for DrawTerrainCommand {
-    type Param = SRes<TerrainViewComponents<GpuTerrainView>>;
-    type ViewQuery = MainEntity;
-    type ItemQuery = ();
+    type Param = ();
+    type ViewQuery = ();
+    type ItemQuery = &'static GpuTerrainView;
 
     #[inline]
     fn render<'w, 's>(
-        item: &P,
-        view: ROQueryItem<'w, 's, Self::ViewQuery>,
-        _: Option<ROQueryItem<'w, 's, Self::ItemQuery>>,
-        gpu_terrain_views: SystemParamItem<'w, '_, Self::Param>,
+        _item: &P,
+        _view: ROQueryItem<'w, 's, Self::ViewQuery>,
+        gpu_terrain_view: Option<ROQueryItem<'w, 's, Self::ItemQuery>>,
+        _: bevy::ecs::system::SystemParamItem<'w, '_, Self::Param>,
         pass: &mut TrackedRenderPass<'w>,
     ) -> RenderCommandResult {
-        let gpu_terrain_view = &gpu_terrain_views.into_inner()[&(item.main_entity().id(), view)];
+        let Some(gpu_terrain_view) = gpu_terrain_view else {
+            return RenderCommandResult::Skip;
+        };
 
         pass.set_stencil_reference(gpu_terrain_view.order);
         pass.draw_indirect(&gpu_terrain_view.indirect_buffer, 0);

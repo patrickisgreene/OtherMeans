@@ -1,8 +1,6 @@
 use crate::{
-    config::TerrainComponents,
     debug::DebugTerrain,
     render::{GpuTerrain, GpuTerrainView},
-    view::TerrainViewComponents,
 };
 use bevy::{
     prelude::*,
@@ -16,6 +14,7 @@ pub mod systems;
 pub use pipeline_key::TilingPrepassPipelineKey;
 pub use pipelines::TerrainTilingPrepassPipelines;
 
+#[derive(Component)]
 pub struct TilingPrepassItem {
     refine_tiles_pipeline: CachedComputePipelineId,
     prepare_root_pipeline: CachedComputePipelineId,
@@ -43,10 +42,7 @@ impl TilingPrepassItem {
 }
 
 pub fn tiling_prepass(world: &World, mut ctx: RenderContext) {
-    let prepass_items = world.resource::<TerrainViewComponents<TilingPrepassItem>>();
     let pipeline_cache = world.resource::<PipelineCache>();
-    let gpu_terrains = world.resource::<TerrainComponents<GpuTerrain>>();
-    let gpu_terrain_views = world.resource::<TerrainViewComponents<GpuTerrainView>>();
     let debug = world.get_resource::<DebugTerrain>();
 
     if debug.map(|debug| debug.freeze).unwrap_or(false) {
@@ -57,7 +53,13 @@ pub fn tiling_prepass(world: &World, mut ctx: RenderContext) {
         .command_encoder()
         .begin_compute_pass(&ComputePassDescriptor::default());
 
-    for (&(terrain, view), prepass_item) in prepass_items.iter() {
+    let Some(mut terrains) =
+        world.try_query::<(&GpuTerrain, &GpuTerrainView, &TilingPrepassItem)>()
+    else {
+        return;
+    };
+
+    for (gpu_terrain, gpu_terrain_view, prepass_item) in terrains.iter(world) {
         let Some((
             refine_tiles_pipeline,
             prepare_root_pipeline,
@@ -67,9 +69,6 @@ pub fn tiling_prepass(world: &World, mut ctx: RenderContext) {
         else {
             continue;
         };
-
-        let gpu_terrain = &gpu_terrains[&terrain];
-        let gpu_terrain_view = &gpu_terrain_views[&(terrain, view)];
 
         let Some(terrain_bind_group) = &gpu_terrain.terrain_bind_group else {
             continue;

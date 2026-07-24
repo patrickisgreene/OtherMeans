@@ -60,7 +60,7 @@ impl From<&TileTree> for TerrainViewUniform {
             world_position: tile_tree.view_world_position,
             half_spaces: tile_tree.half_spaces,
 
-            surface_approximation: tile_tree.surface_approximation.clone(),
+            surface_approximation: tile_tree.surface_approximation,
         }
     }
 }

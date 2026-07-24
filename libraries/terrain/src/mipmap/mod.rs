@@ -1,4 +1,4 @@
-use crate::{config::TerrainComponents, data::tile_atlas::gpu::GpuTileAtlas};
+use crate::data::tile_atlas::gpu::GpuTileAtlas;
 use bevy::{
     prelude::*,
     render::{render_resource::*, renderer::RenderContext},
@@ -14,13 +14,15 @@ pub(crate) use pipelines::*;
 
 pub(crate) fn mip_prepass(world: &World, mut ctx: RenderContext) {
     let pipeline_cache = world.resource::<PipelineCache>();
-    let gpu_tile_atlases = world.resource::<TerrainComponents<GpuTileAtlas>>();
+    let Some(mut gpu_tile_atlases) = world.try_query::<&GpuTileAtlas>() else {
+        return;
+    };
 
     let mut pass = ctx
         .command_encoder()
         .begin_compute_pass(&ComputePassDescriptor::default());
 
-    for gpu_tile_atlas in gpu_tile_atlases.values() {
+    for gpu_tile_atlas in gpu_tile_atlases.iter(world) {
         gpu_tile_atlas.generate_mip(&mut pass, pipeline_cache);
     }
 }

@@ -8,17 +8,14 @@ use bevy::{
     },
 };
 
-use crate::{
-    config::TerrainComponents,
-    render::{GpuTerrain, TerrainBindGroup},
-};
+use crate::render::{GpuTerrain, TerrainBindGroup};
 
 pub fn prepare(
     device: Res<RenderDevice>,
     buffers: Res<RenderAssets<GpuShaderBuffer>>,
-    mut gpu_terrains: ResMut<TerrainComponents<GpuTerrain>>,
+    mut gpu_terrains: Query<&mut GpuTerrain>,
 ) {
-    for gpu_terrain in &mut gpu_terrains.values_mut() {
+    for mut gpu_terrain in &mut gpu_terrains {
         let terrain_buffer = buffers.get(&gpu_terrain.terrain_buffer).unwrap();
 
         // Todo: be smarter about bind group recreation

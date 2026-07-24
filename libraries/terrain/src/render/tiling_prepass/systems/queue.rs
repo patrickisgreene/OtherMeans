@@ -4,27 +4,22 @@ use bevy::{
 };
 
 use crate::{
-    config::TerrainComponents,
     data::tile_atlas::gpu::GpuTileAtlas,
     debug::DebugTerrain,
     render::{
         GpuTerrainView, TerrainTilingPrepassPipelines, TilingPrepassItem, TilingPrepassPipelineKey,
     },
-    view::TerrainViewComponents,
 };
 
 pub fn queue_tiling_prepass(
+    mut commands: Commands,
     debug: Option<Res<DebugTerrain>>,
     pipeline_cache: Res<PipelineCache>,
     prepass_pipelines: ResMut<TerrainTilingPrepassPipelines>,
     mut pipelines: ResMut<SpecializedComputePipelines<TerrainTilingPrepassPipelines>>,
-    mut prepass_items: ResMut<TerrainViewComponents<TilingPrepassItem>>,
-    gpu_terrain_views: Res<TerrainViewComponents<GpuTerrainView>>,
-    gpu_tile_atlases: Res<TerrainComponents<GpuTileAtlas>>,
+    terrains: Query<(Entity, &GpuTileAtlas), With<GpuTerrainView>>,
 ) {
-    for &(terrain, view) in gpu_terrain_views.keys() {
-        let gpu_tile_atlas = &gpu_tile_atlases[&terrain];
-
+    for (entity, gpu_tile_atlas) in &terrains {
         let mut key = TilingPrepassPipelineKey::NONE;
 
         if gpu_tile_atlas.is_spherical {
@@ -56,14 +51,11 @@ pub fn queue_tiling_prepass(
             key | TilingPrepassPipelineKey::PREPARE_RENDER,
         );
 
-        prepass_items.insert(
-            (terrain, view),
-            TilingPrepassItem {
-                refine_tiles_pipeline,
-                prepare_root_pipeline,
-                prepare_next_pipeline,
-                prepare_render_pipeline,
-            },
-        );
+        commands.entity(entity).insert(TilingPrepassItem {
+            refine_tiles_pipeline,
+            prepare_root_pipeline,
+            prepare_next_pipeline,
+            prepare_render_pipeline,
+        });
     }
 }

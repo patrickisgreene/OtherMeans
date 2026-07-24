@@ -6,15 +6,14 @@ use bevy::ui_widgets::{
 };
 use terrain::data::{TileAtlas, TileTree};
 use terrain::debug::DebugTerrain;
-use terrain::view::TerrainViewComponents;
 
 use crate::debug::{ColorPlaneOf, ColorPreviewOf};
 use crate::{EarthAtmosphereSettings, EarthMaterial, EarthParams};
 
-/// A labeled slider that writes into every live [`TileTree`] (there's normally exactly one,
-/// keyed by (terrain, view) - see `initialize()`) whenever it's dragged, via `setter`. Silently
+/// A labeled slider that writes into every live [`TileTree`] (there's normally exactly one
+/// terrain entity - see `initialize()`) whenever it's dragged, via `setter`. Silently
 /// does nothing before the terrain has finished loading, matching the same
-/// `tile_trees.values_mut()` pattern already used by the keyboard debug controls in
+/// `tile_trees.iter_mut()` pattern already used by the keyboard debug controls in
 /// `terrain::debug::update_view_parameter`.
 pub fn lod_slider(
     label_text: &str,
@@ -40,9 +39,9 @@ pub fn lod_slider(
                 SliderStep(step)
                 SliderPrecision(2)
                 on(slider_self_update)
-                on(move |change: On<ValueChange<f32>>, mut tile_trees: ResMut<TerrainViewComponents<TileTree>>| {
-                    for tile_tree in tile_trees.values_mut() {
-                        setter(tile_tree, change.value as f64);
+                on(move |change: On<ValueChange<f32>>, mut tile_trees: Query<&mut TileTree>| {
+                    for mut tile_tree in tile_trees.iter_mut() {
+                        setter(&mut tile_tree, change.value as f64);
                     }
                 })
             )
@@ -70,9 +69,9 @@ pub fn lod_switch(
             (
                 @FeathersToggleSwitch
                 on(checkbox_self_update)
-                on(move |change: On<ValueChange<bool>>, mut tile_trees: ResMut<TerrainViewComponents<TileTree>>| {
-                    for tile_tree in tile_trees.values_mut() {
-                        setter(tile_tree, change.value);
+                on(move |change: On<ValueChange<bool>>, mut tile_trees: Query<&mut TileTree>| {
+                    for mut tile_tree in tile_trees.iter_mut() {
+                        setter(&mut tile_tree, change.value);
                     }
                 })
             ),
@@ -103,9 +102,9 @@ pub fn lod_switch_checked(
                 @FeathersToggleSwitch
                 Checked
                 on(checkbox_self_update)
-                on(move |change: On<ValueChange<bool>>, mut tile_trees: ResMut<TerrainViewComponents<TileTree>>| {
-                    for tile_tree in tile_trees.values_mut() {
-                        setter(tile_tree, change.value);
+                on(move |change: On<ValueChange<bool>>, mut tile_trees: Query<&mut TileTree>| {
+                    for mut tile_tree in tile_trees.iter_mut() {
+                        setter(&mut tile_tree, change.value);
                     }
                 })
             ),

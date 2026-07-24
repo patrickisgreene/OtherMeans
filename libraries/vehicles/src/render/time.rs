@@ -11,7 +11,7 @@ use bevy::{
         renderer::{RenderDevice, RenderQueue},
     },
 };
-use terrain::prelude::{TerrainViewComponents, TileTree};
+use terrain::prelude::TileTree;
 
 use crate::render::pipeline::RenderParamsBindGroupLayout;
 
@@ -31,15 +31,15 @@ pub struct VehiclesRenderParams {
 }
 
 /// Mirrors `buildings::instances::update_building_batches`'s per-frame fade-param refresh -
-/// there's only ever one (terrain, view) pair in this app.
+/// there's only ever one terrain entity in this app.
 pub fn update_vehicles_render_params(
     mut params: ResMut<VehiclesRenderParams>,
     time: Res<Time>,
-    tile_trees: Res<TerrainViewComponents<TileTree>>,
+    tile_trees: Query<&TileTree>,
 ) {
     params.elapsed_secs = time.elapsed_secs();
 
-    if let Some(tile_tree) = tile_trees.values().next() {
+    if let Some(tile_tree) = tile_trees.iter().next() {
         params.blend_distance = tile_tree.blend_distance as f32;
         params.blend_range = tile_tree.blend_range;
         params.max_lod = tile_tree.lod_count.saturating_sub(1) as f32;
