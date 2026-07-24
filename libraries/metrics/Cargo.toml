@@ -1,5 +1,5 @@
 [package]
-name = "statistics"
+name = "metrics"
 version.workspace = true
 edition.workspace = true
 

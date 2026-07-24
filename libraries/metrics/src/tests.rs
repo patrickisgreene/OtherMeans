@@ -3,13 +3,13 @@ use bevy::prelude::*;
 
 fn app() -> App {
     let mut app = App::new();
-    app.add_plugins(StatisticsPlugin::<"testing">::default());
+    app.add_plugins(MetricsPlugin::<"testing">::default());
     app
 }
 
 fn spawn(app: &mut App, value: u8) -> Entity {
     app.world_mut()
-        .spawn(Statistic::<"testing"> {
+        .spawn(Metric::<"testing"> {
             last: 0,
             value: value,
         })
@@ -18,12 +18,12 @@ fn spawn(app: &mut App, value: u8) -> Entity {
 
 fn spawn_cumu(app: &mut App) {
     app.world_mut()
-        .spawn(CumulativeStatistic::<"testing">::default());
+        .spawn(CumulativeMetric::<"testing">::default());
 }
 
 fn cumu_value(app: &mut App) -> u32 {
     app.world_mut()
-        .query::<&CumulativeStatistic<"testing">>()
+        .query::<&CumulativeMetric<"testing">>()
         .single(app.world())
         .map(|x| x.get())
         .unwrap()
@@ -31,7 +31,7 @@ fn cumu_value(app: &mut App) -> u32 {
 
 fn cumu_max(app: &mut App) -> u32 {
     app.world_mut()
-        .query::<&CumulativeStatistic<"testing">>()
+        .query::<&CumulativeMetric<"testing">>()
         .single(app.world())
         .map(|x| x.max)
         .unwrap()
@@ -94,7 +94,7 @@ fn statistic_value_updated() {
     assert_eq!(cumu_value(&mut app), 300);
 
     app.world_mut()
-        .get_mut::<Statistic<"testing">>(a)
+        .get_mut::<Metric<"testing">>(a)
         .unwrap()
         .set(150);
 
@@ -117,14 +117,12 @@ fn on_statistic_removed() {
     app.update();
 
     assert_eq!(cumu_value(&mut app), 300);
-    assert_eq!(cumu_max(&mut app), 2 * Statistic::<"testing">::MAX as u32);
+    assert_eq!(cumu_max(&mut app), 2 * Metric::<"testing">::MAX as u32);
 
-    app.world_mut()
-        .entity_mut(a)
-        .remove::<Statistic<"testing">>();
+    app.world_mut().entity_mut(a).remove::<Metric<"testing">>();
 
     app.update();
 
     assert_eq!(cumu_value(&mut app), 200);
-    assert_eq!(cumu_max(&mut app), Statistic::<"testing">::MAX as u32);
+    assert_eq!(cumu_max(&mut app), Metric::<"testing">::MAX as u32);
 }

@@ -1,5 +1,5 @@
 [package]
-name = "buildings"
+name = "vehicles"
 version.workspace = true
 edition.workspace = true
 
@@ -8,6 +8,5 @@ terrain.workspace = true
 big_space.workspace = true
 bevy.workspace = true
 bytemuck.workspace = true
-image.workspace = true
-thiserror.workspace = true
+buildings.workspace = true
 roads.workspace = true

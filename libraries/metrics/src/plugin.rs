@@ -6,13 +6,13 @@ use bevy::prelude::*;
 #[derive(Component, PartialEq)]
 pub struct NoTag;
 
-pub struct StatisticsPlugin<const S: &'static str, T: Component + PartialEq = NoTag, L = Update> {
+pub struct MetricsPlugin<const S: &'static str, T: Component + PartialEq = NoTag, L = Update> {
     label: L,
     tag: PhantomData<T>,
 }
 
-impl<const S: &'static str, T: Component + PartialEq, L> StatisticsPlugin<S, T, L> {
-    pub fn new(label: L) -> StatisticsPlugin<S, T, L> {
+impl<const S: &'static str, T: Component + PartialEq, L> MetricsPlugin<S, T, L> {
+    pub fn new(label: L) -> MetricsPlugin<S, T, L> {
         Self {
             label,
             tag: Default::default(),
@@ -20,7 +20,7 @@ impl<const S: &'static str, T: Component + PartialEq, L> StatisticsPlugin<S, T, 
     }
 }
 
-impl<const S: &'static str, T: Component + PartialEq> Default for StatisticsPlugin<S, T> {
+impl<const S: &'static str, T: Component + PartialEq> Default for MetricsPlugin<S, T> {
     fn default() -> Self {
         Self {
             label: Update,
@@ -29,7 +29,7 @@ impl<const S: &'static str, T: Component + PartialEq> Default for StatisticsPlug
     }
 }
 
-impl<const S: &'static str, T: Component + PartialEq> Plugin for StatisticsPlugin<S, T> {
+impl<const S: &'static str, T: Component + PartialEq> Plugin for MetricsPlugin<S, T> {
     fn build(&self, app: &mut App) {
         if std::any::TypeId::of::<T>() == std::any::TypeId::of::<NoTag>() {
             app.add_systems(

@@ -1,13 +1,13 @@
 use bevy::prelude::*;
 
 #[derive(Component, Default, Reflect, Deref, Debug, PartialEq, Clone, Copy, Hash, Eq)]
-pub struct Statistic<const S: &'static str> {
+pub struct Metric<const S: &'static str> {
     pub(crate) last: u8,
     #[deref]
     pub(crate) value: u8,
 }
 
-impl<const S: &'static str> Statistic<S> {
+impl<const S: &'static str> Metric<S> {
     pub const MAX: u8 = u8::MAX;
     pub const MIN: u8 = u8::MIN;
 
@@ -26,13 +26,13 @@ impl<const S: &'static str> Statistic<S> {
 }
 
 #[derive(Component, Default, Deref, Reflect, Debug, PartialEq, Clone, Copy, Hash, Eq)]
-pub struct CumulativeStatistic<const S: &'static str> {
+pub struct CumulativeMetric<const S: &'static str> {
     pub(crate) max: u32,
     #[deref]
     pub(crate) value: u32,
 }
 
-impl<const S: &'static str> CumulativeStatistic<S> {
+impl<const S: &'static str> CumulativeMetric<S> {
     pub fn new(max: u32, value: u32) -> Self {
         Self { max, value }
     }

@@ -1,0 +1,14 @@
+[package]
+name = "roads"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+clap.workspace = true
+bevy.workspace = true
+serde.workspace = true
+shapefile.workspace = true
+bevy_common_assets.workspace = true
+ron.workspace = true
+thiserror.workspace = true
+terrain.workspace = true

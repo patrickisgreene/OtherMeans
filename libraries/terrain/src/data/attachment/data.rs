@@ -91,6 +91,31 @@ pub(crate) fn asset_relative_path(path: &Path) -> PathBuf {
 }
 
 impl Attachment {
+    /// Asset-relative base path tiles of this attachment are loaded from (join with
+    /// [`TileCoordinate::path`] for a specific tile's file).
+    pub fn path(&self) -> &Path {
+        &self.path
+    }
+
+    /// Full side length (in texels) of one tile's stored image, including the border padding on
+    /// both sides - see [`Self::border_size`]/[`Self::center_size`].
+    pub fn texture_size(&self) -> u32 {
+        self.texture_size
+    }
+
+    /// Side length (in texels) of a tile's actual (non-overlapping) content, i.e.
+    /// `texture_size - 2 * border_size`.
+    pub fn center_size(&self) -> u32 {
+        self.center_size
+    }
+
+    /// Width (in texels) of the overlapping border baked into each tile's stored image, used to
+    /// avoid sampling artifacts at tile edges - see `compute_sample_uv` in
+    /// `shaders/attachments.wgsl` for how this maps a tile-local UV into the padded texture.
+    pub fn border_size(&self) -> u32 {
+        self.border_size
+    }
+
     pub(crate) fn new(config: &AttachmentConfig, path: &str) -> Self {
         let path = asset_relative_path(Path::new(path));
 

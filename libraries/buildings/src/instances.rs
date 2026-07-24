@@ -1,17 +1,24 @@
 use bevy::{
+    image::Image,
     math::{DVec2, DVec3},
     platform::collections::{HashMap, HashSet},
     prelude::*,
     render::sync_component::SyncComponent,
 };
 use big_space::prelude::{CellCoord, Grid, Grids};
+use terrain::data::attachment::Attachment;
 use terrain::math::Coordinate;
-use terrain::prelude::{TerrainShape, TerrainViewComponents, TileAtlas, TileCoordinate, TileTree};
+use terrain::prelude::{
+    AttachmentLabel, TerrainShape, TerrainViewComponents, TileAtlas, TileCoordinate, TileTree,
+};
 
-use crate::height::HeightMap;
+use roads::descriptor::RoadNetwork;
+use roads::index::{RoadCoarseIndex, build_coarse_index, coarse_ancestor, tile_road_occupancy};
+
 use crate::ocean_mask::OceanMask;
 use crate::population::PopulationDensity;
 use crate::render::fade::BuildingsFadeParams;
+use crate::tile_height::{height_tile_path, sample_height_tile, tile_local_uv};
 
 /// Number of building instances along each edge of an active tile.
 pub const GRID_SIZE: u32 = 80;
@@ -134,15 +141,19 @@ fn footprint_touches_ocean(
 }
 
 /// Generates a grid of mono-colored cube instances covering `coordinate`'s footprint, skipping
-/// any sample point where `population` reports zero density or `ocean_mask` reports water, and
-/// scaling each surviving instance's height by its local density and placing it at its actual
-/// terrain elevation (via `height_map` and `height_scale`), plus the big_space cell/translation
-/// the owning entity should be spawned at. Returns an empty instance list if the tile has no
-/// buildings anywhere in its footprint.
+/// any sample point where `population` reports zero density, `ocean_mask` reports water, or
+/// `road_occupancy` (see `roads::index::tile_road_occupancy`, computed once per tile by the
+/// caller) flags that grid cell as having a road through it - so buildings don't spawn on top of
+/// `vehicles`' traffic - and scaling each surviving instance's height by its local density and
+/// placing it at its actual terrain elevation (via `height_image`/`height_attachment` and
+/// `height_scale`), plus the
+/// big_space cell/translation the owning entity should be spawned at. Returns an empty instance
+/// list if the tile has no buildings anywhere in its footprint.
 ///
 /// This is the single place building placement happens, kept separate from tile discovery so
 /// that future work (e.g. per-city population data) can replace it without touching the
 /// surrounding ECS plumbing.
+#[allow(clippy::too_many_arguments)]
 pub fn generate_tile_instances(
     coordinate: TileCoordinate,
     shape: TerrainShape,
@@ -150,7 +161,9 @@ pub fn generate_tile_instances(
     grid: &Grid,
     population: &PopulationDensity,
     ocean_mask: &OceanMask,
-    height_map: &HeightMap,
+    height_image: &Image,
+    height_attachment: &Attachment,
+    road_occupancy: &[bool],
 ) -> (CellCoord, Vec3, Vec<InstanceData>) {
     let spherical = shape_is_spherical(shape);
     let tile_count = 2f64.powi(coordinate.lod as i32);
@@ -183,6 +196,10 @@ pub fn generate_tile_instances(
                 continue;
             }
 
+            if road_occupancy[(iy * GRID_SIZE + ix) as usize] {
+                continue;
+            }
+
             if footprint_touches_ocean(
                 coordinate.face,
                 sample_uv,
@@ -193,10 +210,12 @@ pub fn generate_tile_instances(
                 continue;
             }
 
-            // Real terrain elevation, in the same units the terrain mesh itself displaces by
-            // (see `libraries/buildings/src/height.rs` for why `height_scale` is needed here),
-            // so buildings sit on the actual visible ground instead of the base ellipsoid.
-            let elevation = height_map.sample(lat, lon) * height_scale;
+            // Real terrain elevation, sampled from the exact same per-tile height raster the
+            // terrain mesh itself displaces by (see `crate::tile_height`), so buildings sit
+            // flush on the actual visible ground instead of disagreeing with it.
+            let local_uv = tile_local_uv(sample_uv, coordinate);
+            let elevation =
+                sample_height_tile(height_image, height_attachment, local_uv) * height_scale;
             let world_position = shape.position_unit_to_local(unit_position, elevation as f64);
 
             let normal = if spherical {
@@ -233,16 +252,20 @@ pub fn generate_tile_instances(
 /// entities as the active tile set (and its population/ocean coverage) changes. Waits for the
 /// population density, ocean mask, and height map assets to finish loading before doing
 /// anything.
+#[allow(clippy::too_many_arguments)]
 pub fn update_building_batches(
     mut commands: Commands,
     mut known: Local<HashMap<TileCoordinate, Option<Entity>>>,
     mut population_handle: Local<Option<Handle<PopulationDensity>>>,
     mut ocean_mask_handle: Local<Option<Handle<OceanMask>>>,
-    mut height_map_handle: Local<Option<Handle<HeightMap>>>,
+    mut height_tile_handles: Local<HashMap<TileCoordinate, Handle<Image>>>,
+    mut road_network_handle: Local<Option<Handle<RoadNetwork>>>,
+    mut road_coarse_index: Local<Option<RoadCoarseIndex>>,
     asset_server: Res<AssetServer>,
     populations: Res<Assets<PopulationDensity>>,
     ocean_masks: Res<Assets<OceanMask>>,
-    height_maps: Res<Assets<HeightMap>>,
+    images: Res<Assets<Image>>,
+    road_networks: Res<Assets<RoadNetwork>>,
     tile_trees: Res<TerrainViewComponents<TileTree>>,
     mut fade_params: ResMut<BuildingsFadeParams>,
     grids: Grids,
@@ -271,10 +294,25 @@ pub fn update_building_batches(
         return;
     };
 
-    let height_map_handle = height_map_handle
-        .get_or_insert_with(|| asset_server.load("earth/height.tif"))
+    let road_network_handle = road_network_handle
+        .get_or_insert_with(|| asset_server.load("earth/roads.ron"))
         .clone();
-    let Some(height_map) = height_maps.get(&height_map_handle) else {
+    let Some(road_network) = road_networks.get(&road_network_handle) else {
+        return;
+    };
+
+    if road_coarse_index.is_none() {
+        let Some((_, tile_atlas)) = terrain_query.iter().next() else {
+            return;
+        };
+        let target_lod = tile_atlas.lod_count.saturating_sub(1);
+        *road_coarse_index = Some(build_coarse_index(
+            road_network,
+            tile_atlas.shape,
+            target_lod,
+        ));
+    }
+    let Some(road_coarse_index) = road_coarse_index.as_ref() else {
         return;
     };
 
@@ -283,6 +321,9 @@ pub fn update_building_batches(
             continue;
         };
         let grid = grids.get(root);
+        let Some(height_attachment) = tile_atlas.attachments.get(&AttachmentLabel::Height) else {
+            continue;
+        };
 
         let active: HashSet<TileCoordinate> = tile_atlas.active_tiles_at_highest_lod().collect();
 
@@ -296,6 +337,7 @@ pub fn update_building_batches(
                 false
             }
         });
+        height_tile_handles.retain(|coordinate, _| active.contains(coordinate));
 
         let new_tiles: Vec<TileCoordinate> = active
             .iter()
@@ -304,6 +346,33 @@ pub fn update_building_batches(
             .collect();
 
         for coordinate in new_tiles {
+            // Load (or keep waiting on) this tile's own height image - the exact same per-tile
+            // R32F file the terrain mesh itself displaces by - before placing anything on it.
+            // Left out of `known` (retried next frame) until it's ready.
+            let handle = height_tile_handles
+                .entry(coordinate)
+                .or_insert_with(|| {
+                    asset_server.load(height_tile_path(coordinate, height_attachment))
+                })
+                .clone();
+            let Some(height_image) = images.get(&handle) else {
+                continue;
+            };
+
+            let road_ancestor = coarse_ancestor(coordinate, road_coarse_index.coarse_lod);
+            let road_candidates = road_coarse_index
+                .buckets
+                .get(&road_ancestor)
+                .map(Vec::as_slice)
+                .unwrap_or(&[]);
+            let road_occupancy = tile_road_occupancy(
+                coordinate,
+                road_network,
+                road_candidates,
+                tile_atlas.shape,
+                GRID_SIZE,
+            );
+
             let (cell, translation, instances) = generate_tile_instances(
                 coordinate,
                 tile_atlas.shape,
@@ -311,7 +380,9 @@ pub fn update_building_batches(
                 grid,
                 population,
                 ocean_mask,
-                height_map,
+                height_image,
+                height_attachment,
+                &road_occupancy,
             );
 
             if instances.is_empty() {

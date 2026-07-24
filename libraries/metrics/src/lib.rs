@@ -9,4 +9,4 @@ mod systems;
 mod tests;
 
 pub use components::*;
-pub use plugin::StatisticsPlugin;
+pub use plugin::MetricsPlugin;

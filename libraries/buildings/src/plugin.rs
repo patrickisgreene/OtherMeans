@@ -12,7 +12,6 @@ use bevy::{
     },
 };
 
-use crate::height::{HeightMap, HeightMapLoader};
 use crate::instances::{update_building_batches, BuildingInstances};
 use crate::ocean_mask::{OceanMask, OceanMaskLoader};
 use crate::population::{PopulationDensity, PopulationDensityLoader};
@@ -36,8 +35,6 @@ impl Plugin for BuildingsPlugin {
             .register_asset_loader(PopulationDensityLoader)
             .init_asset::<OceanMask>()
             .register_asset_loader(OceanMaskLoader)
-            .init_asset::<HeightMap>()
-            .register_asset_loader(HeightMapLoader)
             .init_resource::<BuildingsFadeParams>()
             .add_systems(Update, update_building_batches)
             .add_plugins((

@@ -49,7 +49,7 @@ pub struct TerrainConfig {
 }
 
 fn default_height_scale() -> f32 {
-    10000.0
+    100000.0
 }
 
 impl Default for TerrainConfig {

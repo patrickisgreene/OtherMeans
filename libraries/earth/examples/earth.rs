@@ -27,6 +27,8 @@ fn main() {
             earth::EarthPlugin,
             earth::debug::EarthDebugPlugin,
             buildings::BuildingsPlugin,
+            roads::RoadsPlugin,
+            vehicles::VehiclesPlugin,
             FpsOverlayPlugin::default(),
         ))
         .add_systems(Update, initialize)
