@@ -1,6 +1,10 @@
 pub mod descriptor;
 pub mod preprocess;
 
+mod components;
+
+pub use components::*;
+
 use bevy::prelude::*;
 use bevy_common_assets::ron::RonAssetPlugin;
 use serde::{Deserialize, Serialize};

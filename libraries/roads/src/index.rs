@@ -1,10 +1,11 @@
 use bevy::{
-    math::{DVec3, IVec2},
+    math::IVec2,
     platform::collections::{HashMap, HashSet},
     prelude::*,
 };
 use terrain::math::Coordinate;
 use terrain::prelude::{TerrainShape, TileCoordinate};
+use workspace::lat_lon_to_unit_position;
 
 use crate::descriptor::RoadNetwork;
 
@@ -38,16 +39,6 @@ pub fn shape_is_spherical(shape: TerrainShape) -> bool {
     !matches!(shape, TerrainShape::Plane { .. })
 }
 
-/// Converts a latitude/longitude (degrees) to a point on the unit cube-sphere - inverse of
-/// `buildings::instances::lat_lon_degrees`.
-pub fn lat_lon_to_unit_position(lat_deg: f64, lon_deg: f64) -> DVec3 {
-    let lat = lat_deg.to_radians();
-    let lon = lon_deg.to_radians();
-    let y = lat.sin();
-    let horizontal = lat.cos();
-    DVec3::new(-horizontal * lon.cos(), y, horizontal * lon.sin())
-}
-
 pub fn tile_xy(coordinate: Coordinate, tile_count: f64) -> IVec2 {
     (coordinate.uv * tile_count)
         .as_ivec2()
@@ -67,7 +58,11 @@ pub fn pick_coarse_lod(shape: TerrainShape, target_lod: u32) -> u32 {
 /// Builds `RoadCoarseIndex` from the whole `RoadNetwork`, once. Cheap: only looks at each road's
 /// existing vertices (plus one midpoint per segment, to catch a straight segment briefly passing
 /// through a coarse tile without a vertex landing inside it) - no resampling, no elevation.
-pub fn build_coarse_index(network: &RoadNetwork, shape: TerrainShape, target_lod: u32) -> RoadCoarseIndex {
+pub fn build_coarse_index(
+    network: &RoadNetwork,
+    shape: TerrainShape,
+    target_lod: u32,
+) -> RoadCoarseIndex {
     let spherical = shape_is_spherical(shape);
     let coarse_lod = pick_coarse_lod(shape, target_lod);
     let tile_count = (coarse_lod as f64).exp2();
@@ -101,7 +96,10 @@ pub fn build_coarse_index(network: &RoadNetwork, shape: TerrainShape, target_lod
         }
     }
 
-    RoadCoarseIndex { coarse_lod, buckets }
+    RoadCoarseIndex {
+        coarse_lod,
+        buckets,
+    }
 }
 
 /// Finds `tile`'s ancestor at `coarse_lod`, for looking it up in `RoadCoarseIndex::buckets`.

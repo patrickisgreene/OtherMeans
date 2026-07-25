@@ -36,7 +36,7 @@ impl Scenario {
 
     pub fn combatant_for_place_or_country(
         &self,
-        index: usize,
+        index: u32,
         country: &CountryId,
     ) -> Option<CombatantId> {
         self.territory

@@ -3,7 +3,8 @@ use terrain::data::attachment::Attachment;
 use terrain::math::Coordinate;
 use terrain::prelude::{TerrainShape, TileCoordinate};
 
-use roads::index::{lat_lon_to_unit_position, shape_is_spherical, tile_xy};
+use roads::index::{shape_is_spherical, tile_xy};
+use workspace::lat_lon_to_unit_position;
 
 use buildings::tile_height::{sample_height_tile, tile_local_uv};
 

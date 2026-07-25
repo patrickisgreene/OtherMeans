@@ -7,6 +7,14 @@ use bevy::{
 };
 use big_space::prelude::*;
 
+pub struct OrbitalCameraPlugin;
+
+impl Plugin for OrbitalCameraPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Update, orbital_camera_controller);
+    }
+}
+
 fn ray_sphere_intersection(
     ray_origin: DVec3,
     ray_direction: DVec3,

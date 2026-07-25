@@ -9,3 +9,4 @@ big_space.workspace = true
 
 [dev-dependencies]
 workspace.workspace = true
+bevy-inspector-egui.workspace = true

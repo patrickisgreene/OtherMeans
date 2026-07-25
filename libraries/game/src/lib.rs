@@ -1,12 +1,42 @@
-use bevy::prelude::*;
+use bevy::{app::PluginGroupBuilder, prelude::*};
 
-use scenario::Scenario;
+mod components;
+mod plugins;
+mod resources;
+mod spawn;
 
-#[derive(Resource)]
-pub struct GameScenario(pub Handle<Scenario>);
+pub use components::*;
+pub use resources::*;
+pub use spawn::*;
 
-#[derive(Resource)]
-pub struct EarthConfig(pub Handle<terrain::config::TerrainConfig>);
+use crate::plugins::InterfacePlugin;
 
-#[derive(Resource)]
-pub struct GameCitiesDatabase(pub Handle<cities::descriptor::CitiesDatabase>);
+#[derive(States, Default, Debug, PartialEq, Clone, Copy, Hash, Eq)]
+pub enum GameState {
+    #[default]
+    Uninitialized,
+    Loading,
+    Running,
+    Spawning,
+}
+
+pub struct GamePlugins;
+
+impl PluginGroup for GamePlugins {
+    fn build(self) -> PluginGroupBuilder {
+        PluginGroupBuilder::start::<Self>()
+            .add(plugins::StatePlugin)
+            .add(SpawnPlugin)
+            .add(plugins::SpacePlugin)
+            .add(camera::EarthCameraPlugin)
+            .add(earth::EarthPlugin)
+            .add(cities::CitiesPlugin)
+            .add(labels::LabelsPlugin::new(GameState::Spawning))
+            .add(roads::RoadsPlugin)
+            .add(buildings::BuildingsPlugin)
+            .add(vehicles::VehiclesPlugin)
+            .add(scenario::ScenarioPlugin)
+            .add(InterfacePlugin)
+            .add_group(bevy::feathers::FeathersPlugins)
+    }
+}

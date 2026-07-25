@@ -4,10 +4,17 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
-terrain.workspace = true
 big_space.workspace = true
 bevy.workspace = true
 bytemuck.workspace = true
 image.workspace = true
 thiserror.workspace = true
+
 roads.workspace = true
+terrain.workspace = true
+workspace.workspace = true
+
+[dev-dependencies]
+earth.workspace = true
+bevy-inspector-egui.workspace = true
+bevy = { workspace = true, features = ["bevy_dev_tools"] }

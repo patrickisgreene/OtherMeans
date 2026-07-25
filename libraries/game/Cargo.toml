@@ -4,7 +4,21 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
-bevy.workspace = true
+bevy = { workspace = true, features = ["bevy_feathers"] }
+big_space.workspace = true
+
+roads.workspace = true
+earth.workspace = true
 cities.workspace = true
+labels.workspace = true
+camera.workspace = true
 terrain.workspace = true
+metrics.workspace = true
+buildings.workspace = true
+workspace.workspace = true
 scenario.workspace = true
+vehicles.workspace = true
+
+
+[dev-dependencies]
+bevy = { workspace = true, features = ["bevy_dev_tools"] }

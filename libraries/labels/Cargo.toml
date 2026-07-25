@@ -1,14 +1,16 @@
 [package]
-name = "earth"
+name = "labels"
 version.workspace = true
 edition.workspace = true
 
 [dependencies]
+cities.workspace = true
 terrain.workspace = true
-big_space.workspace = true
 bevy = { workspace = true, features = ["bevy_feathers"] }
 
 [dev-dependencies]
 workspace.workspace = true
+big_space.workspace = true
+scenario.workspace = true
 bevy-inspector-egui.workspace = true
-bevy = { workspace = true, features = ["file_watcher", "bevy_dev_tools"] }
+bevy = { workspace = true, default-features = true, features = ["bevy_dev_tools", "bevy_feathers"] }

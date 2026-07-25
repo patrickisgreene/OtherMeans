@@ -10,3 +10,8 @@ bevy.workspace = true
 bytemuck.workspace = true
 buildings.workspace = true
 roads.workspace = true
+workspace.workspace = true
+
+[dev-dependencies]
+bevy-inspector-egui.workspace = true
+bevy = { workspace = true, features = ["bevy_dev_tools"] }

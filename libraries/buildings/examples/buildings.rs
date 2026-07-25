@@ -1,6 +1,5 @@
 use bevy::dev_tools::fps_overlay::FpsOverlayPlugin;
 use bevy::input::common_conditions::input_toggle_active;
-use bevy::shader::ShaderRef;
 use bevy::{prelude::*, reflect::TypePath, render::render_resource::*};
 use bevy_inspector_egui::bevy_egui::EguiPlugin;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
@@ -8,57 +7,33 @@ use terrain::{TerrainConfigHandle, TerrainPlugins, prelude::*};
 
 use workspace::EARTH_RADIUS;
 
-#[derive(ShaderType, Clone)]
-struct GradientInfo {
-    mode: u32,
-}
-
 #[derive(Asset, AsBindGroup, TypePath, Clone)]
-pub struct CustomMaterial {
-    #[texture(0)]
-    #[sampler(1)]
-    gradient: Handle<Image>,
-    #[uniform(2)]
-    gradient_info: GradientInfo,
-}
+pub struct CustomMaterial {}
 
-impl Material for CustomMaterial {
-    fn fragment_shader() -> ShaderRef {
-        "shaders/terrain.wgsl".into()
-    }
-}
+impl Material for CustomMaterial {}
 
 fn main() {
     App::new()
         .add_plugins((
-            workspace::default_plugins_big_space(Some("example/assets".into())),
+            workspace::default_plugins_big_space(None),
             TerrainPlugins::<CustomMaterial>::default(),
+            roads::RoadsPlugin,
+            buildings::BuildingsPlugin,
             FpsOverlayPlugin::default(),
             EguiPlugin::default(),
             WorldInspectorPlugin::new().run_if(input_toggle_active(false, KeyCode::F10)),
         ))
-        .insert_resource(TerrainSettings::new(vec!["albedo"]))
+        .insert_resource(TerrainSettings::new(vec!["earth", "water"]))
         .add_systems(Startup, initialize)
         .run();
 }
 
 fn initialize(
     mut commands: Commands,
-    mut images: ResMut<LoadingImages>,
     asset_server: Res<AssetServer>,
     mut materials: ResMut<Assets<CustomMaterial>>,
 ) {
-    let gradient1 = asset_server.load("textures/gradient1.png");
-    images.load_image(
-        &gradient1,
-        TextureDimension::D2,
-        TextureFormat::Rgba8UnormSrgb,
-    );
-
-    let material = materials.add(CustomMaterial {
-        gradient: gradient1,
-        gradient_info: GradientInfo { mode: 2 },
-    });
+    let material = materials.add(CustomMaterial {});
 
     commands.spawn_big_space(Grid::default(), |grid| {
         grid.insert(InheritedVisibility::default());
@@ -75,7 +50,7 @@ fn initialize(
 
         grid.spawn_spatial((
             MeshMaterial3d(material),
-            TerrainConfigHandle(asset_server.load("terrain/terrain.ron")),
+            TerrainConfigHandle(asset_server.load("earth/terrain.ron")),
         ));
     });
 }

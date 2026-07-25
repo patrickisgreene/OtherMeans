@@ -53,7 +53,7 @@ pub fn run_preprocessor() -> Result<(), Error> {
             lat,
             lon,
             name: field_string(&record, "NAME"),
-            country: CountryId::from_str(&field_string(&record, "ADM0NAME")).unwrap(),
+            country: CountryId::from_str(&field_string(&record, "ADM0_A3")).unwrap(),
             scale_rank: field_number(&record, "SCALERANK") as u8,
             label_rank: field_number(&record, "LABELRANK") as u8,
             population: field_number(&record, "POP_MAX") as u32,

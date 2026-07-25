@@ -12,3 +12,4 @@ bevy_common_assets.workspace = true
 ron.workspace = true
 thiserror.workspace = true
 terrain.workspace = true
+workspace.workspace = true

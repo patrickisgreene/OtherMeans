@@ -1,3 +1,4 @@
+use bevy::prelude::*;
 use bitflags::bitflags;
 use serde::{Deserialize, Serialize};
 
@@ -15,7 +16,7 @@ pub enum Industry {
 }
 
 bitflags! {
-    #[derive(Debug, PartialEq, Clone, Copy, Hash, Eq, Serialize, Deserialize)]
+    #[derive(Component, Debug, PartialEq, Clone, Copy, Hash, Eq, Serialize, Deserialize)]
     pub struct Industries: u32 {
         const FISHING    = 0b00000001;
         const FARMING    = 0b00000010;
