@@ -5,4 +5,4 @@ edition.workspace = true
 
 [dependencies]
 clap.workspace = true
-bevy.workspace = true
+bevy = { workspace = true, features = ["bevy_log"] }

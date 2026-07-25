@@ -12,6 +12,9 @@ CHLOROPHYLL_URL=https://coastwatch.pfeg.noaa.gov/erddap/files/erdMPIC8day_R2022N
 PLACES_URL=https://naturalearth.s3.amazonaws.com/10m_cultural/ne_10m_populated_places.zip
 POPULATION_URL=https://data.worldpop.org/GIS/Population/Global_2015_2030/R2025A/2020/0_Mosaicked/v1/1km/constrained/global_pop_2020_CN_1km_R2025A_v1.tif
 ROADS_URL=https://naturalearth.s3.amazonaws.com/10m_cultural/ne_10m_roads.zip
+PORTS_URL=https://naturalearth.s3.amazonaws.com/10m_cultural/ne_10m_ports.zip
+AIRPORTS_URL=https://naturalearth.s3.amazonaws.com/10m_cultural/ne_10m_airports.zip
+SHIPPING_LANES_URL=https://github.com/newzealandpaul/Shipping-Lanes/archive/refs/heads/main.zip
 
 mkdir -p $WORK_DIR/resources/earth/data
 
@@ -25,6 +28,9 @@ wget -nc -O $WORK_DIR/resources/earth/data/chlorophyll.nc $CHLOROPHYLL_URL
 wget -nc -O $WORK_DIR/resources/earth/data/places.zip $PLACES_URL
 wget -nc -O $WORK_DIR/resources/earth/data/population.tif $POPULATION_URL
 wget -nc -O $WORK_DIR/resources/earth/data/roads.zip $ROADS_URL
+wget -nc -O $WORK_DIR/resources/earth/data/shipping.zip $SHIPPING_LANES_URL
+wget -nc -O $WORK_DIR/resources/earth/data/ports.zip $PORTS_URL
+wget -nc -O $WORK_DIR/resources/earth/data/airports.zip $AIRPORTS_URL
 
 unzip -n $WORK_DIR/resources/earth/data/coastline.zip \
       -d $WORK_DIR/resources/earth/data/coastline
@@ -40,3 +46,12 @@ unzip -n $WORK_DIR/resources/earth/data/places.zip \
 
 unzip -n $WORK_DIR/resources/earth/data/roads.zip \
       -d $WORK_DIR/resources/earth/data/roads
+
+unzip -n $WORK_DIR/resources/earth/data/shipping.zip \
+      -d $WORK_DIR/resources/earth/data/shipping
+
+unzip -n $WORK_DIR/resources/earth/data/ports.zip \
+      -d $WORK_DIR/resources/earth/data/ports
+
+unzip -n $WORK_DIR/resources/earth/data/airports.zip \
+      -d $WORK_DIR/resources/earth/data/airports

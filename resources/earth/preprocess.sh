@@ -14,6 +14,7 @@ $SCRIPT_DIR/heightmap.sh
 $SCRIPT_DIR/cities.sh
 $SCRIPT_DIR/population.sh
 $SCRIPT_DIR/roads.sh
+$SCRIPT_DIR/shipping.sh
 
 rm -f $EARTH_DIR/height-float32.tif
 gdal_translate -ot Float32 $EARTH_DIR/height.tif $EARTH_DIR/height-float32.tif
@@ -21,6 +22,8 @@ gdal_translate -ot Float32 $EARTH_DIR/height.tif $EARTH_DIR/height-float32.tif
 gdal_edit.py -a_srs IAU_2015:39900 -a_ullr -180 90 180 -90 $EARTH_DIR/height-float32.tif
 gdal_edit.py -a_srs IAU_2015:39900 -a_ullr -180 90 180 -90 $EARTH_DIR/land.tif
 gdal_edit.py -a_srs IAU_2015:39900 -a_ullr -180 90 180 -90 $EARTH_DIR/water.tif
+
+cargo build --release -p terrain-preprocess
 
 $WORK_DIR/target/release/terrain-preprocess \
     --src-path $WORK_DIR/resources/earth/height-float32.tif \

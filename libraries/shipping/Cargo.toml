@@ -1,14 +1,17 @@
 [package]
-name = "earth"
+name = "shipping"
 version.workspace = true
 edition.workspace = true
 
 [dependencies]
 terrain.workspace = true
 big_space.workspace = true
-bevy = { workspace = true, features = ["bevy_feathers", "bevy_picking"] }
+bevy.workspace = true
+bytemuck.workspace = true
+
+shipping-lanes.workspace = true
+workspace.workspace = true
 
 [dev-dependencies]
-workspace.workspace = true
 bevy-inspector-egui.workspace = true
-bevy = { workspace = true, features = ["file_watcher", "bevy_dev_tools"] }
+bevy = { workspace = true, features = ["bevy_dev_tools"] }

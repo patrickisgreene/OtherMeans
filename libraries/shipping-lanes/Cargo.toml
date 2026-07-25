@@ -1,15 +1,15 @@
 [package]
-name = "cities"
+name = "shipping-lanes"
 version.workspace = true
 edition.workspace = true
 
 [dependencies]
 clap.workspace = true
+bevy.workspace = true
 serde.workspace = true
-smol_str.workspace = true
-bitflags.workspace = true
 shapefile.workspace = true
 bevy_common_assets.workspace = true
 ron.workspace = true
 thiserror.workspace = true
-bevy = { workspace = true, features = ["bevy_asset"] }
+terrain.workspace = true
+workspace.workspace = true

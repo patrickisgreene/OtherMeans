@@ -18,6 +18,8 @@ buildings.workspace = true
 workspace.workspace = true
 scenario.workspace = true
 vehicles.workspace = true
+shipping.workspace = true
+shipping-lanes.workspace = true
 
 
 [dev-dependencies]

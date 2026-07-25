@@ -36,6 +36,8 @@ impl PluginGroup for GamePlugins {
             .add(buildings::BuildingsPlugin)
             .add(vehicles::VehiclesPlugin)
             .add(scenario::ScenarioPlugin)
+            .add(shipping_lanes::ShippingLanesPlugin)
+            .add(shipping::ShippingPlugin)
             .add(InterfacePlugin)
             .add_group(bevy::feathers::FeathersPlugins)
     }
