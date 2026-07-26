@@ -1,6 +1,6 @@
 use bevy::{dev_tools::fps_overlay::FpsOverlayPlugin, prelude::*};
 
-use game::{GameCitiesDatabase, GameCityLightsDatabase, GamePlugins, GameScenario, GameState};
+use game::{GameCitiesDatabase, GamePlugins, GameScenario, GameState};
 use scenario::Scenario;
 use workspace::default_plugins_big_space;
 
@@ -20,7 +20,6 @@ fn setup(
 ) {
     commands.insert_resource(GameScenario(scenarios.add(Scenario::players_america())));
     commands.insert_resource(GameCitiesDatabase(assets.load("earth/cities.ron")));
-    commands.insert_resource(GameCityLightsDatabase(assets.load("earth/city-lights.ron")));
 }
 
 fn start(mut state: ResMut<NextState<GameState>>) {

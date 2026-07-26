@@ -1,5 +1,4 @@
 pub mod descriptor;
-pub mod lighting;
 pub mod preprocess;
 
 mod components;

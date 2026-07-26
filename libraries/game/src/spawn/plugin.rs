@@ -18,7 +18,6 @@ impl Plugin for SpawnPlugin {
                 systems::spawn_camera,
                 systems::spawn_earth,
                 systems::spawn_cities,
-                systems::spawn_city_lights,
                 systems::spawn_combatants,
             ),
         );

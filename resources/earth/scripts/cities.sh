@@ -7,5 +7,4 @@ cargo build -p cities --release
 
 target/release/cities-preprocess \
     --out-file $WORK_DIR/assets/earth/cities.ron \
-    --city-lights-out-file $WORK_DIR/assets/earth/city-lights.ron \
     --populated-places $DATA_DIR/places/ne_10m_populated_places.shp
