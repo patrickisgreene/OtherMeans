@@ -1,10 +1,12 @@
 mod cli;
+mod light_clusters;
 
 use std::str::FromStr;
 
 pub use cli::Cli;
+pub use light_clusters::build_light_clusters;
 
-use crate::descriptor::{CitiesDatabase, CityDescriptor, CountryId, Industries};
+use crate::descriptor::{CitiesDatabase, CityDescriptor, CityLightsDatabase, CountryId, Industries};
 use shapefile::Shape;
 use shapefile::dbase::{FieldValue, Record};
 use smol_str::SmolStr;
@@ -59,6 +61,14 @@ pub fn run_preprocessor() -> Result<(), Error> {
             population: field_number(&record, "POP_MAX") as u32,
             industries: Industries::empty(),
         });
+    }
+
+    if let Some(city_lights_out_file) = &args.city_lights_out_file {
+        let clusters = build_light_clusters(&cities, args.light_cluster_radius_km * 1000.0);
+        let light_database = CityLightsDatabase(clusters);
+        let encoded =
+            ron::ser::to_string_pretty(&light_database, ron::ser::PrettyConfig::default())?;
+        std::fs::write(city_lights_out_file, encoded)?;
     }
 
     let database = CitiesDatabase(cities);

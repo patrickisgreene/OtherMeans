@@ -12,4 +12,5 @@ shapefile.workspace = true
 bevy_common_assets.workspace = true
 ron.workspace = true
 thiserror.workspace = true
+terrain.workspace = true
 bevy = { workspace = true, features = ["bevy_asset"] }

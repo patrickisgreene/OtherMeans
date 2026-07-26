@@ -31,6 +31,7 @@ impl PluginGroup for GamePlugins {
             .add(camera::EarthCameraPlugin)
             .add(earth::EarthPlugin)
             .add(cities::CitiesPlugin)
+            .add(cities::lighting::LightingPlugin)
             .add(labels::LabelsPlugin::new(GameState::Spawning))
             .add(roads::RoadsPlugin)
             .add(buildings::BuildingsPlugin)
