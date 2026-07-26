@@ -8,9 +8,7 @@ use bevy::{
 use big_space::prelude::{CellCoord, Grid, Grids};
 use terrain::data::attachment::Attachment;
 use terrain::math::Coordinate;
-use terrain::prelude::{
-    AttachmentLabel, TerrainShape, TileAtlas, TileCoordinate, TileTree,
-};
+use terrain::prelude::{AttachmentLabel, TerrainShape, TileAtlas, TileCoordinate, TileTree};
 
 use roads::descriptor::RoadNetwork;
 use roads::index::{RoadCoarseIndex, build_coarse_index, coarse_ancestor, tile_road_occupancy};
@@ -145,7 +143,7 @@ fn footprint_in_ocean(
 /// any sample point where `population` reports zero density, the height tile reports water
 /// (elevation == 0.0), or `road_occupancy` (see `roads::index::tile_road_occupancy`, computed
 /// once per tile by the caller) flags that grid cell as having a road through it - so buildings
-/// don't spawn on top of `vehicles`' traffic - and scaling each surviving instance's height by
+/// don't spawn on top of `automobiles`' traffic - and scaling each surviving instance's height by
 /// its local density and placing it at its actual terrain elevation (via `height_image`/`height_attachment`
 /// and `height_scale`), plus the
 /// big_space cell/translation the owning entity should be spawned at. Returns an empty instance

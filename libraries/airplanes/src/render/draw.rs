@@ -19,54 +19,54 @@ use bevy::{
     },
 };
 
-use crate::instances::{InstanceData, ShippingInstances};
-use crate::render::origin::ShippingTileOrigin;
-use crate::render::pipeline::{ShipMeshBuffer, ShippingPipeline, ShippingPipelineKey};
+use crate::instances::{AirplaneInstances, InstanceData};
+use crate::render::origin::AirplaneTileOrigin;
+use crate::render::pipeline::{AirplaneMeshBuffer, AirplanePipeline, AirplanePipelineKey};
 use crate::render::time::SetRenderParamsBindGroup;
 
-/// Extracts newly-spawned (or, in principle, changed) [`ShippingInstances`] into the render
-/// world. Gated on `Changed<>` in the main world, same as
-/// `buildings::render::draw::extract_building_instances` - `ShippingInstances` is only ever
-/// inserted once per tile (all motion happens in the vertex shader afterward), so this fires
-/// exactly once per tile's lifetime rather than re-cloning every tile's instances every frame.
-pub fn extract_shipping_instances(
+/// Extracts newly-spawned (or, in principle, changed) [`AirplaneInstances`] into the render
+/// world. Gated on `Changed<>` in the main world - `AirplaneInstances` is only ever inserted once
+/// per tile (all motion happens in the vertex shader afterward), so this fires exactly once per
+/// tile's lifetime rather than re-cloning every tile's instances every frame. Copy of
+/// `shipping::render::draw::extract_shipping_instances`.
+pub fn extract_airplane_instances(
     mut commands: Commands,
-    query: Extract<Query<(RenderEntity, &ShippingInstances), Changed<ShippingInstances>>>,
+    query: Extract<Query<(RenderEntity, &AirplaneInstances), Changed<AirplaneInstances>>>,
 ) {
     for (entity, instances) in &query {
         commands.entity(entity).insert(instances.clone());
     }
 }
 
-/// A single, persistent, reused GPU buffer holding every currently-active tile's ship
-/// instances, merged and baked to absolute (camera-relative) positions each frame - copy of
-/// `buildings::render::draw::MergedBuildingInstances`.
+/// A single, persistent, reused GPU buffer holding every currently-active tile's plane instances,
+/// merged and baked to absolute (camera-relative) positions each frame - copy of
+/// `shipping::render::draw::MergedShippingInstances`.
 #[derive(Resource)]
-pub struct MergedShippingInstances(pub RawBufferVec<InstanceData>);
+pub struct MergedAirplaneInstances(pub RawBufferVec<InstanceData>);
 
-impl Default for MergedShippingInstances {
+impl Default for MergedAirplaneInstances {
     fn default() -> Self {
         Self(RawBufferVec::new(BufferUsages::VERTEX))
     }
 }
 
 /// A persistent placeholder entity used as the `Transparent3d` phase item's associated entity,
-/// since ships are rendered via one merged draw call rather than per-tile entities - copy of
-/// `buildings::render::draw::BuildingsRendererEntity`.
+/// since planes are rendered via one merged draw call rather than per-tile entities - copy of
+/// `shipping::render::draw::ShippingRendererEntity`.
 #[derive(Resource)]
-pub struct ShippingRendererEntity(pub Entity);
+pub struct AirplaneRendererEntity(pub Entity);
 
-impl FromWorld for ShippingRendererEntity {
+impl FromWorld for AirplaneRendererEntity {
     fn from_world(world: &mut World) -> Self {
-        Self(world.spawn(Name::new("ShippingRenderer")).id())
+        Self(world.spawn(Name::new("AirplanesRenderer")).id())
     }
 }
 
-pub fn prepare_merged_shipping_buffer(
-    mut merged: ResMut<MergedShippingInstances>,
+pub fn prepare_merged_airplane_buffer(
+    mut merged: ResMut<MergedAirplaneInstances>,
     render_device: Res<RenderDevice>,
     render_queue: Res<RenderQueue>,
-    tiles: Query<(&ShippingInstances, &ShippingTileOrigin)>,
+    tiles: Query<(&AirplaneInstances, &AirplaneTileOrigin)>,
 ) {
     merged.0.values_mut().clear();
 
@@ -85,10 +85,10 @@ pub fn prepare_merged_shipping_buffer(
     merged.0.write_buffer(&render_device, &render_queue);
 }
 
-pub struct DrawShippingInstanced;
+pub struct DrawAirplanesInstanced;
 
-impl<P: PhaseItem> RenderCommand<P> for DrawShippingInstanced {
-    type Param = (SRes<ShipMeshBuffer>, SRes<MergedShippingInstances>);
+impl<P: PhaseItem> RenderCommand<P> for DrawAirplanesInstanced {
+    type Param = (SRes<AirplaneMeshBuffer>, SRes<MergedAirplaneInstances>);
     type ViewQuery = ();
     type ItemQuery = ();
 
@@ -97,47 +97,47 @@ impl<P: PhaseItem> RenderCommand<P> for DrawShippingInstanced {
         _item: &P,
         _view: ROQueryItem<'w, '_, Self::ViewQuery>,
         _entity: Option<ROQueryItem<'w, '_, Self::ItemQuery>>,
-        (ship, merged): SystemParamItem<'w, '_, Self::Param>,
+        (airplane, merged): SystemParamItem<'w, '_, Self::Param>,
         pass: &mut TrackedRenderPass<'w>,
     ) -> RenderCommandResult {
         let merged = merged.into_inner();
         let Some(buffer) = merged.0.buffer() else {
             return RenderCommandResult::Skip;
         };
-        let ship = ship.into_inner();
+        let airplane = airplane.into_inner();
 
-        pass.set_vertex_buffer(0, ship.vertex_buffer.slice(..));
+        pass.set_vertex_buffer(0, airplane.vertex_buffer.slice(..));
         pass.set_vertex_buffer(1, buffer.slice(..));
-        pass.set_index_buffer(ship.index_buffer.slice(..), IndexFormat::Uint16);
-        pass.draw_indexed(0..ship.index_count, 0, 0..merged.0.len() as u32);
+        pass.set_index_buffer(airplane.index_buffer.slice(..), IndexFormat::Uint16);
+        pass.draw_indexed(0..airplane.index_count, 0, 0..merged.0.len() as u32);
 
         RenderCommandResult::Success
     }
 }
 
-pub type DrawShipping = (
+pub type DrawAirplanes = (
     SetItemPipeline,
     SetMeshViewBindGroup<0>,
     SetRenderParamsBindGroup<1>,
-    DrawShippingInstanced,
+    DrawAirplanesInstanced,
 );
 
-pub fn queue_shipping(
+pub fn queue_airplanes(
     draw_functions: Res<DrawFunctions<Transparent3d>>,
-    shipping_pipeline: Res<ShippingPipeline>,
-    mut pipelines: ResMut<SpecializedRenderPipelines<ShippingPipeline>>,
+    airplane_pipeline: Res<AirplanePipeline>,
+    mut pipelines: ResMut<SpecializedRenderPipelines<AirplanePipeline>>,
     pipeline_cache: Res<PipelineCache>,
     view_key_cache: Res<ViewKeyCache>,
     mut transparent_render_phases: ResMut<ViewSortedRenderPhases<Transparent3d>>,
     views: Query<&ExtractedView>,
-    merged: Res<MergedShippingInstances>,
-    renderer_entity: Res<ShippingRendererEntity>,
+    merged: Res<MergedAirplaneInstances>,
+    renderer_entity: Res<AirplaneRendererEntity>,
 ) {
     if merged.0.is_empty() {
         return;
     }
 
-    let draw_function = draw_functions.read().get_id::<DrawShipping>().unwrap();
+    let draw_function = draw_functions.read().get_id::<DrawAirplanes>().unwrap();
     let entity = renderer_entity.0;
     let main_entity = MainEntity::from(entity);
 
@@ -153,8 +153,8 @@ pub fn queue_shipping(
 
         let pipeline = pipelines.specialize(
             &pipeline_cache,
-            &shipping_pipeline,
-            ShippingPipelineKey { view_key },
+            &airplane_pipeline,
+            AirplanePipelineKey { view_key },
         );
 
         transparent_phase.add_transient(Transparent3d {

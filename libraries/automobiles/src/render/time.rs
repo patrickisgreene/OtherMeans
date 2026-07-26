@@ -1,7 +1,7 @@
 use bevy::{
     ecs::{
         query::ROQueryItem,
-        system::{lifetimeless::SRes, SystemParamItem},
+        system::{SystemParamItem, lifetimeless::SRes},
     },
     prelude::*,
     render::{
@@ -15,15 +15,15 @@ use terrain::prelude::TileTree;
 
 use crate::render::pipeline::RenderParamsBindGroupLayout;
 
-/// The single per-frame input driving all vehicle rendering: `shaders/vehicles.wgsl` computes
-/// each vehicle's position as a function of `elapsed_secs`, its per-instance speed and phase, and
-/// its static chain waypoints - so moving every vehicle costs nothing more per frame than
+/// The single per-frame input driving all automobile rendering: `shaders/automobiles.wgsl` computes
+/// each automobile's position as a function of `elapsed_secs`, its per-instance speed and phase, and
+/// its static chain waypoints - so moving every automobile costs nothing more per frame than
 /// uploading this one small uniform. `blend_distance`/`blend_range`/`max_lod` are terrain's own
 /// LOD blend-region parameters (mirrors `buildings::render::fade::BuildingsFadeParams`), folded
-/// into the same uniform rather than a second bind group, so vehicles fade out in sync with
+/// into the same uniform rather than a second bind group, so automobiles fade out in sync with
 /// terrain LOD exactly like buildings do, without a second per-frame upload.
 #[derive(Resource, Clone, Copy, Default, ExtractResource, ShaderType)]
-pub struct VehiclesRenderParams {
+pub struct AutomobilesRenderParams {
     pub elapsed_secs: f32,
     pub blend_distance: f32,
     pub blend_range: f32,
@@ -32,8 +32,8 @@ pub struct VehiclesRenderParams {
 
 /// Mirrors `buildings::instances::update_building_batches`'s per-frame fade-param refresh -
 /// there's only ever one terrain entity in this app.
-pub fn update_vehicles_render_params(
-    mut params: ResMut<VehiclesRenderParams>,
+pub fn update_automobiles_render_params(
+    mut params: ResMut<AutomobilesRenderParams>,
     time: Res<Time>,
     tile_trees: Query<&TileTree>,
 ) {
@@ -47,10 +47,10 @@ pub fn update_vehicles_render_params(
 }
 
 #[derive(Resource, Default)]
-pub struct RenderParamsBuffer(pub UniformBuffer<VehiclesRenderParams>);
+pub struct RenderParamsBuffer(pub UniformBuffer<AutomobilesRenderParams>);
 
 pub fn prepare_render_params_buffer(
-    params: Res<VehiclesRenderParams>,
+    params: Res<AutomobilesRenderParams>,
     mut buffer: ResMut<RenderParamsBuffer>,
     render_device: Res<RenderDevice>,
     render_queue: Res<RenderQueue>,
@@ -71,7 +71,7 @@ pub fn prepare_render_params_bind_group(
 ) {
     if let Some(binding) = buffer.0.binding() {
         commands.insert_resource(RenderParamsBindGroup(render_device.create_bind_group(
-            "VehiclesRenderParams bindgroup",
+            "AutomobilesRenderParams bindgroup",
             &pipeline_cache.get_bind_group_layout(&layout.layout),
             &BindGroupEntries::single(binding),
         )));

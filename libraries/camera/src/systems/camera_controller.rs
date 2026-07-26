@@ -34,7 +34,7 @@ pub fn earth_camera_controller(
     }
 
     // ── Zoom ────────────────────────────────────────────────────────────────
-    let min_distance = controller.radius * 1.05;
+    let min_distance = controller.radius * 1.025;
     let max_distance = controller.max_distance;
     for event in mouse_wheel.read() {
         let speed = match event.unit {

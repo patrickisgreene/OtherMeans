@@ -27,7 +27,12 @@ pub fn height_tile_path(coordinate: TileCoordinate, height_attachment: &Attachme
 ///
 /// Returns the raw normalized height value - same convention as the GPU's `sample_height`
 /// before its `terrain.height_scale *` multiply, so callers keep multiplying by
-/// `TileAtlas::height_scale` themselves exactly as before.
+/// `TileAtlas::height_scale` themselves exactly as before. Deliberately *not* corrected for the
+/// small land-pixel floor `heightmap.sh`'s `EPSILON` bakes in above 0.0 - land there is never
+/// exactly 0.0 by design (it's reserved as an unambiguous ocean sentinel; see
+/// `shaders/earth/fragment.wgsl`'s `compute_ocean_blend`, which classifies anything `<= 0.0` as
+/// ocean), so "correcting" it back to true 0 here would misclassify low-lying coastal land as
+/// ocean there.
 pub fn sample_height_tile(image: &Image, height_attachment: &Attachment, local_uv: DVec2) -> f32 {
     let texture_size = height_attachment.texture_size();
     let scale = height_attachment.center_size() as f64 / texture_size as f64;

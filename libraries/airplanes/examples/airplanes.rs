@@ -3,7 +3,7 @@ use bevy::input::common_conditions::input_toggle_active;
 use bevy::{prelude::*, reflect::TypePath, render::render_resource::*};
 use bevy_inspector_egui::bevy_egui::EguiPlugin;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
-use terrain::{TerrainConfigHandle, TerrainPlugins, prelude::*};
+use terrain::{prelude::*, TerrainConfigHandle, TerrainPlugins};
 
 use workspace::EARTH_RADIUS;
 
@@ -17,8 +17,8 @@ fn main() {
         .add_plugins((
             workspace::default_plugins_big_space(None),
             TerrainPlugins::<CustomMaterial>::default(),
-            roads::RoadsPlugin,
-            vehicles::VehiclesPlugin,
+            cities::CitiesPlugin,
+            airplanes::AirplanesPlugin,
             FpsOverlayPlugin::default(),
             EguiPlugin::default(),
             WorldInspectorPlugin::new().run_if(input_toggle_active(false, KeyCode::F10)),

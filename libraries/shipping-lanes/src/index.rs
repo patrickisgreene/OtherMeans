@@ -20,7 +20,7 @@ const COARSE_BUCKET_SIZE_M: f64 = 150_000.0;
 
 /// Maps each coarse tile to the indices (into `RoadNetwork::0`) of roads that pass anywhere near
 /// it. Built once, cheaply, from `network`'s raw vertices (no resampling, no elevation lookups) -
-/// this is deliberately the only whole-globe structure any road-aware system (`vehicles`,
+/// this is deliberately the only whole-globe structure any road-aware system (`ships`,
 /// `buildings`) needs to build. Both crates narrow down to a small per-tile candidate list via
 /// this index, then do their own (elevation-aware or not) fine-grained work only for that list.
 #[derive(Resource, Default)]
@@ -112,11 +112,11 @@ pub fn coarse_ancestor(tile: TileCoordinate, coarse_lod: u32) -> TileCoordinate 
 
 /// Builds a `grid_size x grid_size` occupancy grid (row-major, `[iy * grid_size + ix]`) flagging
 /// which cells of `tile`'s placement grid a road passes through - the 2D, elevation-free
-/// counterpart to `vehicles`' fine per-tile chain building. Cell `(ix, iy)` uses the exact same
+/// counterpart to `ships`' fine per-tile chain building. Cell `(ix, iy)` uses the exact same
 /// UV convention as `buildings::instances::generate_tile_instances`'s placement grid, so callers
 /// there can index it directly by their own `(ix, iy)` loop variables.
 ///
-/// Unlike `vehicles`' path-following use case (which needs precise, elevation-aware waypoints),
+/// Unlike `ships`' path-following use case (which needs precise, elevation-aware waypoints),
 /// this only needs a coarse "is a road anywhere in this cell" answer, so roads are resampled at a
 /// step proportional to the cell size (not a fixed real-world distance) and elevation is ignored
 /// entirely (`0.0` everywhere) - real-world segment length is only used to pick a safe step count.

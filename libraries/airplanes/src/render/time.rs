@@ -15,25 +15,40 @@ use terrain::prelude::TileTree;
 
 use crate::render::pipeline::RenderParamsBindGroupLayout;
 
-/// The single per-frame input driving all ship rendering: `shaders/ships.wgsl` computes
-/// each ship's position as a function of `elapsed_secs`, its per-instance speed and phase, and
-/// its static chain waypoints - so moving every ship costs nothing more per frame than
-/// uploading this one small uniform. `blend_distance`/`blend_range`/`max_lod` are terrain's own
-/// LOD blend-region parameters (mirrors `buildings::render::fade::BuildingsFadeParams`), folded
-/// into the same uniform rather than a second bind group, so ships fade out in sync with
-/// terrain LOD exactly like buildings do, without a second per-frame upload.
-#[derive(Resource, Clone, Copy, Default, ExtractResource, ShaderType)]
-pub struct ShippingRenderParams {
+/// The single per-frame input driving all plane rendering: `shaders/airplanes.wgsl` computes each
+/// plane's position as a function of `elapsed_secs`, its per-instance speed and phase, and its
+/// static chain waypoints. `blend_distance`/`blend_range`/`max_lod` are terrain's own LOD
+/// blend-region parameters, folded into the same uniform so planes fade out in sync with terrain
+/// LOD. Copy of `shipping::render::time::ShippingRenderParams`.
+#[derive(Resource, Clone, Copy, ExtractResource, ShaderType)]
+pub struct AirplaneRenderParams {
     pub elapsed_secs: f32,
     pub blend_distance: f32,
     pub blend_range: f32,
     pub max_lod: f32,
 }
 
-/// Mirrors `buildings::instances::update_building_batches`'s per-frame fade-param refresh -
-/// there's only ever one terrain entity in this app.
-pub fn update_shipping_render_params(
-    mut params: ResMut<ShippingRenderParams>,
+/// `shaders/airplanes.wgsl`'s `compute_fade` divides by `blend_distance` and `blend_range` - a
+/// derived, all-zero `Default` (as `shipping`'s equivalent uses) would make every plane fully
+/// transparent (`log2(0/x)` = -inf, `saturate` clamps that to alpha 0) on any frame this resource
+/// is read before `update_airplane_render_params` has found a `TileTree` to copy real values
+/// from. Explicit large fallbacks here mean a plane renders fully opaque instead of invisible
+/// during that window, regardless of whether it turns out to be the whole story.
+impl Default for AirplaneRenderParams {
+    fn default() -> Self {
+        Self {
+            elapsed_secs: 0.0,
+            blend_distance: f32::MAX,
+            blend_range: 1.0,
+            max_lod: f32::MAX,
+        }
+    }
+}
+
+/// Mirrors `shipping::render::time::update_shipping_render_params` - there's only ever one
+/// terrain entity in this app.
+pub fn update_airplane_render_params(
+    mut params: ResMut<AirplaneRenderParams>,
     time: Res<Time>,
     tile_trees: Query<&TileTree>,
 ) {
@@ -47,10 +62,10 @@ pub fn update_shipping_render_params(
 }
 
 #[derive(Resource, Default)]
-pub struct RenderParamsBuffer(pub UniformBuffer<ShippingRenderParams>);
+pub struct RenderParamsBuffer(pub UniformBuffer<AirplaneRenderParams>);
 
 pub fn prepare_render_params_buffer(
-    params: Res<ShippingRenderParams>,
+    params: Res<AirplaneRenderParams>,
     mut buffer: ResMut<RenderParamsBuffer>,
     render_device: Res<RenderDevice>,
     render_queue: Res<RenderQueue>,
@@ -71,7 +86,7 @@ pub fn prepare_render_params_bind_group(
 ) {
     if let Some(binding) = buffer.0.binding() {
         commands.insert_resource(RenderParamsBindGroup(render_device.create_bind_group(
-            "ShippingRenderParams bindgroup",
+            "AirplaneRenderParams bindgroup",
             &pipeline_cache.get_bind_group_layout(&layout.layout),
             &BindGroupEntries::single(binding),
         )));

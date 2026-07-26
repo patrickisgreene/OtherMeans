@@ -12,20 +12,20 @@ use bevy::{
 use crate::instances::{ShippingInstances, update_shipping_batches};
 use crate::render::{
     draw::{
-        ShippingRendererEntity, DrawShipping, MergedShippingInstances, extract_shipping_instances,
+        DrawShipping, MergedShippingInstances, ShippingRendererEntity, extract_shipping_instances,
         prepare_merged_shipping_buffer, queue_shipping,
     },
     origin::ShippingTileOrigin,
-    pipeline::{ShippingPipeline, init_shipping_pipeline, init_render_params_bind_group_layout},
+    pipeline::{ShippingPipeline, init_render_params_bind_group_layout, init_shipping_pipeline},
     time::{
-        ShippingRenderParams, RenderParamsBuffer, prepare_render_params_bind_group,
+        RenderParamsBuffer, ShippingRenderParams, prepare_render_params_bind_group,
         prepare_render_params_buffer, update_shipping_render_params,
     },
 };
 
 /// Renders small instanced boxes animating along roads as ambient, purely-visual traffic.
 ///
-/// Requires [`buildings::BuildingsPlugin`] (for `buildings::tile_height`, used to place vehicles
+/// Requires [`buildings::BuildingsPlugin`] (for `buildings::tile_height`, used to place ships
 /// at real terrain elevation) and [`roads::RoadsPlugin`] (for the `RoadNetwork` asset loader) to
 /// already be added to the app.
 pub struct ShippingPlugin;
@@ -33,7 +33,10 @@ pub struct ShippingPlugin;
 impl Plugin for ShippingPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<ShippingRenderParams>()
-            .add_systems(Update, (update_shipping_batches, update_shipping_render_params))
+            .add_systems(
+                Update,
+                (update_shipping_batches, update_shipping_render_params),
+            )
             .add_plugins((
                 SyncComponentPlugin::<ShippingInstances>::default(),
                 ExtractComponentPlugin::<ShippingTileOrigin>::default(),

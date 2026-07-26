@@ -7,6 +7,7 @@ edition.workspace = true
 bevy = { workspace = true, features = ["bevy_feathers"] }
 big_space.workspace = true
 
+airplanes.workspace = true
 roads.workspace = true
 earth.workspace = true
 cities.workspace = true
@@ -17,7 +18,7 @@ metrics.workspace = true
 buildings.workspace = true
 workspace.workspace = true
 scenario.workspace = true
-vehicles.workspace = true
+automobiles.workspace = true
 shipping.workspace = true
 shipping-lanes.workspace = true
 

@@ -103,9 +103,9 @@ fn vertex(input: VertexInput) -> VertexOutput {
 
     let scaled = input.position * vec3<f32>(input.color_and_width.w, input.dimensions.y, input.dimensions.x);
     let offset = right * scaled.x + up * scaled.y + forward * scaled.z;
-    // Shifts each direction to its own side of the chain's centerline by half the ship's own
+    // Shifts each direction to its own side of the chain's centerline by half the vehicle's own
     // footprint width, so opposing traffic (`direction` = +1.0/-1.0, see
-    // `shipping::instances::build_instance`) sails in separate side-by-side lanes flanking the
+    // `automobiles::instances::build_instance`) drives in separate side-by-side lanes flanking the
     // centerline instead of both directions sharing the exact same path and overlapping.
     let lane_offset = right * (input.color_and_width.w * 0.5 * direction);
     // Mirrors buildings' `+ normal * (height * 0.5)` (see

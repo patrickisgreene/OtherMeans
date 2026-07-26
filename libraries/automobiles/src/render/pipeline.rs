@@ -12,9 +12,9 @@ use bevy::{
 };
 
 use crate::instances::InstanceData;
-use crate::render::time::VehiclesRenderParams;
+use crate::render::time::AutomobilesRenderParams;
 
-pub const VEHICLES_SHADER: &str = "shaders/vehicles.wgsl";
+pub const AUTOMOBILES_SHADER: &str = "shaders/automobiles.wgsl";
 
 /// A low-poly semi-truck silhouette: a tall box at the back (trailer, roof at local Y = +0.5,
 /// running flat from the back all the way to `TRAILER_FRONT_Z`) then a sloped section dropping
@@ -22,7 +22,7 @@ pub const VEHICLES_SHADER: &str = "shaders/vehicles.wgsl";
 /// vertical (directly above the bottom-front edge, forming an enclosed box front). Local axes
 /// match the old unit-cube convention (X = width, Y = height, Z = length, each in roughly
 /// -0.5..0.5) so the existing per-instance `dimensions`/`color_and_width.w` scaling in the
-/// shader, and the ground-placement lift (`shaders/vehicles.wgsl`'s `up * (height * 0.5)`), keep
+/// shader, and the ground-placement lift (`shaders/automobiles.wgsl`'s `up * (height * 0.5)`), keep
 /// working unchanged.
 #[repr(C)]
 #[derive(Clone, Copy, bytemuck::Pod, bytemuck::Zeroable)]
@@ -103,7 +103,7 @@ fn truck_mesh() -> (Vec<TruckVertex>, Vec<u16>) {
     (vertices, TRUCK_INDICES.to_vec())
 }
 
-/// A resource holding the shared truck vertex/index buffers used by every vehicle instance batch.
+/// A resource holding the shared truck vertex/index buffers used by every automobile instance batch.
 #[derive(Resource)]
 pub struct TruckMeshBuffer {
     pub vertex_buffer: Buffer,
@@ -111,7 +111,7 @@ pub struct TruckMeshBuffer {
     pub index_count: u32,
 }
 
-/// The bind group layout for the per-frame [`VehiclesRenderParams`] uniform (group 1).
+/// The bind group layout for the per-frame [`AutomobilesRenderParams`] uniform (group 1).
 #[derive(Resource)]
 pub struct RenderParamsBindGroupLayout {
     pub layout: BindGroupLayoutDescriptor,
@@ -119,45 +119,45 @@ pub struct RenderParamsBindGroupLayout {
 
 pub fn init_render_params_bind_group_layout(mut commands: Commands) {
     let layout = BindGroupLayoutDescriptor::new(
-        "VehiclesRenderParams layout",
+        "AutomobilessRenderParams layout",
         &BindGroupLayoutEntries::single(
             ShaderStages::VERTEX,
-            uniform_buffer::<VehiclesRenderParams>(false),
+            uniform_buffer::<AutomobilesRenderParams>(false),
         ),
     );
 
     commands.insert_resource(RenderParamsBindGroupLayout { layout });
 }
 
-/// The pipeline used to render instanced, animated vehicle boxes.
+/// The pipeline used to render instanced, animated automobile boxes.
 #[derive(Resource)]
-pub struct VehiclesPipeline {
+pub struct AutomobilesPipeline {
     mesh_pipeline: MeshPipeline,
     render_params_layout: BindGroupLayoutDescriptor,
     shader: Handle<Shader>,
 }
 
-pub fn init_vehicles_pipeline(
+pub fn init_automobiles_pipeline(
     mut commands: Commands,
     mesh_pipeline: Res<MeshPipeline>,
     render_params_layout: Res<RenderParamsBindGroupLayout>,
     asset_server: Res<AssetServer>,
     render_device: Res<RenderDevice>,
 ) {
-    commands.insert_resource(VehiclesPipeline {
+    commands.insert_resource(AutomobilesPipeline {
         mesh_pipeline: mesh_pipeline.clone(),
         render_params_layout: render_params_layout.layout.clone(),
-        shader: asset_server.load(VEHICLES_SHADER),
+        shader: asset_server.load(AUTOMOBILES_SHADER),
     });
 
     let (vertices, indices) = truck_mesh();
     let vertex_buffer = render_device.create_buffer_with_data(&BufferInitDescriptor {
-        label: Some("vehicle_truck_vertex_buffer"),
+        label: Some("automobiles_truck_vertex_buffer"),
         contents: bytemuck::cast_slice(&vertices),
         usage: BufferUsages::VERTEX,
     });
     let index_buffer = render_device.create_buffer_with_data(&BufferInitDescriptor {
-        label: Some("vehicle_truck_index_buffer"),
+        label: Some("automobiles_truck_index_buffer"),
         contents: bytemuck::cast_slice(&indices),
         usage: BufferUsages::INDEX,
     });
@@ -170,7 +170,7 @@ pub fn init_vehicles_pipeline(
 }
 
 #[derive(Clone, PartialEq, Eq, Hash)]
-pub struct VehiclesPipelineKey {
+pub struct AutomobilesPipelineKey {
     pub view_key: MeshPipelineKey,
 }
 
@@ -226,14 +226,14 @@ fn instance_buffer_layout() -> VertexBufferLayout {
     }
 }
 
-impl SpecializedRenderPipeline for VehiclesPipeline {
-    type Key = VehiclesPipelineKey;
+impl SpecializedRenderPipeline for AutomobilesPipeline {
+    type Key = AutomobilesPipelineKey;
 
     fn specialize(&self, key: Self::Key) -> RenderPipelineDescriptor {
         let view_layout = self.mesh_pipeline.get_view_layout(key.view_key.into());
 
         RenderPipelineDescriptor {
-            label: Some("vehicles_pipeline".into()),
+            label: Some("automobiles_pipeline".into()),
             layout: vec![
                 view_layout.main_layout.clone(),
                 self.render_params_layout.clone(),

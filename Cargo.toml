@@ -43,6 +43,7 @@ big_space = { git = "https://github.com/m-edlund/big_space", features = ["i32"],
 bevy_common_assets = { version = "0.17.0", features = ["ron"] }
 bevy-inspector-egui = "0.37"
 
+airplanes.path = "libraries/airplanes"
 buildings.path = "libraries/buildings"
 camera.path = "libraries/camera"
 earth.path = "libraries/earth"
@@ -53,7 +54,7 @@ terrain.path = "libraries/terrain"
 metrics.path = "libraries/metrics"
 weapons.path = "libraries/weapons"
 scenario.path = "libraries/scenario"
-vehicles.path = "libraries/vehicles"
+automobiles.path = "libraries/automobiles"
 workspace.path = "libraries/workspace"
 shipping.path = "libraries/shipping"
 shipping-lanes.path = "libraries/shipping-lanes"

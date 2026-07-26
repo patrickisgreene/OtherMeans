@@ -15,13 +15,13 @@ use buildings::tile_height::{sample_height_tile, tile_local_uv};
 /// re-bucketed per step rather than assigned to a single tile as a whole.
 const ROAD_SAMPLE_STEP_M: f64 = 300.0;
 
-/// Maximum number of waypoints stored per in-tile road chain. Bounds the size of the per-vehicle
+/// Maximum number of waypoints stored per in-tile road chain. Bounds the size of the per-automobile
 /// waypoint array the vertex shader walks (see `render::pipeline`); chains longer than this in
 /// raw sample count are split into multiple chains rather than growing that array unboundedly.
 pub const MAX_WAYPOINTS: usize = 8;
 
-/// A single contiguous, tile-local sequence of points a vehicle can loop along. Always wholly
-/// contained within one terrain tile, so a vehicle bound to a chain never needs to hand off to a
+/// A single contiguous, tile-local sequence of points a automobile can loop along. Always wholly
+/// contained within one terrain tile, so a automobile bound to a chain never needs to hand off to a
 /// neighbouring tile mid-drive.
 #[derive(Clone)]
 pub struct RoadChain {
@@ -31,7 +31,7 @@ pub struct RoadChain {
     /// Cumulative real-world distance (metres) from `waypoints[0]` to each waypoint; same
     /// length as `waypoints`, `cumulative[0] == 0.0`.
     pub cumulative: Vec<f32>,
-    /// Surface normal at the chain's first waypoint, used as a constant "up" for every vehicle
+    /// Surface normal at the chain's first waypoint, used as a constant "up" for every automobile
     /// on this chain. A tile at the highest LOD is small enough that the normal barely varies
     /// across it, so one normal per chain (rather than per-waypoint) is an acceptable
     /// simplification for a purely visual effect.
@@ -47,7 +47,7 @@ impl RoadChain {
 /// A (lon, lat) point resolved to `target_lod`'s tile grid, plus its real world-space position
 /// (already including terrain elevation, matching how `buildings` places instances) and its unit
 /// cube-sphere position (used to derive a surface normal). Elevation-aware, unlike
-/// `roads::index`'s coarse bucketing - this is why it stays in `vehicles` rather than moving there
+/// `roads::index`'s coarse bucketing - this is why it stays in `automobiles` rather than moving there
 /// too (see `libraries/roads/src/index.rs`'s doc comment on `tile_road_occupancy`).
 struct Located {
     tile: TileCoordinate,
@@ -155,8 +155,14 @@ impl ChainBuilder {
     /// Adds a sample point. Flushes the chain in progress first if the sample isn't in the
     /// target tile, or if the chain is already full - in the full case the last point is carried
     /// over as the new chain's first point so adjacent chains still meet, keeping the rendered
-    /// road visually continuous even though any single vehicle only drives one chain of it.
-    fn push(&mut self, located: &Located, chains: &mut Vec<RoadChain>, shape: TerrainShape, spherical: bool) {
+    /// road visually continuous even though any single automobile only drives one chain of it.
+    fn push(
+        &mut self,
+        located: &Located,
+        chains: &mut Vec<RoadChain>,
+        shape: TerrainShape,
+        spherical: bool,
+    ) {
         let in_target = located.tile == self.target;
         let full = self.points.len() >= MAX_WAYPOINTS;
 

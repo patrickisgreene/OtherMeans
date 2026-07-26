@@ -14,27 +14,27 @@ use roads::index::{RoadCoarseIndex, build_coarse_index, coarse_ancestor};
 
 use crate::network::{MAX_WAYPOINTS, RoadChain, chains_for_tile};
 
-/// Target spacing (metres) between vehicles along a chain - lower means denser traffic.
-const VEHICLE_SPACING_M: f32 = 120.0;
-/// Upper bound on vehicles spawned per chain, regardless of how long it is - keeps a single
+/// Target spacing (metres) between automobiles along a chain - lower means denser traffic.
+const AUTOMOBILES_SPACING_M: f32 = 2500.0;
+/// Upper bound on automobiles spawned per chain, regardless of how long it is - keeps a single
 /// unusually long in-tile chain (e.g. a highway running straight through a tile) from spawning
 /// an excessive number of instances.
-const MAX_VEHICLES_PER_CHAIN: usize = 6;
-/// Hard cap on vehicles spawned for a single tile, regardless of how many road chains it
+const MAX_AUTOMOBILES_PER_CHAIN: usize = 6;
+/// Hard cap on automobiles spawned for a single tile, regardless of how many road chains it
 /// contains. A shallow terrain config (few LODs) can make a single "highest LOD" tile hundreds of
 /// kilometres across, potentially covering thousands of chains - without this, such a tile could
 /// spawn tens of thousands of instances at once.
-const MAX_VEHICLES_PER_TILE: usize = 300;
-/// Chains shorter than this aren't worth putting a vehicle on - the loop would be barely visible.
-const MIN_CHAIN_LENGTH_M: f32 = 20.0;
+const MAX_AUTOMOBILES_PER_TILE: usize = 150;
+/// Chains shorter than this aren't worth putting a automobile on - the loop would be barely visible.
+const MIN_CHAIN_LENGTH_M: f32 = 15.0;
 
-const VEHICLE_SPEED_MIN: f32 = 100.0;
-const VEHICLE_SPEED_MAX: f32 = 500.0;
-const VEHICLE_LENGTH: f32 = 1000.5;
-const VEHICLE_WIDTH: f32 = 250.9;
-const VEHICLE_HEIGHT: f32 = 400.5;
+const AUTOMOBILE_SPEED_MIN: f32 = 100.0;
+const AUTOMOBILE_SPEED_MAX: f32 = 500.0;
+const AUTOMOBILE_LENGTH: f32 = 1000.5;
+const AUTOMOBILE_WIDTH: f32 = 250.9;
+const AUTOMOBILE_HEIGHT: f32 = 400.5;
 
-const VEHICLE_COLORS: [[f32; 3]; 5] = [
+const AUTOMOBILE_COLORS: [[f32; 3]; 5] = [
     [0.78, 0.10, 0.08],
     [0.85, 0.85, 0.88],
     [0.12, 0.12, 0.14],
@@ -44,8 +44,8 @@ const VEHICLE_COLORS: [[f32; 3]; 5] = [
 
 /// Per-instance data for a single active tile, uploaded to the GPU as a vertex buffer. Unlike
 /// `buildings::instances::InstanceData`, this is written once at spawn time but never describes
-/// a fixed position - the vertex shader (`shaders/vehicles.wgsl`) walks `waypoints` as a function
-/// of a per-frame time uniform to animate the vehicle along its chain, so no per-frame CPU work
+/// a fixed position - the vertex shader (`shaders/automobiles.wgsl`) walks `waypoints` as a function
+/// of a per-frame time uniform to animate the automobile along its chain, so no per-frame CPU work
 /// is needed to move it.
 #[repr(C)]
 #[derive(Clone, Copy, bytemuck::Pod, bytemuck::Zeroable)]
@@ -67,19 +67,19 @@ pub struct InstanceData {
     pub dimensions: [f32; 4],
 }
 
-/// Identifies which terrain tile a vehicle batch entity belongs to.
+/// Identifies which terrain tile a automobile batch entity belongs to.
 #[derive(Component, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct VehicleTile(pub TileCoordinate);
+pub struct AutomobilesTile(pub TileCoordinate);
 
-/// Per-instance vehicle data for a single active tile. Written once at tile spawn and never
+/// Per-instance automobile data for a single active tile. Written once at tile spawn and never
 /// mutated afterward (all motion happens in the vertex shader), so - exactly like
 /// `buildings::instances::BuildingInstances` - it's extracted into the render world via a
 /// hand-written `Changed<>`-gated system instead of `ExtractComponentPlugin`.
 #[derive(Component, Clone)]
-pub struct VehicleInstances(pub Vec<InstanceData>);
+pub struct AutomobilesInstances(pub Vec<InstanceData>);
 
-impl SyncComponent for VehicleInstances {
-    type Target = VehicleInstances;
+impl SyncComponent for AutomobilesInstances {
+    type Target = AutomobilesInstances;
 }
 
 fn hash_u64(mut x: u64) -> u64 {
@@ -95,20 +95,20 @@ fn mix(a: u64, b: u64) -> u64 {
     hash_u64(a ^ hash_u64(b))
 }
 
-/// Deterministic pseudo-random unit float in `[0, 1)` for a given vehicle, stable across tile
-/// respawns since it's derived purely from the tile/chain/vehicle indices (no external RNG
+/// Deterministic pseudo-random unit float in `[0, 1)` for a given automobile, stable across tile
+/// respawns since it's derived purely from the tile/chain/automobile indices (no external RNG
 /// state) - mirrors `buildings::instances::jitter_uv`'s approach.
 fn jitter_unit(
     coordinate: TileCoordinate,
     chain_index: usize,
-    vehicle_index: usize,
+    automobile_index: usize,
     salt: u64,
 ) -> f32 {
     let seed = mix(
         mix(coordinate.face as u64, coordinate.xy.x as u64),
         mix(
             mix(coordinate.xy.y as u64, chain_index as u64),
-            mix(vehicle_index as u64, salt),
+            mix(automobile_index as u64, salt),
         ),
     );
     (hash_u64(seed) as f64 / u64::MAX as f64) as f32
@@ -118,7 +118,7 @@ fn build_instance(
     chain: &RoadChain,
     coordinate: TileCoordinate,
     chain_index: usize,
-    vehicle_index: usize,
+    automobile_index: usize,
     slot: usize,
 ) -> InstanceData {
     let count = chain.waypoints.len().min(MAX_WAYPOINTS);
@@ -131,34 +131,34 @@ fn build_instance(
     }
 
     let total_length = chain.total_length().max(0.0001);
-    let speed = VEHICLE_SPEED_MIN
-        + jitter_unit(coordinate, chain_index, vehicle_index, 0)
-            * (VEHICLE_SPEED_MAX - VEHICLE_SPEED_MIN);
-    let phase = jitter_unit(coordinate, chain_index, vehicle_index, 1) * total_length;
-    let color = VEHICLE_COLORS[(jitter_unit(coordinate, chain_index, vehicle_index, 2)
-        * VEHICLE_COLORS.len() as f32)
-        .min(VEHICLE_COLORS.len() as f32 - 1.0) as usize];
-    // Alternates by `slot`, the vehicle's index across the *whole tile* rather than just its own
-    // chain - most chains only spawn a single vehicle (`generate_tile_instances`'s per-chain
-    // `count` is usually clamped down to 1), so alternating by `vehicle_index` alone left nearly
-    // every vehicle at index 0 and therefore always forward. `slot` keeps the 50/50 split even
-    // then; chains that do spawn multiple vehicles still get an even mix among themselves since
-    // their vehicles occupy consecutive slots. One lane per direction (see the lateral lane
-    // offset in `shaders/vehicles.wgsl`).
+    let speed = AUTOMOBILE_SPEED_MIN
+        + jitter_unit(coordinate, chain_index, automobile_index, 0)
+            * (AUTOMOBILE_SPEED_MAX - AUTOMOBILE_SPEED_MIN);
+    let phase = jitter_unit(coordinate, chain_index, automobile_index, 1) * total_length;
+    let color = AUTOMOBILE_COLORS[(jitter_unit(coordinate, chain_index, automobile_index, 2)
+        * AUTOMOBILE_COLORS.len() as f32)
+        .min(AUTOMOBILE_COLORS.len() as f32 - 1.0) as usize];
+    // Alternates by `slot`, the automobile's index across the *whole tile* rather than just its own
+    // chain - most chains only spawn a single automobile (`generate_tile_instances`'s per-chain
+    // `count` is usually clamped down to 1), so alternating by `automobile_index` alone left nearly
+    // every automobile at index 0 and therefore always forward. `slot` keeps the 50/50 split even
+    // then; chains that do spawn multiple automobiles still get an even mix among themselves since
+    // their automobiles occupy consecutive slots. One lane per direction (see the lateral lane
+    // offset in `shaders/automobiles.wgsl`).
     let direction = if slot % 2 == 0 { 1.0 } else { -1.0 };
 
     InstanceData {
         waypoints,
         path_params: [count as f32, speed, phase, direction],
         normal: [chain.normal.x, chain.normal.y, chain.normal.z, 0.0],
-        color_and_width: [color[0], color[1], color[2], VEHICLE_WIDTH],
-        dimensions: [VEHICLE_LENGTH, VEHICLE_HEIGHT, 0.0, 0.0],
+        color_and_width: [color[0], color[1], color[2], AUTOMOBILE_WIDTH],
+        dimensions: [AUTOMOBILE_LENGTH, AUTOMOBILE_HEIGHT, 0.0, 0.0],
     }
 }
 
-/// Generates the vehicle instances for every chain the road index has registered for
-/// `coordinate`, spawning a density of vehicles proportional to each chain's length - capped at
-/// `MAX_VEHICLES_PER_TILE` in total. A "highest LOD" tile's real-world size depends entirely on
+/// Generates the automobile instances for every chain the road index has registered for
+/// `coordinate`, spawning a density of automobiles proportional to each chain's length - capped at
+/// `MAX_AUTOMOBILES_PER_TILE` in total. A "highest LOD" tile's real-world size depends entirely on
 /// the terrain config's `lod_count` (a shallow config can make it hundreds of kilometres across,
 /// easily covering thousands of chains), so the per-chain cap alone isn't enough to bound cost -
 /// without a tile-wide budget a single very road-dense tile could spawn tens of thousands of
@@ -169,8 +169,8 @@ fn generate_tile_instances(coordinate: TileCoordinate, chains: &[RoadChain]) -> 
         return Vec::new();
     }
 
-    let desired_total = ((total_length / VEHICLE_SPACING_M).round() as usize).max(1);
-    let budget = desired_total.min(MAX_VEHICLES_PER_TILE);
+    let desired_total = ((total_length / AUTOMOBILES_SPACING_M).round() as usize).max(1);
+    let budget = desired_total.min(MAX_AUTOMOBILES_PER_TILE);
 
     let mut instances = Vec::with_capacity(budget);
     let mut assigned = 0usize;
@@ -185,20 +185,20 @@ fn generate_tile_instances(coordinate: TileCoordinate, chains: &[RoadChain]) -> 
             continue;
         }
 
-        // Proportional share of the tile's budget, so longer chains get more vehicles, capped
+        // Proportional share of the tile's budget, so longer chains get more automobiles, capped
         // per-chain so one exceptionally long chain can't visually hog the whole tile's budget.
         let share = ((length / total_length) * budget as f32).round() as usize;
         let count = share
-            .clamp(1, MAX_VEHICLES_PER_CHAIN)
+            .clamp(1, MAX_AUTOMOBILES_PER_CHAIN)
             .min(budget - assigned);
 
-        for vehicle_index in 0..count {
+        for automobile_index in 0..count {
             let slot = instances.len();
             instances.push(build_instance(
                 chain,
                 coordinate,
                 chain_index,
-                vehicle_index,
+                automobile_index,
                 slot,
             ));
         }
@@ -208,13 +208,13 @@ fn generate_tile_instances(coordinate: TileCoordinate, chains: &[RoadChain]) -> 
     instances
 }
 
-/// Keeps one vehicle-batch entity alive per terrain tile that is currently loaded at the highest
+/// Keeps one automobile-batch entity alive per terrain tile that is currently loaded at the highest
 /// LOD and has at least one road chain, spawning/despawning entities as the active tile set
 /// changes - mirrors `buildings::instances::update_building_batches`. The whole-globe
 /// `RoadTileIndex` is built exactly once, the first time a `TileAtlas` and the `RoadNetwork`
 /// asset are both available (tile boundaries at the fixed highest LOD never change afterward, so
 /// there's nothing to rebuild).
-pub fn update_vehicle_batches(
+pub fn update_automobiles_batches(
     mut commands: Commands,
     mut known: Local<HashMap<TileCoordinate, Option<Entity>>>,
     mut network_handle: Local<Option<Handle<RoadNetwork>>>,
@@ -282,11 +282,13 @@ pub fn update_vehicle_batches(
             };
 
             // Load (or keep waiting on) this tile's own height image - the exact same per-tile
-            // R32F file the terrain mesh itself displaces by - before placing vehicles on it.
+            // R32F file the terrain mesh itself displaces by - before placing automobiles on it.
             // Left out of `known` (retried next frame) until it's ready.
             let handle = height_tile_handles
                 .entry(coordinate)
-                .or_insert_with(|| asset_server.load(height_tile_path(coordinate, height_attachment)))
+                .or_insert_with(|| {
+                    asset_server.load(height_tile_path(coordinate, height_attachment))
+                })
                 .clone();
             let Some(height_image) = images.get(&handle) else {
                 continue;
@@ -315,8 +317,8 @@ pub fn update_vehicle_batches(
 
             let entity = commands
                 .spawn((
-                    VehicleTile(coordinate),
-                    VehicleInstances(instances),
+                    AutomobilesTile(coordinate),
+                    AutomobilesInstances(instances),
                     cell,
                     Transform::from_translation(translation),
                     ChildOf(root),

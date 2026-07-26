@@ -2,11 +2,12 @@ use bevy::{
     core_pipeline::core_3d::{Transparent3d, TransparentSortingInfo3d},
     ecs::{
         query::ROQueryItem,
-        system::{lifetimeless::SRes, SystemParamItem},
+        system::{SystemParamItem, lifetimeless::SRes},
     },
     pbr::{SetMeshViewBindGroup, ViewKeyCache},
     prelude::*,
     render::{
+        Extract,
         render_phase::{
             DrawFunctions, PhaseItem, PhaseItemExtraIndex, RenderCommand, RenderCommandResult,
             SetItemPipeline, TrackedRenderPass, ViewSortedRenderPhases,
@@ -15,58 +16,57 @@ use bevy::{
         renderer::{RenderDevice, RenderQueue},
         sync_world::{MainEntity, RenderEntity},
         view::ExtractedView,
-        Extract,
     },
 };
 
-use crate::instances::{InstanceData, VehicleInstances};
-use crate::render::origin::VehicleTileOrigin;
-use crate::render::pipeline::{TruckMeshBuffer, VehiclesPipeline, VehiclesPipelineKey};
+use crate::instances::{AutomobilesInstances, InstanceData};
+use crate::render::origin::AutomobilesTileOrigin;
+use crate::render::pipeline::{AutomobilesPipeline, AutomobilesPipelineKey, TruckMeshBuffer};
 use crate::render::time::SetRenderParamsBindGroup;
 
-/// Extracts newly-spawned (or, in principle, changed) [`VehicleInstances`] into the render
+/// Extracts newly-spawned (or, in principle, changed) [`AutomobilesInstances`] into the render
 /// world. Gated on `Changed<>` in the main world, same as
-/// `buildings::render::draw::extract_building_instances` - `VehicleInstances` is only ever
+/// `buildings::render::draw::extract_building_instances` - `AutomobilesInstances` is only ever
 /// inserted once per tile (all motion happens in the vertex shader afterward), so this fires
 /// exactly once per tile's lifetime rather than re-cloning every tile's instances every frame.
-pub fn extract_vehicle_instances(
+pub fn extract_automobiles_instances(
     mut commands: Commands,
-    query: Extract<Query<(RenderEntity, &VehicleInstances), Changed<VehicleInstances>>>,
+    query: Extract<Query<(RenderEntity, &AutomobilesInstances), Changed<AutomobilesInstances>>>,
 ) {
     for (entity, instances) in &query {
         commands.entity(entity).insert(instances.clone());
     }
 }
 
-/// A single, persistent, reused GPU buffer holding every currently-active tile's vehicle
+/// A single, persistent, reused GPU buffer holding every currently-active tile's automobile
 /// instances, merged and baked to absolute (camera-relative) positions each frame - copy of
 /// `buildings::render::draw::MergedBuildingInstances`.
 #[derive(Resource)]
-pub struct MergedVehicleInstances(pub RawBufferVec<InstanceData>);
+pub struct MergedAutomobilesInstances(pub RawBufferVec<InstanceData>);
 
-impl Default for MergedVehicleInstances {
+impl Default for MergedAutomobilesInstances {
     fn default() -> Self {
         Self(RawBufferVec::new(BufferUsages::VERTEX))
     }
 }
 
 /// A persistent placeholder entity used as the `Transparent3d` phase item's associated entity,
-/// since vehicles are rendered via one merged draw call rather than per-tile entities - copy of
+/// since automobiles are rendered via one merged draw call rather than per-tile entities - copy of
 /// `buildings::render::draw::BuildingsRendererEntity`.
 #[derive(Resource)]
-pub struct VehiclesRendererEntity(pub Entity);
+pub struct AutomobilesRendererEntity(pub Entity);
 
-impl FromWorld for VehiclesRendererEntity {
+impl FromWorld for AutomobilesRendererEntity {
     fn from_world(world: &mut World) -> Self {
-        Self(world.spawn(Name::new("VehiclesRenderer")).id())
+        Self(world.spawn(Name::new("AutomobilesRenderer")).id())
     }
 }
 
-pub fn prepare_merged_vehicle_buffer(
-    mut merged: ResMut<MergedVehicleInstances>,
+pub fn prepare_merged_automobiles_buffer(
+    mut merged: ResMut<MergedAutomobilesInstances>,
     render_device: Res<RenderDevice>,
     render_queue: Res<RenderQueue>,
-    tiles: Query<(&VehicleInstances, &VehicleTileOrigin)>,
+    tiles: Query<(&AutomobilesInstances, &AutomobilesTileOrigin)>,
 ) {
     merged.0.values_mut().clear();
 
@@ -85,10 +85,10 @@ pub fn prepare_merged_vehicle_buffer(
     merged.0.write_buffer(&render_device, &render_queue);
 }
 
-pub struct DrawVehiclesInstanced;
+pub struct DrawAutomobilesInstanced;
 
-impl<P: PhaseItem> RenderCommand<P> for DrawVehiclesInstanced {
-    type Param = (SRes<TruckMeshBuffer>, SRes<MergedVehicleInstances>);
+impl<P: PhaseItem> RenderCommand<P> for DrawAutomobilesInstanced {
+    type Param = (SRes<TruckMeshBuffer>, SRes<MergedAutomobilesInstances>);
     type ViewQuery = ();
     type ItemQuery = ();
 
@@ -115,35 +115,34 @@ impl<P: PhaseItem> RenderCommand<P> for DrawVehiclesInstanced {
     }
 }
 
-pub type DrawVehicles = (
+pub type DrawAutomobiles = (
     SetItemPipeline,
     SetMeshViewBindGroup<0>,
     SetRenderParamsBindGroup<1>,
-    DrawVehiclesInstanced,
+    DrawAutomobilesInstanced,
 );
 
-pub fn queue_vehicles(
+pub fn queue_automobiles(
     draw_functions: Res<DrawFunctions<Transparent3d>>,
-    vehicles_pipeline: Res<VehiclesPipeline>,
-    mut pipelines: ResMut<SpecializedRenderPipelines<VehiclesPipeline>>,
+    automobiles_pipeline: Res<AutomobilesPipeline>,
+    mut pipelines: ResMut<SpecializedRenderPipelines<AutomobilesPipeline>>,
     pipeline_cache: Res<PipelineCache>,
     view_key_cache: Res<ViewKeyCache>,
     mut transparent_render_phases: ResMut<ViewSortedRenderPhases<Transparent3d>>,
     views: Query<&ExtractedView>,
-    merged: Res<MergedVehicleInstances>,
-    renderer_entity: Res<VehiclesRendererEntity>,
+    merged: Res<MergedAutomobilesInstances>,
+    renderer_entity: Res<AutomobilesRendererEntity>,
 ) {
     if merged.0.is_empty() {
         return;
     }
 
-    let draw_function = draw_functions.read().get_id::<DrawVehicles>().unwrap();
+    let draw_function = draw_functions.read().get_id::<DrawAutomobiles>().unwrap();
     let entity = renderer_entity.0;
     let main_entity = MainEntity::from(entity);
 
     for view in &views {
-        let Some(transparent_phase) =
-            transparent_render_phases.get_mut(&view.retained_view_entity)
+        let Some(transparent_phase) = transparent_render_phases.get_mut(&view.retained_view_entity)
         else {
             continue;
         };
@@ -154,8 +153,8 @@ pub fn queue_vehicles(
 
         let pipeline = pipelines.specialize(
             &pipeline_cache,
-            &vehicles_pipeline,
-            VehiclesPipelineKey { view_key },
+            &automobiles_pipeline,
+            AutomobilesPipelineKey { view_key },
         );
 
         transparent_phase.add_transient(Transparent3d {

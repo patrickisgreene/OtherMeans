@@ -3,4 +3,4 @@ pub mod network;
 pub mod plugin;
 pub mod render;
 
-pub use plugin::VehiclesPlugin;
+pub use plugin::AutomobilesPlugin;

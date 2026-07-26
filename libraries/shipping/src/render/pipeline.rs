@@ -63,34 +63,34 @@ const BRIDGE_TOP_Y: f32 = 0.30;
 fn ship_positions() -> [Vec3; 26] {
     [
         // Hull.
-        Vec3::new(-0.5, HULL_BOTTOM_Y, STERN_Z),      // 0: stern-left-bottom
-        Vec3::new(0.5, HULL_BOTTOM_Y, STERN_Z),       // 1: stern-right-bottom
-        Vec3::new(-0.5, HULL_BOTTOM_Y, BOW_TAPER_Z),  // 2: mid-left-bottom
-        Vec3::new(0.5, HULL_BOTTOM_Y, BOW_TAPER_Z),   // 3: mid-right-bottom
-        Vec3::new(0.0, HULL_BOTTOM_Y, BOW_Z),         // 4: bow-bottom
-        Vec3::new(-0.5, DECK_Y, STERN_Z),             // 5: stern-left-deck
-        Vec3::new(0.5, DECK_Y, STERN_Z),              // 6: stern-right-deck
-        Vec3::new(-0.5, DECK_Y, BOW_TAPER_Z),         // 7: mid-left-deck
-        Vec3::new(0.5, DECK_Y, BOW_TAPER_Z),          // 8: mid-right-deck
-        Vec3::new(0.0, DECK_Y, BOW_Z),                // 9: bow-deck
+        Vec3::new(-0.5, HULL_BOTTOM_Y, STERN_Z), // 0: stern-left-bottom
+        Vec3::new(0.5, HULL_BOTTOM_Y, STERN_Z),  // 1: stern-right-bottom
+        Vec3::new(-0.5, HULL_BOTTOM_Y, BOW_TAPER_Z), // 2: mid-left-bottom
+        Vec3::new(0.5, HULL_BOTTOM_Y, BOW_TAPER_Z), // 3: mid-right-bottom
+        Vec3::new(0.0, HULL_BOTTOM_Y, BOW_Z),    // 4: bow-bottom
+        Vec3::new(-0.5, DECK_Y, STERN_Z),        // 5: stern-left-deck
+        Vec3::new(0.5, DECK_Y, STERN_Z),         // 6: stern-right-deck
+        Vec3::new(-0.5, DECK_Y, BOW_TAPER_Z),    // 7: mid-left-deck
+        Vec3::new(0.5, DECK_Y, BOW_TAPER_Z),     // 8: mid-right-deck
+        Vec3::new(0.0, DECK_Y, BOW_Z),           // 9: bow-deck
         // Cargo block.
-        Vec3::new(-CARGO_X, DECK_Y, CARGO_BACK_Z),      // 10: back-left-bottom
-        Vec3::new(CARGO_X, DECK_Y, CARGO_BACK_Z),       // 11: back-right-bottom
-        Vec3::new(-CARGO_X, DECK_Y, CARGO_FRONT_Z),     // 12: front-left-bottom
-        Vec3::new(CARGO_X, DECK_Y, CARGO_FRONT_Z),      // 13: front-right-bottom
+        Vec3::new(-CARGO_X, DECK_Y, CARGO_BACK_Z), // 10: back-left-bottom
+        Vec3::new(CARGO_X, DECK_Y, CARGO_BACK_Z),  // 11: back-right-bottom
+        Vec3::new(-CARGO_X, DECK_Y, CARGO_FRONT_Z), // 12: front-left-bottom
+        Vec3::new(CARGO_X, DECK_Y, CARGO_FRONT_Z), // 13: front-right-bottom
         Vec3::new(-CARGO_X, CARGO_TOP_Y, CARGO_BACK_Z), // 14: back-left-top
-        Vec3::new(CARGO_X, CARGO_TOP_Y, CARGO_BACK_Z),  // 15: back-right-top
-        Vec3::new(-CARGO_X, CARGO_TOP_Y, CARGO_FRONT_Z),// 16: front-left-top
+        Vec3::new(CARGO_X, CARGO_TOP_Y, CARGO_BACK_Z), // 15: back-right-top
+        Vec3::new(-CARGO_X, CARGO_TOP_Y, CARGO_FRONT_Z), // 16: front-left-top
         Vec3::new(CARGO_X, CARGO_TOP_Y, CARGO_FRONT_Z), // 17: front-right-top
         // Bridge.
-        Vec3::new(-BRIDGE_X, DECK_Y, BRIDGE_BACK_Z),      // 18: back-left-bottom
-        Vec3::new(BRIDGE_X, DECK_Y, BRIDGE_BACK_Z),       // 19: back-right-bottom
-        Vec3::new(-BRIDGE_X, DECK_Y, BRIDGE_FRONT_Z),     // 20: front-left-bottom
-        Vec3::new(BRIDGE_X, DECK_Y, BRIDGE_FRONT_Z),      // 21: front-right-bottom
-        Vec3::new(-BRIDGE_X, BRIDGE_TOP_Y, BRIDGE_BACK_Z),// 22: back-left-top
+        Vec3::new(-BRIDGE_X, DECK_Y, BRIDGE_BACK_Z), // 18: back-left-bottom
+        Vec3::new(BRIDGE_X, DECK_Y, BRIDGE_BACK_Z),  // 19: back-right-bottom
+        Vec3::new(-BRIDGE_X, DECK_Y, BRIDGE_FRONT_Z), // 20: front-left-bottom
+        Vec3::new(BRIDGE_X, DECK_Y, BRIDGE_FRONT_Z), // 21: front-right-bottom
+        Vec3::new(-BRIDGE_X, BRIDGE_TOP_Y, BRIDGE_BACK_Z), // 22: back-left-top
         Vec3::new(BRIDGE_X, BRIDGE_TOP_Y, BRIDGE_BACK_Z), // 23: back-right-top
         Vec3::new(-BRIDGE_X, BRIDGE_TOP_Y, BRIDGE_FRONT_Z), // 24: front-left-top
-        Vec3::new(BRIDGE_X, BRIDGE_TOP_Y, BRIDGE_FRONT_Z),  // 25: front-right-top
+        Vec3::new(BRIDGE_X, BRIDGE_TOP_Y, BRIDGE_FRONT_Z), // 25: front-right-top
     ]
 }
 
@@ -164,7 +164,7 @@ pub struct ShipMeshBuffer {
     pub index_count: u32,
 }
 
-/// The bind group layout for the per-frame [`VehiclesRenderParams`] uniform (group 1).
+/// The bind group layout for the per-frame [`ShippingRenderParams`] uniform (group 1).
 #[derive(Resource)]
 pub struct RenderParamsBindGroupLayout {
     pub layout: BindGroupLayoutDescriptor,
@@ -172,7 +172,7 @@ pub struct RenderParamsBindGroupLayout {
 
 pub fn init_render_params_bind_group_layout(mut commands: Commands) {
     let layout = BindGroupLayoutDescriptor::new(
-        "VehiclesRenderParams layout",
+        "ShippingsRenderParams layout",
         &BindGroupLayoutEntries::single(
             ShaderStages::VERTEX,
             uniform_buffer::<ShippingRenderParams>(false),

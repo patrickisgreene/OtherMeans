@@ -1,5 +1,5 @@
 [package]
-name = "vehicles"
+name = "automobiles"
 version.workspace = true
 edition.workspace = true
 

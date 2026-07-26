@@ -38,9 +38,9 @@ struct VertexOutput {
     @location(1) color: vec4<f32>,
 }
 
-// Mirrors `buildings`' `compute_fade` (see libraries/buildings/src/shaders/buildings.wgsl) -
-// vehicles live at the same fixed highest LOD as buildings, so they fade out over the same
-// terrain LOD blend window instead of popping when their tile leaves the active set.
+// Mirrors `shipping`'s `compute_fade` (see assets/shaders/shipping.wgsl) - planes live at the
+// same fixed highest LOD as other ambient traffic, so they fade out over the same terrain LOD
+// blend window instead of popping when their tile leaves the active set.
 fn compute_fade(world_position: vec3<f32>) -> f32 {
     let view_distance = distance(world_position, view.world_position);
     let blend_range = max(render_params.blend_range, 0.0001);
@@ -68,8 +68,8 @@ fn vertex(input: VertexInput) -> VertexOutput {
     let total_length = max(waypoints[count - 1u].w, 0.0001);
     let raw_dist = speed * render_params.elapsed_secs + phase;
     let dist_forward = raw_dist - floor(raw_dist / total_length) * total_length;
-    // Reverse-direction vehicles walk the same waypoint path back-to-front, so they visually
-    // drive the opposite way down the road instead of just facing backward.
+    // Reverse-direction planes walk the same waypoint path back-to-front, so return flights
+    // visually fly the opposite way along the route instead of just facing backward.
     let dist = select(dist_forward, total_length - dist_forward, direction < 0.0);
 
     var segment_start = waypoints[0];
@@ -103,11 +103,16 @@ fn vertex(input: VertexInput) -> VertexOutput {
 
     let scaled = input.position * vec3<f32>(input.color_and_width.w, input.dimensions.y, input.dimensions.x);
     let offset = right * scaled.x + up * scaled.y + forward * scaled.z;
-    // Mirrors buildings' `+ normal * (height * 0.5)` (see
-    // `libraries/buildings/src/instances.rs::generate_tile_instances`) - `path_position` is
-    // exactly at ground elevation, so without this lift the box would be centered on the ground
-    // point (half embedded below the visible surface) instead of resting on top of it.
-    let world_position = path_position + up * (input.dimensions.y * 0.5) + offset;
+    // Shifts each direction to its own side of the chain's centerline by half the plane's own
+    // footprint width, so opposing traffic (`direction` = +1.0/-1.0, see
+    // `airplanes::instances::build_instance`) flies in separate side-by-side lanes flanking the
+    // centerline instead of both directions sharing the exact same path and overlapping.
+    let lane_offset = right * (input.color_and_width.w * 0.5 * direction);
+    // Unlike `shipping`'s ships (which rest on the sea surface, so their box is lifted up by half
+    // its height to avoid clipping through it), a plane's waypoints already sit at its correct
+    // in-air altitude (see `network::altitude_for_progress`) - `path_position` is the plane's own
+    // center, not a surface to rest on top of, so no vertical lift is added here.
+    let world_position = path_position + offset + lane_offset;
 
     var output: VertexOutput;
     output.clip_position = position_world_to_clip(world_position);

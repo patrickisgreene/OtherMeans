@@ -34,10 +34,11 @@ impl PluginGroup for GamePlugins {
             .add(labels::LabelsPlugin::new(GameState::Spawning))
             .add(roads::RoadsPlugin)
             .add(buildings::BuildingsPlugin)
-            .add(vehicles::VehiclesPlugin)
+            .add(automobiles::AutomobilesPlugin)
             .add(scenario::ScenarioPlugin)
             .add(shipping_lanes::ShippingLanesPlugin)
             .add(shipping::ShippingPlugin)
+            .add(airplanes::AirplanesPlugin)
             .add(InterfacePlugin)
             .add_group(bevy::feathers::FeathersPlugins)
     }
