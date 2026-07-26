@@ -35,6 +35,8 @@ pub fn earth_camera_controller(
 
     // ── Zoom ────────────────────────────────────────────────────────────────
     let min_distance = controller.radius * 1.03;
+    // TODO: Max distance is set to kee pthe earth in frame.
+    // This hack makes it so we can see the universe around the earth.
     let max_distance = controller.max_distance * 1.5;
     for event in mouse_wheel.read() {
         let speed = match event.unit {
