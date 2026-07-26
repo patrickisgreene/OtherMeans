@@ -220,7 +220,7 @@ pub fn update_view_parameter(
         if input.just_pressed(KeyCode::KeyN) {
             tile_tree.blend_distance -= 0.25 * face_size;
             tile_tree.load_distance -= 0.25 * face_size;
-            debug!(
+            println!(
                 "Decreased the blend and load distance to {}.",
                 tile_tree.blend_distance / face_size
             );
@@ -228,7 +228,7 @@ pub fn update_view_parameter(
         if input.just_pressed(KeyCode::KeyE) {
             tile_tree.blend_distance += 0.25 * face_size;
             tile_tree.load_distance += 0.25 * face_size;
-            debug!(
+            println!(
                 "Increased the blend and load distance to {}.",
                 tile_tree.blend_distance / face_size
             );
@@ -237,7 +237,7 @@ pub fn update_view_parameter(
         if input.just_pressed(KeyCode::KeyI) {
             tile_tree.morph_distance -= face_size;
             tile_tree.subdivision_distance -= face_size;
-            debug!(
+            println!(
                 "Decreased the morph distance to {}.",
                 tile_tree.morph_distance / face_size
             );
@@ -245,7 +245,7 @@ pub fn update_view_parameter(
         if input.just_pressed(KeyCode::KeyO) {
             tile_tree.morph_distance += face_size;
             tile_tree.subdivision_distance += face_size;
-            debug!(
+            println!(
                 "Increased the morph distance to {}.",
                 tile_tree.morph_distance / face_size
             );
@@ -253,11 +253,11 @@ pub fn update_view_parameter(
 
         if input.just_pressed(KeyCode::KeyX) && tile_tree.grid_size > 2 {
             tile_tree.grid_size -= 2;
-            debug!("Decreased the grid size to {}.", tile_tree.grid_size);
+            println!("Decreased the grid size to {}.", tile_tree.grid_size);
         }
         if input.just_pressed(KeyCode::KeyJ) {
             tile_tree.grid_size += 2;
-            debug!("Increased the grid size to {}.", tile_tree.grid_size);
+            println!("Increased the grid size to {}.", tile_tree.grid_size);
         }
 
         if input.just_pressed(KeyCode::KeyV) {
@@ -265,7 +265,7 @@ pub fn update_view_parameter(
                 TerrainViewport::Sphere => TerrainViewport::Square,
                 TerrainViewport::Square => TerrainViewport::Sphere,
             };
-            debug!("Toggled the viewport shape to {:?}.", tile_tree.viewport);
+            println!("Toggled the viewport shape to {:?}.", tile_tree.viewport);
         }
     }
 }

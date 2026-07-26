@@ -26,7 +26,3 @@ slab.workspace = true
 workspace.workspace = true
 bevy-inspector-egui.workspace = true
 bevy = { workspace = true, default-features = true, features = ["bevy_dev_tools"] }
-
-[[example]]
-name = "terrain"
-path = "example/main.rs"
