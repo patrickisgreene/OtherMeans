@@ -4,9 +4,10 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
+bevy = { workspace = true, features = ["bevy_feathers", "bevy_scene", "bevy_state"] }
+
 cities.workspace = true
 terrain.workspace = true
-bevy = { workspace = true, features = ["bevy_feathers", "bevy_scene", "bevy_state"] }
 
 [dev-dependencies]
 workspace.workspace = true
