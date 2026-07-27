@@ -25,8 +25,8 @@ const MAX_AIRPLANES_PER_TILE: usize = 40;
 /// Chains shorter than this aren't worth putting a plane on.
 const MIN_CHAIN_LENGTH_M: f32 = 500.0;
 
-const AIRPLANE_SPEED_MIN: f32 = 800.0;
-const AIRPLANE_SPEED_MAX: f32 = 1200.0;
+const AIRPLANE_SPEED_MIN: f32 = 3200.0;
+const AIRPLANE_SPEED_MAX: f32 = 4800.0;
 // A slim fuselage silhouette - long and narrow along the direction of travel, unlike a ship's
 // broad hull or a truck's near-cubic box.
 const AIRPLANE_LENGTH: f32 = 3000.0;
