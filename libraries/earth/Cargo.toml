@@ -11,4 +11,4 @@ bevy = { workspace = true, features = ["bevy_feathers", "bevy_picking"] }
 [dev-dependencies]
 workspace.workspace = true
 bevy-inspector-egui.workspace = true
-bevy = { workspace = true, features = ["file_watcher", "bevy_dev_tools"] }
+bevy = { workspace = true, features = ["file_watcher", "bevy_dev_tools", "bevy_scene"] }
