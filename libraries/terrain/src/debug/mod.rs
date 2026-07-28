@@ -63,6 +63,8 @@ pub struct DebugTerrain {
     pub show_normals: bool,
     pub morph: bool,
     pub blend: bool,
+    // TODO: This causes a seam to appear. for some reasone around the base cubespher tiles.
+    // Its a bug in lookup_best in functions.wgsl
     pub tile_tree_lod: bool,
     pub lighting: bool,
     pub sample_grad: bool,
@@ -82,7 +84,7 @@ impl Default for DebugTerrain {
             show_normals: false,
             morph: true,
             blend: true,
-            tile_tree_lod: true,
+            tile_tree_lod: false,
             lighting: true,
             sample_grad: true,
             high_precision: true,
