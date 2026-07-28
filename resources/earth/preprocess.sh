@@ -48,7 +48,7 @@ $WORK_DIR/target/release/terrain-preprocess \
     --no-data source \
     --data-type Byte \
     --attachment-label earth \
-    --texture-size 512 \
+    --texture-size 256 \
     --border-size 4 \
     --mip-level-count 4 \
     --format rgb8u \
@@ -63,7 +63,7 @@ $WORK_DIR/target/release/terrain-preprocess \
     --no-data source \
     --data-type Byte \
     --attachment-label water \
-    --texture-size 256 \
+    --texture-size 512 \
     --border-size 4 \
     --mip-level-count 4 \
     --format rgb8u \
