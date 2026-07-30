@@ -21,7 +21,7 @@ fn main() {
             EguiPlugin::default(),
             WorldInspectorPlugin::new().run_if(input_toggle_active(false, KeyCode::F10)),
         ))
-        .insert_resource(TerrainSettings::new(vec!["earth", "water"]))
+        .insert_resource(TerrainSettings::new(vec!["earth"]))
         .add_systems(Startup, initialize)
         .run();
 }

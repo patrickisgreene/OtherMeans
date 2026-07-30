@@ -23,7 +23,7 @@ impl Plugin for EarthPlugin {
             atmosphere::EarthAtmospherePlugin,
             TerrainPlugins::<EarthMaterial>::default(),
         ))
-        .insert_resource(TerrainSettings::new(vec!["earth", "water"]))
+        .insert_resource(TerrainSettings::new(vec!["earth"]))
         .add_systems(Update, toggle_render_mode)
         .insert_resource(ClearColor(Color::srgb(0.012, 0.012, 0.031)));
     }

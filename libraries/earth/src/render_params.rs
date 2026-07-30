@@ -26,11 +26,11 @@ pub struct EarthParams {
     pub ocean_polar_color: Vec3,
     /// Base ocean color blended in toward the equator (low |latitude|) - a lighter, warmer blue.
     pub ocean_equatorial_color: Vec3,
-    /// Brightness contrast applied from the real GEBCO bathymetric hillshade (water_attachment's
+    /// Brightness contrast applied from the real GEBCO bathymetric hillshade (earth_attachment's ocean-side
     /// red channel), centered on its ~0.7 mean so typical seafloor renders at neutral
     /// brightness. 0 = no relief shading (flat color), higher = more ridge/trench contrast.
     pub bathymetry_strength: f32,
-    /// Multiplier on the raw chlorophyll byte (water_attachment's green channel, mean ~0.03)
+    /// Multiplier on the raw chlorophyll byte (earth_attachment's green channel on the ocean side, mean ~0.03)
     /// before it saturates into the chlorophyll tint - real concentrations are low outside
     /// productive coastal zones, so this needs to be well above 1 to be visible at all.
     pub chlorophyll_strength: f32,

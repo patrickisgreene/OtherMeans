@@ -58,9 +58,6 @@ impl AttachmentFormat {
         match self {
             AttachmentFormat::Rgb8U => TextureFormat::Rgba8Unorm,
             AttachmentFormat::Rgba8U => TextureFormat::Rgba8Unorm,
-            AttachmentFormat::R16U => TextureFormat::R16Uint,
-            AttachmentFormat::R16I => TextureFormat::R16Uint,
-            AttachmentFormat::Rg16U => TextureFormat::Rg16Uint,
             _ => self.render_format(),
         }
     }

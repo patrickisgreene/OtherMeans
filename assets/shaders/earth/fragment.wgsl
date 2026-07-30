@@ -1,5 +1,5 @@
 #import terrain::types::AtlasTile
-#import terrain::bindings::{terrain, attachments, earth_attachment, water_attachment}
+#import terrain::bindings::{terrain, attachments, earth_attachment}
 #import terrain::attachments::{sample_height, sample_surface_gradient}
 #import terrain::fragment::{FragmentInput, FragmentOutput, FragmentInfo, fragment_info, fragment_debug, fragment_output}
 #import terrain::functions::lookup_tile
@@ -22,12 +22,14 @@ fn compute_ocean_blend(height: f32) -> f32 {
     return select(0.0, 1.0, height <= 0.0);
 }
 
-// Inverse of the sRGB EOTF the GPU applies when sampling water_attachment - it's
-// Rgba8UnormSrgb (same format as earth_attachment) even though its r/g/b channels carry
-// depth/chlorophyll/coastline-distance data, not real color (see
-// resources/earth/scripts/distance-field.sh and earth.sh). The GPU decodes it as sRGB anyway,
-// which corrupts the byte value - this undoes that decode to recover what was actually written
-// before doing any distance math on it.
+// Inverse of the sRGB EOTF the GPU applies when sampling earth_attachment's ocean-side pixels -
+// it's Rgba8UnormSrgb (needed for land's real color pixels) even though the ocean side's r/g/b
+// channels carry depth/chlorophyll/coastline-distance data, not color (see
+// resources/earth/scripts/distance-field.sh, bathyometry.sh, chlorophyll.sh and
+// terrain-preprocess/src/bin/combine-earth.rs, which packs that data in per-pixel wherever
+// height marks a pixel as ocean). The GPU decodes it as sRGB anyway, which corrupts the byte
+// value - this undoes that decode to recover what was actually written before doing any
+// distance math on it.
 fn undo_srgb(value: f32) -> f32 {
     if value <= 0.0031308 {
         return value * 12.92;
@@ -39,25 +41,26 @@ fn undo_srgb(value: f32) -> f32 {
 // cap distance). Height alone can't drive this - it's flat 0.0 everywhere in open ocean - so
 // this still reads the real distance field, purely to keep shore foam localized to the coast.
 fn compute_shore_distance(tile: AtlasTile) -> f32 {
-    let raw = sample_attachment_float(tile, water_attachment, attachments.water).b;
+    let raw = sample_attachment_float(tile, earth_attachment, attachments.earth).b;
     let shore_signed = undo_srgb(raw);
     return saturate((shore_signed - 0.5) * 2.0);
 }
 
 // Real NASA GEBCO hillshaded ocean-floor relief (ridges, trenches, seamounts - see
-// resources/earth/scripts/bathyometry.sh), packed into water_attachment's red channel. Not a
-// literal depth value - it's a shaded-relief illustration, mean around 0.7 - but it gives
-// water_surface_color genuine seafloor texture to shade with instead of a flat color.
+// resources/earth/scripts/bathyometry.sh), packed into earth_attachment's red channel on the
+// ocean side. Not a literal depth value - it's a shaded-relief illustration, mean around 0.7 -
+// but it gives water_surface_color genuine seafloor texture to shade with instead of a flat
+// color.
 fn compute_bathymetry_relief(tile: AtlasTile) -> f32 {
-    let raw = sample_attachment_float(tile, water_attachment, attachments.water).r;
+    let raw = sample_attachment_float(tile, earth_attachment, attachments.earth).r;
     return undo_srgb(raw);
 }
 
 // Real satellite-derived chlorophyll concentration (coastal upwelling/river plumes read high,
 // open ocean near zero - see resources/earth/scripts/chlorophyll.sh), packed into
-// water_attachment's green channel.
+// earth_attachment's green channel on the ocean side.
 fn compute_chlorophyll(tile: AtlasTile) -> f32 {
-    let raw = sample_attachment_float(tile, water_attachment, attachments.water).g;
+    let raw = sample_attachment_float(tile, earth_attachment, attachments.earth).g;
     return undo_srgb(raw);
 }
 
@@ -147,7 +150,7 @@ fn fragment(input: FragmentInput) -> FragmentOutput {
             let color = mix(sample_color, vec3(0.0), compute_ocean_blend(height));
             output.color = vec4(color, 1.0);
         }
-        case 4: { // Distance - the real coastline SDF read from water_attachment's blue channel.
+        case 4: { // Distance - the real coastline SDF read from earth_attachment's blue channel.
             output.color = vec4(vec3(compute_shore_distance(tile)), 1.0);
             let color = mix(0.0, compute_shore_distance(tile), compute_ocean_blend(height));
             output.color = vec4(0.0, 0.0, color, 1.0);

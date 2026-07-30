@@ -35,7 +35,7 @@ fn main() {
         ))
         .init_state::<ExampleState>()
         .insert_resource(UiTheme(create_dark_theme()))
-        .insert_resource(TerrainSettings::new(vec!["earth", "water"]))
+        .insert_resource(TerrainSettings::new(vec!["earth"]))
         .add_systems(Startup, initialize)
         .add_systems(Update, spawn_cities)
         .run();

@@ -6,11 +6,11 @@
 #else ifdef RGBA8U 
 @group(0) @binding(2) var child_texture: texture_storage_2d_array<rgba8unorm, write>;
 #else ifdef R16U
-@group(0) @binding(2) var child_texture: texture_storage_2d_array<r16uint, write>;
+@group(0) @binding(2) var child_texture: texture_storage_2d_array<r16unorm, write>;
 #else ifdef R16I
-@group(0) @binding(2) var child_texture: texture_storage_2d_array<r16sint, write>;
+@group(0) @binding(2) var child_texture: texture_storage_2d_array<r16snorm, write>;
 #else ifdef Rg16U
-@group(0) @binding(2) var child_texture: texture_storage_2d_array<rg16uint, write>;
+@group(0) @binding(2) var child_texture: texture_storage_2d_array<rg16unorm, write>;
 #else ifdef R32F
 @group(0) @binding(2) var child_texture: texture_storage_2d_array<r32float, write>;
 #endif

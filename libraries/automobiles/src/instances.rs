@@ -282,7 +282,7 @@ pub fn update_automobiles_batches(
             };
 
             // Load (or keep waiting on) this tile's own height image - the exact same per-tile
-            // R32F file the terrain mesh itself displaces by - before placing automobiles on it.
+            // R16U file the terrain mesh itself displaces by - before placing automobiles on it.
             // Left out of `known` (retried next frame) until it's ready.
             let handle = height_tile_handles
                 .entry(coordinate)

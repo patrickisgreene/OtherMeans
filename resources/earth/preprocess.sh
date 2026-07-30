@@ -26,18 +26,21 @@ gdal_edit.py -a_srs IAU_2015:39900 -a_ullr -180 90 180 -90 $EARTH_DIR/water.tif
 cargo build --release -p terrain-preprocess
 
 $WORK_DIR/target/release/terrain-preprocess \
-    --src-path $WORK_DIR/resources/earth/height-float32.tif \
+    --src-path $WORK_DIR/resources/earth/height.tif \
     --terrain-path $WORK_DIR/assets/earth/ \
     --overwrite \
     --lod-count 6 \
     --fill-radius 16.0 \
     --no-data source \
+    --data-type UInt16 \
     --attachment-label height \
     --texture-size 512 \
     --border-size 4 \
     --mip-level-count 4 \
-    --format r32f \
+    --format r16u \
     --shape earth
+
+cargo build --release -p terrain-preprocess
 
 $WORK_DIR/target/release/terrain-preprocess \
     --src-path $WORK_DIR/resources/earth/land.tif \
@@ -47,8 +50,8 @@ $WORK_DIR/target/release/terrain-preprocess \
     --fill-radius 16.0 \
     --no-data source \
     --data-type Byte \
-    --attachment-label earth \
-    --texture-size 256 \
+    --attachment-label land \
+    --texture-size 512 \
     --border-size 4 \
     --mip-level-count 4 \
     --format rgb8u \
@@ -68,3 +71,14 @@ $WORK_DIR/target/release/terrain-preprocess \
     --mip-level-count 4 \
     --format rgb8u \
     --shape earth
+
+# Merges the now-generated `land`/`water` tile atlases into a single `earth` attachment,
+# per-pixel-selected by the `height` attachment's own ocean sentinel (see
+# terrain-preprocess/src/bin/combine-earth.rs) - land and water never need to be sampled
+# simultaneously at render time (the fragment shader always knows which side of the coastline
+# it's on from height alone), so combining them ahead of time drops one whole attachment/texture
+# bind at runtime. Removes the standalone `land`/`water` tile directories afterward - rerun the
+# two `terrain-preprocess` invocations above to regenerate them if this ever needs reverting.
+cargo build --release -p terrain-preprocess --bin combine-earth
+$WORK_DIR/target/release/combine-earth \
+    --terrain-path $WORK_DIR/assets/earth/

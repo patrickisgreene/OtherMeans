@@ -23,7 +23,7 @@ fn load_wind_texture(mut commands: Commands, asset_server: Res<AssetServer>) {
         .load_builder()
         .with_settings(|s: &mut ImageLoaderSettings| {
             // The R/G channels encode a wind direction vector, not real color - loading it
-            // sRGB would corrupt those values the same way it would on water_attachment's
+            // sRGB would corrupt those values the same way it would on earth_attachment's ocean-side
             // data channels (see undo_srgb in fragment.wgsl); avoid that by loading linear.
             s.is_srgb = false;
             s.sampler = ImageSampler::Descriptor(ImageSamplerDescriptor {

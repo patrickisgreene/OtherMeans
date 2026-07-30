@@ -9,7 +9,7 @@ use terrain::data::attachment::Attachment;
 use terrain::prelude::AttachmentLabel;
 use terrain::prelude::TileCoordinate;
 
-/// Asset-relative path to `coordinate`'s own height tile - the exact R32F file the terrain
+/// Asset-relative path to `coordinate`'s own height tile - the exact R16U file the terrain
 /// renderer itself loads to displace that tile's mesh (see
 /// `libraries/terrain/src/data/tile_loader/default_loader.rs`'s `start_loading`, which builds
 /// the same path from the same `Attachment`).
@@ -17,7 +17,7 @@ pub fn height_tile_path(coordinate: TileCoordinate, height_attachment: &Attachme
     coordinate.path(&height_attachment.path().join(String::from(&AttachmentLabel::Height)))
 }
 
-/// Bilinearly samples a loaded height tile `image` (the terrain's own per-tile R32F attachment,
+/// Bilinearly samples a loaded height tile `image` (the terrain's own per-tile R16U attachment,
 /// loaded via [`height_tile_path`]) at a tile-local UV (`0..1` over the tile's geographic
 /// footprint, clamped). Replicates the GPU's border/scale remap
 /// (`libraries/terrain/src/render/bind_group/attachment.rs`'s `AttachmentConfig::new`,
@@ -26,10 +26,11 @@ pub fn height_tile_path(coordinate: TileCoordinate, height_attachment: &Attachme
 /// independently-resampled approximation.
 ///
 /// Returns the raw normalized height value - same convention as the GPU's `sample_height`
-/// before its `terrain.height_scale *` multiply, so callers keep multiplying by
+/// (which samples the R16Unorm texture, hardware-dividing the raw stored `u16` by 65535 into
+/// `0..1`) before its `terrain.height_scale *` multiply, so callers keep multiplying by
 /// `TileAtlas::height_scale` themselves exactly as before. Deliberately *not* corrected for the
-/// small land-pixel floor `heightmap.sh`'s `EPSILON` bakes in above 0.0 - land there is never
-/// exactly 0.0 by design (it's reserved as an unambiguous ocean sentinel; see
+/// small land-pixel floor `heightmap.sh`'s `MIN_LAND_VALUE` bakes in above 0.0 - land there is
+/// never exactly 0.0 by design (it's reserved as an unambiguous ocean sentinel; see
 /// `shaders/earth/fragment.wgsl`'s `compute_ocean_blend`, which classifies anything `<= 0.0` as
 /// ocean), so "correcting" it back to true 0 here would misclassify low-lying coastal land as
 /// ocean there.
@@ -43,7 +44,7 @@ pub fn sample_height_tile(image: &Image, height_attachment: &Attachment, local_u
     // texture sampling conventions.
     let pixel = padded_uv * texture_size as f64 - 0.5;
 
-    let data: &[f32] = bytemuck::cast_slice(
+    let data: &[u16] = bytemuck::cast_slice(
         image
             .data
             .as_ref()
@@ -53,7 +54,7 @@ pub fn sample_height_tile(image: &Image, height_attachment: &Attachment, local_u
     let sample = |x: i64, y: i64| -> f32 {
         let x = x.clamp(0, texture_size as i64 - 1) as u32;
         let y = y.clamp(0, texture_size as i64 - 1) as u32;
-        data[(y * texture_size + x) as usize]
+        data[(y * texture_size + x) as usize] as f32 / 65535.0
     };
 
     let x0 = pixel.x.floor();
